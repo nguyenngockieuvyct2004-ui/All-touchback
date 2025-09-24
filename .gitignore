@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Builds / Bundles
+dist/
+**/dist/
+build/
+coverage/
+.vite/
+.next/
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Misc
+tmp/
