@@ -10,9 +10,9 @@ function withQuery(src, params = {}) {
       url.searchParams.set(k, String(v));
     });
     // Helpful defaults for Unsplash
-    if (url.hostname.includes('images.unsplash.com')) {
-      if (!url.searchParams.has('auto')) url.searchParams.set('auto', 'format');
-      if (!url.searchParams.has('fit')) url.searchParams.set('fit', 'crop');
+    if (url.hostname.includes("images.unsplash.com")) {
+      if (!url.searchParams.has("auto")) url.searchParams.set("auto", "format");
+      if (!url.searchParams.has("fit")) url.searchParams.set("fit", "crop");
     }
     return url.toString();
   } catch {
@@ -37,12 +37,10 @@ export function fullUrl(src) {
 }
 
 export function makeSrcSet(src, widths = [320, 640, 960, 1280], q = 70) {
-  return widths
-    .map((w) => `${withQuery(src, { w, q })} ${w}w`)
-    .join(', ');
+  return widths.map((w) => `${withQuery(src, { w, q })} ${w}w`).join(", ");
 }
 
-export function defaultSizes(fallback = '100vw') {
+export function defaultSizes(fallback = "100vw") {
   // Reasonable sizes rule for grid cards; override in components if needed
-  return '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, ' + fallback;
+  return "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, " + fallback;
 }
