@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import StatGroup from '../components/StatGroup.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export default function HomePage(){
+  const { user } = useAuth();
   return (
     <div className="space-y-20">
       <Hero />
@@ -26,10 +28,17 @@ export default function HomePage(){
           <div className="relative space-y-6">
             <h2 className="text-2xl md:text-3xl font-semibold">Bắt đầu tạo kỷ niệm của bạn</h2>
             <p className="max-w-2xl mx-auto text-sm md:text-base text-gray-600 dark:text-gray-400">Đăng ký ngay để trải nghiệm việc kết nối kỷ niệm với thẻ NFC và chia sẻ tức thì.</p>
-            <div className="flex gap-4 justify-center">
-              <Link to="/register" className="btn btn-lg">Đăng ký miễn phí</Link>
-              <Link to="/products" className="btn-outline btn-lg">Xem sản phẩm</Link>
-            </div>
+            {!user ? (
+              <div className="flex gap-4 justify-center">
+                <Link to="/register" className="btn btn-lg">Đăng ký miễn phí</Link>
+                <Link to="/products" className="btn-outline btn-lg">Xem sản phẩm</Link>
+              </div>
+            ) : (
+              <div className="flex gap-4 justify-center">
+                <Link to="/memories" className="btn btn-lg">Đi tới Memories</Link>
+                <Link to="/nfc" className="btn-outline btn-lg">Quản lý thẻ NFC</Link>
+              </div>
+            )}
           </div>
         </section>
       </div>
@@ -38,6 +47,7 @@ export default function HomePage(){
 }
 
 function Hero(){
+  const { user } = useAuth();
   return (
     <div className="hero relative">
       <div className="hero-glow" />
@@ -49,8 +59,17 @@ function Hero(){
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">TouchBack giúp bạn lưu giữ, tổ chức và chia sẻ kỷ niệm thông qua thẻ NFC và liên kết rút gọn bảo mật.</p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            <Link to="/register" className="btn btn-lg shadow-focus">Bắt đầu</Link>
-            <Link to="/login" className="btn-outline btn-lg">Đăng nhập</Link>
+            {!user ? (
+              <>
+                <Link to="/register" className="btn btn-lg shadow-focus">Bắt đầu</Link>
+                <Link to="/login" className="btn-outline btn-lg">Đăng nhập</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/memories" className="btn btn-lg shadow-focus">Mở Memories</Link>
+                <Link to="/products" className="btn-outline btn-lg">Xem sản phẩm</Link>
+              </>
+            )}
             <div className="flex items-center gap-3 text-xs text-left text-gray-500 dark:text-gray-400">
               <div className="flex -space-x-2">
                 {['#fde047','#38bdf8','#a78bfa'].map((c,i)=>(<span key={i} className="w-6 h-6 rounded-full ring-2 ring-white dark:ring-gray-900" style={{background:c}} />))}
