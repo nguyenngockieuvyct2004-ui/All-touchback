@@ -23,25 +23,32 @@ Cung cấp API cho hệ thống: Auth (Local + Google), Sản phẩm, Giỏ hàn
 - NFC Card: tạo, liên kết memories, public resolve slug `/nfc/:slug` hoặc `/m/:slug`
 
 ### Google Đăng nhập (2 cách)
+
 1. Redirect OAuth (đã cấu hình `/auth/google`) → Backend redirect lại Frontend kèm JWT.
 2. Google Identity Services (One Tap / Button) dùng thẻ script:
-	 ```html
-	 <script src="https://accounts.google.com/gsi/client" async defer></script>
-	 <div id="g_id_onload"
-				data-client_id="YOUR_GOOGLE_CLIENT_ID"
-				data-context="signin"
-				data-callback="handleGoogle" ></div>
-	 <div class="g_id_signin" data-type="standard"></div>
-	 <script>
-		 async function handleGoogle(response){
-			 const res = await fetch('http://localhost:4000/auth/google-token',{ method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credential: response.credential }) });
-			 const data = await res.json();
-			 console.log('JWT từ server:', data.token);
-			 // lưu localStorage rồi redirect
-		 }
-	 </script>
-	 ```
-	 Backend endpoint: `POST /auth/google-token` body `{ credential: <id_token> }`.
+   ```html
+   <script src="https://accounts.google.com/gsi/client" async defer></script>
+   <div
+     id="g_id_onload"
+     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+     data-context="signin"
+     data-callback="handleGoogle"
+   ></div>
+   <div class="g_id_signin" data-type="standard"></div>
+   <script>
+     async function handleGoogle(response) {
+       const res = await fetch("http://localhost:4000/auth/google-token", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ credential: response.credential }),
+       });
+       const data = await res.json();
+       console.log("JWT từ server:", data.token);
+       // lưu localStorage rồi redirect
+     }
+   </script>
+   ```
+   Backend endpoint: `POST /auth/google-token` body `{ credential: <id_token> }`.
 
 ## Validation
 

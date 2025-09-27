@@ -8,8 +8,31 @@ const addSchema = Joi.object({
 });
 
 export async function getCart(req, res) {
-  const cart = (await Cart.findOne({ userId: req.user.id })) || { items: [] };
-  res.json(cart);
+  let cart = await Cart.findOne({ userId: req.user.id }).populate(
+    "items.productId"
+  );
+  if (!cart) return res.json({ items: [] });
+  // Chuẩn hoá dữ liệu cho frontend: thêm field product với dữ liệu đã populate
+  const shaped = {
+    _id: cart._id,
+    userId: cart.userId,
+    items: cart.items.map((it) => ({
+      productId: it.productId?._id,
+      quantity: it.quantity,
+      priceSnapshot: it.priceSnapshot,
+      product: it.productId
+        ? {
+            _id: it.productId._id,
+            name: it.productId.name,
+            price: it.productId.price,
+            images: it.productId.images,
+            code: it.productId.code,
+            category: it.productId.category,
+          }
+        : null,
+    })),
+  };
+  res.json(shaped);
 }
 
 export async function addToCart(req, res, next) {
@@ -25,14 +48,20 @@ export async function addToCart(req, res, next) {
     if (existing) existing.quantity += quantity;
     else cart.items.push({ productId, quantity, priceSnapshot: product.price });
     await cart.save();
-    res.json(cart);
+    // populate product for immediate response consistency
+    await cart.populate("items.productId");
+    return getCart(req, res); // reuse shape logic
   } catch (e) {
     next(e);
   }
 }
 
 export async function updateCartItem(req, res) {
-  const { productId, quantity } = req.body;
+  const schema = Joi.object({
+    productId: Joi.string().required(),
+    quantity: Joi.number().integer().min(0).required(),
+  });
+  const { productId, quantity } = await schema.validateAsync(req.body);
   const cart = await Cart.findOne({ userId: req.user.id });
   if (!cart) return res.status(404).json({ message: "Cart empty" });
   const item = cart.items.find((i) => i.productId.toString() === productId);
@@ -43,5 +72,17 @@ export async function updateCartItem(req, res) {
     item.quantity = quantity;
   }
   await cart.save();
-  res.json(cart);
+  await cart.populate("items.productId");
+  return getCart(req, res);
+}
+
+export async function clearCart(req, res) {
+  let cart = await Cart.findOne({ userId: req.user.id });
+  if (cart) {
+    cart.items = [];
+    await cart.save();
+  } else {
+    cart = await Cart.create({ userId: req.user.id, items: [] });
+  }
+  res.json({ items: [] });
 }

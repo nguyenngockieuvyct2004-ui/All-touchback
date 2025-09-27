@@ -23,7 +23,10 @@ app.use(express.json({ limit: "10mb" }));
 app.use(morgan("dev"));
 app.use(passport.initialize());
 
-app.get("/health", (_req, res) => res.json({ status: "ok" }));
+app.get("/health", (_req, res) => {
+  const hasJwt = !!process.env.JWT_SECRET;
+  res.json({ status: "ok", jwtConfigured: hasJwt });
+});
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);

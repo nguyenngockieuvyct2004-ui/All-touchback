@@ -14,7 +14,11 @@ const createSchema = Joi.object({
   tags: Joi.array().items(Joi.string().min(1)).max(15).default([]),
   isPublic: Joi.boolean().default(true),
   cardId: Joi.string().optional(),
-});
+})
+  // Accept 'content' from older/newer clients and map it to 'description'
+  .rename("content", "description", { ignoreUndefined: true, override: false })
+  // Allow unknown keys so we can strip them cleanly without throwing
+  .unknown(true);
 
 export async function listMemories(req, res) {
   const list = await Memory.find({ userId: req.user.id }).sort({
@@ -25,7 +29,9 @@ export async function listMemories(req, res) {
 
 export async function createMemory(req, res, next) {
   try {
-    const data = await createSchema.validateAsync(req.body);
+    const data = await createSchema.validateAsync(req.body, {
+      stripUnknown: true,
+    });
     const memory = await Memory.create({ ...data, userId: req.user.id });
     res.status(201).json(memory);
   } catch (e) {
@@ -45,7 +51,9 @@ export async function updateMemory(req, res, next) {
       Object.keys(createSchema.describe().keys),
       (s) => s.optional()
     );
-    const data = await partialSchema.validateAsync(req.body);
+    const data = await partialSchema.validateAsync(req.body, {
+      stripUnknown: true,
+    });
     const updated = await Memory.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       data,

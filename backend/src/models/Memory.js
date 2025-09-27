@@ -22,4 +22,17 @@ const memorySchema = new Schema(
   { timestamps: true }
 );
 
+// Ensure API responses keep backward compat with "content" field
+function transformDoc(_doc, ret) {
+  if (!ret.content && typeof ret.description !== "undefined") {
+    ret.content = ret.description;
+  }
+  if (ret._id && !ret.id) ret.id = String(ret._id);
+  delete ret.__v;
+  return ret;
+}
+
+memorySchema.set("toJSON", { virtuals: true, transform: transformDoc });
+memorySchema.set("toObject", { virtuals: true, transform: transformDoc });
+
 export default model("Memory", memorySchema);

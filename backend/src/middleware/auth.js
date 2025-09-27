@@ -6,11 +6,20 @@ export function authRequired(req, res, next) {
     return res.status(401).json({ message: "Missing token" });
   const token = header.split(" ")[1];
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const secret =
+      process.env.JWT_SECRET ||
+      (process.env.NODE_ENV !== "production"
+        ? "dev_fallback_secret_change_me"
+        : undefined);
+    const payload = jwt.verify(token, secret);
     req.user = { id: payload.sub, role: payload.role };
     next();
   } catch (e) {
-    return res.status(401).json({ message: "Invalid token" });
+    const msg =
+      process.env.NODE_ENV !== "production"
+        ? `Invalid token: ${e.message}`
+        : "Invalid token";
+    return res.status(401).json({ message: msg });
   }
 }
 

@@ -4,14 +4,16 @@ import User from "../models/User.js";
 import Joi from "joi";
 // Dùng dynamic import để tránh crash server nếu chưa cài đặt google-auth-library
 let _googleClient = null;
-async function getGoogleClient(){
-  if(!_googleClient){
+async function getGoogleClient() {
+  if (!_googleClient) {
     try {
-      const mod = await import('google-auth-library');
+      const mod = await import("google-auth-library");
       const { OAuth2Client } = mod;
       _googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-    } catch (e){
-      throw new Error('google-auth-library chưa được cài đặt. Chạy: npm install google-auth-library');
+    } catch (e) {
+      throw new Error(
+        "google-auth-library chưa được cài đặt. Chạy: npm install google-auth-library"
+      );
     }
   }
   return _googleClient;
@@ -29,9 +31,22 @@ const loginSchema = Joi.object({
 });
 
 function signToken(user) {
-  return jwt.sign({ sub: user._id, role: user.role }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  const secret =
+    process.env.JWT_SECRET ||
+    (process.env.NODE_ENV !== "production"
+      ? "dev_fallback_secret_change_me"
+      : undefined);
+  if (!secret) {
+    // Trả lỗi rõ ràng thay vì lỗi chung chung "secretOrPrivateKey must have a value"
+    throw new Error(
+      "JWT_SECRET is missing. Set it in backend/.env (JWT_SECRET=your_secret)"
+    );
+  }
+  return jwt.sign(
+    { sub: user._id, role: user.role, email: user.email },
+    secret,
+    { expiresIn: "1h" }
+  );
 }
 
 export async function register(req, res, next) {
@@ -83,27 +98,35 @@ export function googleCallback(req, res) {
 
 // Google Sign-In (client gửi credential token của Google Identity Services)
 // POST /auth/google-token  { credential: string }
-export async function googleToken(req, res, next){
+export async function googleToken(req, res, next) {
   const { credential } = req.body || {};
-  if(!credential) return res.status(400).json({ message:'Missing credential'});
+  if (!credential)
+    return res.status(400).json({ message: "Missing credential" });
   try {
     const client = await getGoogleClient();
-    const ticket = await client.verifyIdToken({ idToken: credential, audience: process.env.GOOGLE_CLIENT_ID });
+    const ticket = await client.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
     const payload = ticket.getPayload();
-    if(!payload?.sub) return res.status(400).json({ message:'Invalid token'});
+    if (!payload?.sub)
+      return res.status(400).json({ message: "Invalid token" });
     let user = await User.findOne({ googleId: payload.sub });
-    if(!user){
+    if (!user) {
       user = await User.create({
         fullName: payload.name || payload.email,
         email: payload.email,
         googleId: payload.sub,
-        provider: 'google',
-        role: 'customer'
+        provider: "google",
+        role: "customer",
       });
     }
     const token = signToken(user);
-    res.json({ token, user:{ id:user._id, email:user.email, role:user.role } });
-  } catch(e){
+    res.json({
+      token,
+      user: { id: user._id, email: user.email, role: user.role },
+    });
+  } catch (e) {
     next(e);
   }
 }
