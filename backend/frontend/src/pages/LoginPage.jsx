@@ -35,7 +35,9 @@ export default function LoginPage(){
         const res = await api.post('/auth/google-token',{ credential });
         login(res.data.token);
       } catch(e){
-        console.error(e);
+        const msg = e?.response?.data?.message || e?.message || 'Google Sign-In thất bại';
+        console.error('Google Sign-In error:', msg);
+        setError(msg);
       }
     };
   },[login]);
@@ -44,10 +46,13 @@ export default function LoginPage(){
   useEffect(()=>{
     if(!googleClientId){
       console.warn('VITE_GOOGLE_CLIENT_ID missing. Create frontend/.env.local with VITE_GOOGLE_CLIENT_ID=... and restart dev server.');
+    } else if (import.meta.env.DEV) {
+      const mask = (id)=> id ? `${id.slice(0,8)}...${id.slice(-10)}` : '';
+      console.log('[Google] Using client id:', mask(googleClientId));
     }
   },[googleClientId]);
 
-  // Force render Google button with retry until script ready
+  // Ensure Google SDK script is present, then render button with retry
   useEffect(()=>{
     if(!googleClientId) return; // nothing to do
     let attempts = 0;
@@ -78,7 +83,16 @@ export default function LoginPage(){
         console.warn('Google SDK not ready after retries');
       }
     }
-    tryRender();
+    // If for any reason the script tag is missing, insert it
+    if(!document.querySelector('script[src^="https://accounts.google.com/gsi/client"]')){
+      const s = document.createElement('script');
+      s.src = 'https://accounts.google.com/gsi/client';
+      s.async = true; s.defer = true;
+      s.onload = tryRender; s.onerror = ()=> console.warn('Không tải được Google SDK');
+      document.head.appendChild(s);
+    } else {
+      tryRender();
+    }
   },[googleClientId]);
 
   return <div className="max-w-md mx-auto w-full">

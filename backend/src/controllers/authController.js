@@ -127,6 +127,11 @@ export async function googleToken(req, res, next) {
       user: { id: user._id, email: user.email, role: user.role },
     });
   } catch (e) {
-    next(e);
+    // Provide clearer error in non-production
+    const msg =
+      process.env.NODE_ENV === "production"
+        ? "Xác thực Google thất bại"
+        : `Google verify error: ${e?.message || e}`;
+    res.status(400).json({ message: msg });
   }
 }

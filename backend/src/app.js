@@ -25,7 +25,17 @@ app.use(passport.initialize());
 
 app.get("/health", (_req, res) => {
   const hasJwt = !!process.env.JWT_SECRET;
-  res.json({ status: "ok", jwtConfigured: hasJwt });
+  const googleId = process.env.GOOGLE_CLIENT_ID || "";
+  const googleConfigured = !!googleId;
+  const googleIdMasked = googleId
+    ? `${googleId.slice(0, 8)}...${googleId.slice(-10)}`
+    : null;
+  res.json({
+    status: "ok",
+    jwtConfigured: hasJwt,
+    googleConfigured,
+    googleIdMasked,
+  });
 });
 
 app.use("/auth", authRoutes);
