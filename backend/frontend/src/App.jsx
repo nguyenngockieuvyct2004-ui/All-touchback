@@ -15,6 +15,7 @@ import NfcCardsPage from './pages/NfcCardsPage.jsx';
 import PublicMemoryPage from './pages/PublicMemoryPage.jsx';
 import AdminProductsPage from './pages/AdminProductsPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import ChatPage from './pages/ChatPage.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -59,6 +60,7 @@ export default function App(){
           <Route path="/memories/:id" element={<ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories/:id/edit" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/nfc" element={<ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/m/:slug" element={<PageWrapper><PublicMemoryPage /></PageWrapper>} />
           <Route path="/admin/products" element={<ProtectedRoute roles={["admin","manager"]}><PageWrapper><AdminProductsPage /></PageWrapper></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />

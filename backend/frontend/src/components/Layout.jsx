@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar.jsx';
+import ChatWidget from './ChatWidget.jsx';
 
 export default function Layout({ children }){
   return (
@@ -8,6 +9,7 @@ export default function Layout({ children }){
       <div className="flex-1 w-full">
         {children}
       </div>
+      <ChatWidget />
       <Footer />
     </div>
   );

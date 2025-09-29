@@ -11,6 +11,7 @@ import productRoutes from "./routes/productRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import memoryRoutes from "./routes/memoryRoutes.js";
 import nfcRoutes from "./routes/nfcRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -44,6 +45,7 @@ app.use("/cart", cartRoutes);
 app.use("/memories", memoryRoutes);
 app.use("/nfc", nfcRoutes);
 app.use("/m", nfcRoutes); // public slug resolve
+app.use("/chat", chatRoutes);
 
 app.use(errorHandler);
 
