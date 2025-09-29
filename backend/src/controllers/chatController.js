@@ -52,7 +52,12 @@ export async function chatWithAi(req, res, next) {
         );
         const result = await m.generateContent({ contents });
         const text = result?.response?.text?.() || "";
-        return res.json({ reply: text, model: CACHED_SELECTION.model, api: CACHED_SELECTION.api, cached: true });
+        return res.json({
+          reply: text,
+          model: CACHED_SELECTION.model,
+          api: CACHED_SELECTION.api,
+          cached: true,
+        });
       } catch (e) {
         // Invalidate cache and proceed to probing
         CACHED_SELECTION = null;
