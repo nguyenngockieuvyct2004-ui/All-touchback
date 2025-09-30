@@ -57,6 +57,7 @@ export default function App(){
           <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
           <Route path="/cart" element={<ProtectedRoute><PageWrapper><CartPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories" element={<ProtectedRoute><PageWrapper><MemoriesPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="/memories/new" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories/:id" element={<ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories/:id/edit" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/nfc" element={<ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute>} />

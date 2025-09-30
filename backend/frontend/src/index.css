@@ -29,7 +29,7 @@ p { @apply leading-relaxed; }
 .btn-ghost { @apply inline-flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-sm; }
 
 /* Cards */
-.card { @apply bg-white dark:bg-gray-900/70 backdrop-blur border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-soft relative overflow-hidden; animation: fade .3s ease; }
+.card { @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 shadow-soft relative; animation: fade .3s ease; }
 .card-muted { @apply bg-gray-100 dark:bg-gray-800 border-0 shadow-none; }
 .card-hover { @apply transition hover:shadow-lg hover:-translate-y-[2px]; }
 

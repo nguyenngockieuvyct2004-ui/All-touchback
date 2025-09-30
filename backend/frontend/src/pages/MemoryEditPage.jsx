@@ -5,7 +5,8 @@ import ErrorMessage from '../components/ErrorMessage.jsx';
 
 export default function MemoryEditPage(){
   const { id } = useParams();
-  const isNew = id === 'new';
+  // Hỗ trợ cả route "/memories/new" (không có id) và "/memories/:id/edit"
+  const isNew = !id || id === 'new';
   const navigate = useNavigate();
   const [title,setTitle] = useState('');
   const [description,setDescription] = useState('');
@@ -14,8 +15,17 @@ export default function MemoryEditPage(){
 
   useEffect(()=>{
     if(!isNew){
-  api.get(`/memories/${id}`).then(r=>{ setTitle(r.data.title||''); setDescription(r.data.description ?? r.data.content ?? ''); })
+      api.get(`/memories/${id}`)
+        .then(r=>{
+          setTitle(r.data.title||'');
+          setDescription(r.data.description ?? r.data.content ?? '');
+        })
         .catch(()=> setError('Không tải được dữ liệu'));
+    } else {
+      // Chế độ tạo mới: đảm bảo không hiển thị lỗi cũ
+      setError('');
+      setTitle('');
+      setDescription('');
     }
   },[id,isNew]);
 
@@ -23,10 +33,10 @@ export default function MemoryEditPage(){
     e.preventDefault(); setError(''); setSaving(true);
     try {
       if(isNew){
-        const r = await api.post('/memories',{ title, description });
-        navigate(`/memories/${r.data._id}`);
+        const r = await api.post('/memories',{ title: title.trim(), description });
+        navigate(`/memories/${r.data.id || r.data._id}`);
       } else {
-        await api.put(`/memories/${id}`, { title, description });
+        await api.put(`/memories/${id}`, { title: title.trim(), description });
         navigate(`/memories/${id}`);
       }
     } catch(e){
@@ -39,7 +49,7 @@ export default function MemoryEditPage(){
       <h1 className="text-3xl font-bold tracking-tight gradient-text mb-2">{isNew? 'Tạo Memory':'Sửa Memory'}</h1>
       <p className="text-sm text-muted-foreground">Ghi lại khoảnh khắc đặc biệt của bạn. Bạn có thể viết nhiều dòng.</p>
     </div>
-    <ErrorMessage error={error} />
+    {!isNew && <ErrorMessage error={error} />}
     <form onSubmit={save} className="panel space-y-5">
       <div className="space-y-1.5">
         <label className="label">Tiêu đề</label>
