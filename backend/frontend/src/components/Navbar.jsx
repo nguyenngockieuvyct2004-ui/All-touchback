@@ -26,7 +26,7 @@ export default function Navbar(){
       <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-6 text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
-            <img src={TBLogo} alt="TouchBack" className="w-5 h-5 object-contain mix-blend-multiply dark:mix-blend-screen rounded pointer-events-none select-none" />
+            <img src={TBLogo} alt="TouchBack" className="w-16 h-16 object-contain mix-blend-multiply dark:mix-blend-screen rounded pointer-events-none select-none" />
             <span className="tracking-tight">TouchBack</span>
           </Link>
           <nav className="hidden md:flex items-center gap-1">
@@ -40,7 +40,7 @@ export default function Navbar(){
         <div className="flex items-center gap-2">
           <ThemeToggle />
           {!user && <>
-            <Link to="/login" className="text-xs md:text-sm px-3 h-9 rounded-md border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/15 text-white transition">Đăng nhập</Link>
+            <Link to="/login" className="hidden md:inline-flex text-xs md:text-sm px-3 h-9 items-center rounded-md bg-white/20 hover:bg-white/25 text-white border border-white/30 transition">Đăng nhập</Link>
             <Link to="/register" className="hidden md:inline-flex text-xs md:text-sm px-3 h-9 items-center rounded-md bg-white/20 hover:bg-white/25 text-white border border-white/30 transition">Đăng ký</Link>
           </>}
           {user && <div className="flex items-center gap-3">
