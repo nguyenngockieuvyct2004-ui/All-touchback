@@ -13,6 +13,7 @@ import MemoryEditPage from './pages/MemoryEditPage.jsx';
 import MemoryViewPage from './pages/MemoryViewPage.jsx';
 import NfcCardsPage from './pages/NfcCardsPage.jsx';
 import PublicMemoryPage from './pages/PublicMemoryPage.jsx';
+import PublicCardPage from './pages/PublicCardPage.jsx';
 import AdminProductsPage from './pages/AdminProductsPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ChatPage from './pages/ChatPage.jsx';
@@ -63,6 +64,7 @@ export default function App(){
           <Route path="/nfc" element={<ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/chat" element={<ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/m/:slug" element={<PageWrapper><PublicMemoryPage /></PageWrapper>} />
+          <Route path="/c/:slug" element={<PageWrapper><PublicCardPage /></PageWrapper>} />
           <Route path="/admin/products" element={<ProtectedRoute roles={["admin","manager"]}><PageWrapper><AdminProductsPage /></PageWrapper></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

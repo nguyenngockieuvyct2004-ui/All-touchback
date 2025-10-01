@@ -3,13 +3,19 @@ import {
   createCard,
   linkMemories,
   resolveSlug,
+  listCards,
+  updateCard,
+  listCardMemories,
 } from "../controllers/nfcController.js";
 import { authRequired } from "../middleware/auth.js";
 
 const router = Router();
 
+router.get("/", authRequired, listCards);
 router.post("/", authRequired, createCard);
 router.post("/:id/link", authRequired, linkMemories);
+router.get("/:id/memories", authRequired, listCardMemories);
+router.put("/:id", authRequired, updateCard);
 router.get("/:slug", resolveSlug);
 
 export default router;

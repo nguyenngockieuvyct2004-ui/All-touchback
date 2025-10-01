@@ -7,6 +7,28 @@ const nfcCardSchema = new Schema(
     title: String,
     linkedMemoryIds: [{ type: Types.ObjectId, ref: "Memory" }],
     isActive: { type: Boolean, default: true },
+    // Optional business card profile for public card page
+    profile: {
+      name: String,
+      title: String,
+      company: String,
+      phone: String,
+      email: String,
+      website: String,
+      address: String,
+      avatar: String, // URL to avatar image
+      socials: [
+        new Schema(
+          {
+            label: String, // e.g., Facebook, LinkedIn
+            url: String,
+          },
+          { _id: false }
+        ),
+      ],
+    },
+    // Prefer this memory when rendering public card
+    primaryMemoryId: { type: Types.ObjectId, ref: "Memory" },
   },
   { timestamps: true }
 );

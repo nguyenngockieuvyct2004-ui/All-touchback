@@ -54,9 +54,9 @@ export default function CartPage(){
             <input value={i.quantity} onChange={e=>{
               const v = parseInt(e.target.value)||1; changeQuantity(i.productId, v);
             }} className="w-12 h-8 text-center rounded-md border bg-background text-sm" />
-            <button onClick={()=>changeQuantity(i.productId, i.quantity+1)} className="px-2 h-8 rounded-md border bg-muted text-xs">+</button>
+            <button onClick={()=>changeQuantity(i.productId, i.quantity+1)} className="px-2 h-8 rounded-md border bg-muted text-xs ">+</button>
           </div>
-          <div className="font-semibold text-sm w-24 text-right">{((i.product?.price||0)*i.quantity).toLocaleString()} đ</div>
+          <div className="font-semibold text-sm w-24 text-right ">{((i.product?.price||0)*i.quantity).toLocaleString()} đ</div>
           <button onClick={()=>removeItem(i.productId)} className="text-xs text-red-600 hover:underline">Xoá</button>
         </li>)}
       </ul>

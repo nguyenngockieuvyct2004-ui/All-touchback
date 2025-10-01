@@ -13,6 +13,13 @@ export async function createCard(req, res) {
   res.status(201).json(card);
 }
 
+export async function listCards(req, res) {
+  const cards = await NfcCard.find({ userId: req.user.id }).sort({
+    createdAt: -1,
+  });
+  res.json(cards);
+}
+
 export async function linkMemories(req, res, next) {
   try {
     const { memoryIds } = await linkSchema.validateAsync(req.body);
@@ -24,6 +31,77 @@ export async function linkMemories(req, res, next) {
     card.linkedMemoryIds = memoryIds;
     await card.save();
     res.json(card);
+  } catch (e) {
+    next(e);
+  }
+}
+
+const profileSchema = Joi.object({
+  name: Joi.string().allow("", null),
+  title: Joi.string().allow("", null),
+  company: Joi.string().allow("", null),
+  phone: Joi.string().allow("", null),
+  email: Joi.string().email({ tlds: false }).allow("", null),
+  website: Joi.string().uri({ allowRelative: false }).allow("", null),
+  address: Joi.string().allow("", null),
+  avatar: Joi.string().uri().allow("", null),
+  socials: Joi.array()
+    .items(
+      Joi.object({
+        label: Joi.string().allow("", null),
+        url: Joi.string().uri().required(),
+      })
+    )
+    .max(20)
+    .default([]),
+}).default({});
+
+const updateSchema = Joi.object({
+  title: Joi.string().allow("", null),
+  isActive: Joi.boolean(),
+  profile: profileSchema,
+  primaryMemoryId: Joi.string().allow("", null),
+}).unknown(false);
+
+export async function updateCard(req, res, next) {
+  try {
+    const data = await updateSchema.validateAsync(req.body, {
+      stripUnknown: true,
+    });
+    if (data.primaryMemoryId === "") data.primaryMemoryId = null;
+    const updated = await NfcCard.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      data,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: "Not found" });
+    res.json(updated);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function listCardMemories(req, res, next) {
+  try {
+    const card = await NfcCard.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+    if (!card) return res.status(404).json({ message: "Not found" });
+    const memories = await Memory.find({
+      _id: { $in: card.linkedMemoryIds || [] },
+    })
+      .sort({ updatedAt: -1 })
+      .select("_id title isPublic updatedAt")
+      .lean();
+    res.json(
+      memories.map((m) => ({
+        id: String(m._id),
+        title: m.title,
+        isPublic: !!m.isPublic,
+        updatedAt: m.updatedAt,
+      }))
+    );
   } catch (e) {
     next(e);
   }

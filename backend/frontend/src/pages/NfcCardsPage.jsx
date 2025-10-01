@@ -10,11 +10,24 @@ export default function NfcCardsPage(){
   const [error,setError] = useState('');
   const [creating,setCreating] = useState(false);
   const [linking,setLinking] = useState(false);
-
-  // For demo: there is no GET /nfc list route, so we only manage newly created cards locally.
+  const [savingProfileId, setSavingProfileId] = useState(null);
+  const [loadingMem, setLoadingMem] = useState({}); // {cardId: boolean}
+  const [uploadingAvatar, setUploadingAvatar] = useState({}); // {cardId: boolean}
 
   useEffect(()=>{
     api.get('/memories').then(r=> setMemories(r.data)).catch(()=>{});
+    api.get('/nfc').then(async r=>{
+      const list = r.data||[]; setCards(list);
+      // fetch card-linked memories for primary selection
+      for (const c of list){
+        setLoadingMem(s=> ({...s, [c._id]: true}));
+        try{
+          const resp = await api.get(`/nfc/${c._id}/memories`);
+          setMemories(prev => prev); // keep global
+          setCards(cs=> cs.map(x=> x._id===c._id? { ...x, __cardMems: resp.data } : x));
+        } finally { setLoadingMem(s=> ({...s, [c._id]: false})); }
+      }
+    }).catch(()=>{});
   },[]);
 
   async function createCard(){
@@ -39,6 +52,71 @@ export default function NfcCardsPage(){
     finally { setLinking(false); }
   }
 
+  function updateLocalCard(id, patch){
+    setCards(cs=> cs.map(c=> (c._id===id ? { ...c, ...patch } : c)));
+  }
+
+  function onProfileFieldChange(cardId, path, value){
+    setCards(cs=> cs.map(c=>{
+      if(c._id!==cardId) return c;
+      const profile = { ...(c.profile||{}) };
+      // simple path: 'profile.name' etc. For this form we only use top-level keys under profile
+      const key = path.replace('profile.', '');
+      profile[key] = value;
+      return { ...c, profile };
+    }));
+  }
+
+  function addSocial(card){
+    const socials = [...(card.profile?.socials||[]), { label: '', url: '' }];
+    updateLocalCard(card._id, { profile: { ...(card.profile||{}), socials } });
+  }
+
+  function updateSocial(card, idx, field, value){
+    const socials = [...(card.profile?.socials||[])];
+    socials[idx] = { ...(socials[idx]||{}), [field]: value };
+    updateLocalCard(card._id, { profile: { ...(card.profile||{}), socials } });
+  }
+
+  function removeSocial(card, idx){
+    const socials = (card.profile?.socials||[]).filter((_,i)=> i!==idx);
+    updateLocalCard(card._id, { profile: { ...(card.profile||{}), socials } });
+  }
+
+  async function uploadAvatar(card){
+    const id = card._id;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files && input.files[0];
+      if(!file) return;
+      try{
+        setUploadingAvatar(s=> ({...s, [id]: true}));
+        const fd = new FormData();
+        fd.append('files', file);
+        const r = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        const url = r.data?.files?.[0]?.url;
+        if(!url){ alert('Tải file thất bại'); return; }
+        const profile = { ...(card.profile||{}), avatar: url };
+        updateLocalCard(id, { profile });
+      } catch(e){ alert(e.response?.data?.message || 'Tải file thất bại'); }
+      finally{ setUploadingAvatar(s=> ({...s, [id]: false})); }
+    };
+    input.click();
+  }
+
+  async function saveProfile(card){
+    setSavingProfileId(card._id);
+    setError('');
+    try{
+      const payload = { title: card.title || '', isActive: card.isActive!==false, profile: card.profile||{}, primaryMemoryId: card.primaryMemoryId || '' };
+      const r = await api.put(`/nfc/${card._id}`, payload);
+      updateLocalCard(card._id, r.data);
+    }catch(e){ setError(e.response?.data?.message || 'Lưu profile thất bại'); }
+    finally{ setSavingProfileId(null); }
+  }
+
   return <div className="space-y-6">
     <div className="flex items-center justify-between">
       <h1 className="text-2xl font-semibold tracking-tight">NFC Cards</h1>
@@ -53,7 +131,10 @@ export default function NfcCardsPage(){
             <h3 className="font-semibold text-base flex items-center gap-2">Slug: <span className="font-mono text-primary text-sm bg-primary/5 px-2 py-0.5 rounded border border-primary/20">{card.slug}</span></h3>
             <div className="text-[11px] text-muted-foreground">ID: {card._id}</div>
           </div>
-          <a href={`/m/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem công khai</a>
+          <div className="flex items-center gap-3">
+            <a href={`/m/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem memory</a>
+            <a href={`/c/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem danh thiếp</a>
+          </div>
         </div>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
@@ -69,6 +150,81 @@ export default function NfcCardsPage(){
           <div className="flex items-center gap-3">
             <button onClick={()=>link(card)} disabled={linking || !selected.length} className="btn btn-outline btn-sm min-w-[110px]">{linking?'Đang gắn...':'Gắn vào thẻ'}</button>
             {!!selected.length && <span className="text-[11px] text-muted-foreground">{selected.length} mục đang chọn</span>}
+          </div>
+        </div>
+
+        {/* Primary memory selector */}
+        <div className="space-y-1">
+          <label className="label">Memory chính</label>
+          <select className="input" value={card.primaryMemoryId || ''} onChange={(e)=> updateLocalCard(card._id, { primaryMemoryId: e.target.value || null })}>
+            <option value="">— Lấy public mới nhất —</option>
+            {(card.__cardMems||[]).map(m=> <option key={m.id} value={m.id}>{m.title || '(Không tiêu đề)'} {m.isPublic? '' : '· (private)'}</option>)}
+          </select>
+          {loadingMem[card._id] && <div className="text-[11px] text-muted-foreground">Đang tải danh sách...</div>}
+        </div>
+
+        {/* Profile form */}
+        <div className="pt-2 border-t border-border space-y-3">
+          <h4 className="text-sm font-medium">Hồ sơ danh thiếp</h4>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-muted border">
+              {card.profile?.avatar ? <img src={card.profile.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-sm">🪪</div>}
+            </div>
+            <button type="button" className="btn btn-outline btn-sm" onClick={()=>uploadAvatar(card)} disabled={!!uploadingAvatar[card._id]}>
+              {uploadingAvatar[card._id] ? 'Đang tải...' : 'Tải ảnh đại diện'}
+            </button>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="label">Tên</label>
+              <input className="input" value={card.profile?.name||''} onChange={e=> onProfileFieldChange(card._id, 'profile.name', e.target.value)} placeholder="Nguyễn Văn A" />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Chức danh</label>
+              <input className="input" value={card.profile?.title||''} onChange={e=> onProfileFieldChange(card._id, 'profile.title', e.target.value)} placeholder="Software Engineer" />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Công ty</label>
+              <input className="input" value={card.profile?.company||''} onChange={e=> onProfileFieldChange(card._id, 'profile.company', e.target.value)} placeholder="TouchBack" />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Số điện thoại</label>
+              <input className="input" value={card.profile?.phone||''} onChange={e=> onProfileFieldChange(card._id, 'profile.phone', e.target.value)} placeholder="0909..." />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Email</label>
+              <input className="input" value={card.profile?.email||''} onChange={e=> onProfileFieldChange(card._id, 'profile.email', e.target.value)} placeholder="a@example.com" />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Website</label>
+              <input className="input" value={card.profile?.website||''} onChange={e=> onProfileFieldChange(card._id, 'profile.website', e.target.value)} placeholder="https://..." />
+            </div>
+            <div className="sm:col-span-2 space-y-1">
+              <label className="label">Địa chỉ</label>
+              <input className="input" value={card.profile?.address||''} onChange={e=> onProfileFieldChange(card._id, 'profile.address', e.target.value)} placeholder="Địa chỉ" />
+            </div>
+            <div className="sm:col-span-2 space-y-1">
+              <label className="label">Ảnh đại diện (URL)</label>
+              <input className="input" value={card.profile?.avatar||''} onChange={e=> onProfileFieldChange(card._id, 'profile.avatar', e.target.value)} placeholder="https://...jpg" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="label">Mạng xã hội / Liên kết</label>
+              <button type="button" onClick={()=>addSocial(card)} className="btn btn-outline btn-sm">Thêm link</button>
+            </div>
+            {(card.profile?.socials||[]).map((s,idx)=> (
+              <div key={idx} className="flex gap-2">
+                <input value={s.label||''} onChange={e=> updateSocial(card, idx, 'label', e.target.value)} className="input flex-[0.5]" placeholder="Facebook / LinkedIn / ..." />
+                <input value={s.url||''} onChange={e=> updateSocial(card, idx, 'url', e.target.value)} className="input flex-1" placeholder="https://..." />
+                <button type="button" onClick={()=>removeSocial(card, idx)} className="btn btn-outline">Xoá</button>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-1">
+            <button onClick={()=>saveProfile(card)} disabled={savingProfileId===card._id} className="btn btn-primary min-w-[120px]">{savingProfileId===card._id? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
           </div>
         </div>
       </div>)}

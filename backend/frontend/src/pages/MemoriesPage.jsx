@@ -47,12 +47,12 @@ export default function MemoriesPage(){
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
       <h1 className="text-2xl font-semibold tracking-tight">Memories</h1>
       <div className="flex items-center gap-2">
-        <input value={q} onChange={e=>setQ(e.target.value)} className="input w-56" placeholder="Tìm kiếm..." />
-        <select value={sort} onChange={e=>setSort(e.target.value)} className="input w-36">
+        <input value={q} onChange={e=>setQ(e.target.value)} className="input h-10 w-56" placeholder="Tìm kiếm..." />
+        <select value={sort} onChange={e=>setSort(e.target.value)} className="input h-10 w-36">
           <option value="newest">Mới nhất</option>
           <option value="oldest">Cũ nhất</option>
         </select>
-        <Link to="/memories/new" className="btn btn-primary">Tạo mới</Link>
+  <Link to="/memories/new" className="btn btn-primary h-10 px-5 whitespace-nowrap">Tạo mới</Link>
       </div>
     </div>
     <ErrorMessage error={error} />

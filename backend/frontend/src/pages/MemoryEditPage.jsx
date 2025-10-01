@@ -10,8 +10,15 @@ export default function MemoryEditPage(){
   const navigate = useNavigate();
   const [title,setTitle] = useState('');
   const [description,setDescription] = useState('');
+  const [media, setMedia] = useState([]); // [{type:'image'|'video', url, caption?}]
   const [error,setError] = useState('');
   const [saving,setSaving] = useState(false);
+
+  // Inputs for adding a media item
+  const [mType, setMType] = useState('image');
+  const [mUrl, setMUrl] = useState('');
+  const [mCaption, setMCaption] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(()=>{
     if(!isNew){
@@ -19,6 +26,7 @@ export default function MemoryEditPage(){
         .then(r=>{
           setTitle(r.data.title||'');
           setDescription(r.data.description ?? r.data.content ?? '');
+          setMedia(Array.isArray(r.data.media) ? r.data.media : []);
         })
         .catch(()=> setError('Không tải được dữ liệu'));
     } else {
@@ -26,17 +34,19 @@ export default function MemoryEditPage(){
       setError('');
       setTitle('');
       setDescription('');
+      setMedia([]);
     }
   },[id,isNew]);
 
   async function save(e){
     e.preventDefault(); setError(''); setSaving(true);
     try {
+      const payload = { title: title.trim(), description, media };
       if(isNew){
-        const r = await api.post('/memories',{ title: title.trim(), description });
+        const r = await api.post('/memories', payload);
         navigate(`/memories/${r.data.id || r.data._id}`);
       } else {
-        await api.put(`/memories/${id}`, { title: title.trim(), description });
+        await api.put(`/memories/${id}`, payload);
         navigate(`/memories/${id}`);
       }
     } catch(e){
@@ -60,7 +70,79 @@ export default function MemoryEditPage(){
           <label className="label">Nội dung</label>
           <span className="text-[11px] text-muted-foreground">Có thể xuống dòng để tách đoạn.</span>
         </div>
-  <textarea rows={10} className="input font-mono text-sm leading-relaxed" value={description} onChange={e=>setDescription(e.target.value)} placeholder={"Hôm nay..."} />
+        <textarea
+          rows={10}
+          className="input font-mono text-sm leading-relaxed"
+          value={description}
+          onChange={e=>setDescription(e.target.value)}
+          placeholder={"Hôm nay..."}
+        />
+      </div>
+
+      {/* Media attachments */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="label">Đính kèm ảnh/video</label>
+          <span className="text-[11px] text-muted-foreground">Tải file từ máy hoặc dán URL, tối đa 20 mục.</span>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <select value={mType} onChange={e=>setMType(e.target.value)} className="input h-10 w-28">
+            <option value="image">Ảnh</option>
+            <option value="video">Video</option>
+          </select>
+          <input value={mUrl} onChange={e=>setMUrl(e.target.value)} className="input h-10 flex-1" placeholder={mType==='image'? 'https://... (ảnh)' : 'https://... (video)'} />
+          <input value={mCaption} onChange={e=>setMCaption(e.target.value)} className="input h-10 flex-1" placeholder="Chú thích (tuỳ chọn)" />
+          <button type="button" className="btn h-10 whitespace-nowrap" onClick={()=>{
+            const url = mUrl.trim();
+            if(!url) return;
+            const next = [...media, { type: mType, url, caption: mCaption.trim()||undefined }];
+            if(next.length>20) { alert('Quá 20 media'); return; }
+            setMedia(next); setMUrl(''); setMCaption('');
+          }}>Thêm</button>
+        </div>
+
+        {/* Upload from device */}
+        <div className="flex items-center gap-2">
+          <input type="file" accept="image/*,video/*" multiple className="input h-10 p-2" onChange={async (e)=>{
+            const files = Array.from(e.target.files||[]);
+            if(!files.length) return;
+            try {
+              setUploading(true);
+              const form = new FormData();
+              files.forEach(f=> form.append('files', f));
+              const r = await api.post('/upload', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+              const added = (r.data?.files||[]).map(f=> ({ type: f.type, url: f.url }));
+              const next = [...media, ...added];
+              if(next.length>20) { alert('Vượt quá 20 media, chỉ thêm một phần.'); }
+              setMedia(next.slice(0,20));
+              e.target.value = '';
+            } catch(err){
+              alert(err.response?.data?.message || 'Tải file thất bại');
+            } finally {
+              setUploading(false);
+            }
+          }} />
+          {uploading && <span className="text-xs text-muted-foreground">Đang tải...</span>}
+        </div>
+
+        {!!media.length && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+            {media.map((m,idx)=> (
+              <div key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-2 flex items-center gap-2 bg-white/70 dark:bg-gray-900/60">
+                {m.type==='image' ? (
+                  <img src={m.url} alt={m.caption||''} className="w-16 h-16 object-cover rounded" onError={(e)=>{ e.currentTarget.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\'><rect width=\'100%\' height=\'100%\' fill=\'%23eee\'/></svg>'; }} />
+                ) : (
+                  <div className="w-16 h-16 rounded bg-gray-100 dark:bg-gray-800 text-xs flex items-center justify-center">🎥</div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-medium truncate">{m.caption || (m.type==='image'?'Ảnh':'Video')}</div>
+                  <div className="text-[11px] text-gray-500 truncate">{m.url}</div>
+                </div>
+                <button type="button" className="btn btn-outline btn-sm" onClick={()=> setMedia(media.filter((_,i)=> i!==idx))}>Xoá</button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-3 pt-2">
         <button disabled={saving || !title.trim()} className="btn btn-primary min-w-[120px]">{saving?'Đang lưu...':'Lưu'}</button>
