@@ -100,7 +100,8 @@ export default function LoginPage(){
       <div className="min-h-[calc(100vh-4rem)] w-full flex items-stretch bg-gray-50 dark:bg-gray-950/95">
         <div className="w-full grid md:grid-cols-2 max-w-7xl mx-auto bg-white dark:bg-gray-900 border-y md:border md:rounded-none md:rounded-2xl border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm md:shadow-lg">
           {/* Left hologram side (black background + animated blue border) */}
-          <div className="hidden md:flex items-center justify-center p-10 relative holo-outline-blue">
+          <div className="hidden md:flex items-center justify-center p-10 relative holo-outline-blue min-w-[420px] flex-shrink-0">
+            <div className="holo-inner"></div>
             <div className="relative z-10 text-center space-y-6 max-w-md">
               <h1 className="text-3xl font-bold tracking-tight panel-text-heading">Chào mừng quay lại</h1>
               <p className="text-sm leading-relaxed panel-text-body">Đăng nhập để tiếp tục quản lý kỷ niệm, danh thiếp NFC và trải nghiệm trợ lý AI.</p>

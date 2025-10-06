@@ -221,7 +221,7 @@ textarea.input { @apply resize-y; }
 
 /* Simple blue hologram outline (used when illustration missing) */
 @keyframes holoBorderSweep { 0% { background-position:0 0; } 100% { background-position:400% 0; } }
-.holo-outline-blue { position:relative; border-radius:2.25rem; background:linear-gradient(140deg,#ffffff 0%,#f5f9ff 45%,#eef4ff 70%,#e8f6ff 100%); }
+.holo-outline-blue { position:relative; border-radius:1rem; /* match parent rounded-2xl to avoid corner seam */ background:linear-gradient(140deg,#ffffff 0%,#f5f9ff 45%,#eef4ff 70%,#e8f6ff 100%); overflow:hidden; isolation:isolate; }
 .dark .holo-outline-blue { background:#04070d; }
 .holo-outline-blue .panel-text-heading { @apply text-gray-800 dark:text-white; }
 .holo-outline-blue .panel-text-body { @apply text-gray-600 dark:text-white/70; }
@@ -229,6 +229,8 @@ textarea.input { @apply resize-y; }
 .holo-outline-blue:before { content:""; position:absolute; inset:0; padding:2px; border-radius:inherit; background:
   linear-gradient(115deg,#0ea5e9,#2563eb,#1d4ed8,#0ea5e9,#2563eb); background-size:300% 100%; animation:holoBorderSweep 8s linear infinite;
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; }
+/* Inner layer to guarantee smooth corner (prevents halo artifact) */
+.holo-outline-blue > .holo-inner { position:absolute; inset:2px; border-radius:calc(1rem - 2px); background:inherit; background-clip:padding-box; }
 @media (prefers-reduced-motion: reduce){ .holo-outline-blue:before { animation:none; } }
 
 
