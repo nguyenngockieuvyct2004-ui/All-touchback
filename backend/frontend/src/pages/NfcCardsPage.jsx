@@ -13,6 +13,7 @@ export default function NfcCardsPage(){
   const [savingProfileId, setSavingProfileId] = useState(null);
   const [loadingMem, setLoadingMem] = useState({}); // {cardId: boolean}
   const [uploadingAvatar, setUploadingAvatar] = useState({}); // {cardId: boolean}
+  const [lastSaved, setLastSaved] = useState({}); // {cardId: timestamp}
 
   useEffect(()=>{
     api.get('/memories').then(r=> setMemories(r.data)).catch(()=>{});
@@ -113,6 +114,7 @@ export default function NfcCardsPage(){
       const payload = { title: card.title || '', isActive: card.isActive!==false, profile: card.profile||{}, primaryMemoryId: card.primaryMemoryId || '' };
       const r = await api.put(`/nfc/${card._id}`, payload);
       updateLocalCard(card._id, r.data);
+      setLastSaved(s=> ({ ...s, [card._id]: Date.now() }));
     }catch(e){ setError(e.response?.data?.message || 'Lưu profile thất bại'); }
     finally{ setSavingProfileId(null); }
   }
@@ -223,8 +225,13 @@ export default function NfcCardsPage(){
             ))}
           </div>
 
-          <div className="pt-1">
+          <div className="pt-1 flex items-center gap-4">
             <button onClick={()=>saveProfile(card)} disabled={savingProfileId===card._id} className="btn btn-primary min-w-[120px]">{savingProfileId===card._id? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
+            {lastSaved[card._id] && (
+              <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-fadeInUp">
+                <span>Đã lưu</span>
+              </span>
+            )}
           </div>
         </div>
       </div>)}

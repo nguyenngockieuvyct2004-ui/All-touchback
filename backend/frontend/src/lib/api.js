@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const resolvedBase = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+const resolvedBase = import.meta.env.VITE_API_BASE || "http://localhost:4100";
 const api = axios.create({
   baseURL: resolvedBase,
 });

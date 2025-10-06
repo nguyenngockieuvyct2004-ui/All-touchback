@@ -17,6 +17,8 @@ import PublicCardPage from './pages/PublicCardPage.jsx';
 import AdminProductsPage from './pages/AdminProductsPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ChatPage from './pages/ChatPage.jsx';
+import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -56,6 +58,8 @@ export default function App(){
           <Route path="/products/:id" element={<PageWrapper><ProductDetailPage /></PageWrapper>} />
           <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
           <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
+          <Route path="/forgot-password" element={<PageWrapper><ForgotPasswordPage /></PageWrapper>} />
+          <Route path="/reset-password" element={<PageWrapper><ResetPasswordPage /></PageWrapper>} />
           <Route path="/cart" element={<ProtectedRoute><PageWrapper><CartPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories" element={<ProtectedRoute><PageWrapper><MemoriesPage /></PageWrapper></ProtectedRoute>} />
           <Route path="/memories/new" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
