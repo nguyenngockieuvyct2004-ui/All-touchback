@@ -54,13 +54,13 @@ export default function MemoryEditPage(){
     } finally { setSaving(false); }
   }
 
-  return <div className="max-w-2xl space-y-6">
+  return <div className="max-w-2xl mx-auto px-4 sm:px-6 space-y-6">
     <div>
       <h1 className="text-3xl font-bold tracking-tight gradient-text mb-2">{isNew? 'Tạo Memory':'Sửa Memory'}</h1>
       <p className="text-sm text-muted-foreground">Ghi lại khoảnh khắc đặc biệt của bạn. Bạn có thể viết nhiều dòng.</p>
     </div>
     {!isNew && <ErrorMessage error={error} />}
-    <form onSubmit={save} className="panel space-y-5">
+  <form onSubmit={save} className="panel space-y-5">
       <div className="space-y-1.5">
         <label className="label">Tiêu đề</label>
         <input className="input" value={title} onChange={e=>setTitle(e.target.value)} placeholder="Ví dụ: Buổi chiều ở Đà Lạt" />
@@ -86,13 +86,13 @@ export default function MemoryEditPage(){
           <span className="text-[11px] text-muted-foreground">Tải file từ máy hoặc dán URL, tối đa 20 mục.</span>
         </div>
         <div className="flex flex-col sm:flex-row gap-2">
-          <select value={mType} onChange={e=>setMType(e.target.value)} className="input h-10 w-28">
+          <select value={mType} onChange={e=>setMType(e.target.value)} className="input h-10 w-full sm:w-28">
             <option value="image">Ảnh</option>
             <option value="video">Video</option>
           </select>
-          <input value={mUrl} onChange={e=>setMUrl(e.target.value)} className="input h-10 flex-1" placeholder={mType==='image'? 'https://... (ảnh)' : 'https://... (video)'} />
-          <input value={mCaption} onChange={e=>setMCaption(e.target.value)} className="input h-10 flex-1" placeholder="Chú thích (tuỳ chọn)" />
-          <button type="button" className="btn h-10 whitespace-nowrap" onClick={()=>{
+          <input value={mUrl} onChange={e=>setMUrl(e.target.value)} className="input h-10 flex-1 w-full" placeholder={mType==='image'? 'https://... (ảnh)' : 'https://... (video)'} />
+          <input value={mCaption} onChange={e=>setMCaption(e.target.value)} className="input h-10 flex-1 w-full" placeholder="Chú thích (tuỳ chọn)" />
+          <button type="button" className="btn h-10 whitespace-nowrap w-full sm:w-auto" onClick={()=>{
             const url = mUrl.trim();
             if(!url) return;
             const next = [...media, { type: mType, url, caption: mCaption.trim()||undefined }];
@@ -126,11 +126,11 @@ export default function MemoryEditPage(){
         </div>
 
         {!!media.length && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 pt-1">
             {media.map((m,idx)=> (
               <div key={idx} className="rounded-lg border border-gray-200 dark:border-gray-800 p-2 flex items-center gap-2 bg-white/70 dark:bg-gray-900/60">
                 {m.type==='image' ? (
-                  <img src={m.url} alt={m.caption||''} className="w-16 h-16 object-cover rounded" onError={(e)=>{ e.currentTarget.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\'><rect width=\'100%\' height=\'100%\' fill=\'%23eee\'/></svg>'; }} />
+                  <img loading="lazy" src={m.url} alt={m.caption||''} className="w-16 h-16 object-cover rounded" onError={(e)=>{ e.currentTarget.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'64\' height=\'64\'><rect width=\'100%\' height=\'100%\' fill=\'%23eee\'/></svg>'; }} />
                 ) : (
                   <div className="w-16 h-16 rounded bg-gray-100 dark:bg-gray-800 text-xs flex items-center justify-center">🎥</div>
                 )}
@@ -138,14 +138,14 @@ export default function MemoryEditPage(){
                   <div className="text-xs font-medium truncate">{m.caption || (m.type==='image'?'Ảnh':'Video')}</div>
                   <div className="text-[11px] text-gray-500 truncate">{m.url}</div>
                 </div>
-                <button type="button" className="btn btn-outline btn-sm" onClick={()=> setMedia(media.filter((_,i)=> i!==idx))}>Xoá</button>
+                <button type="button" className="btn btn-outline btn-sm w-full sm:w-auto" onClick={()=> setMedia(media.filter((_,i)=> i!==idx))}>Xoá</button>
               </div>
             ))}
           </div>
         )}
       </div>
-      <div className="flex items-center gap-3 pt-2">
-        <button disabled={saving || !title.trim()} className="btn btn-primary min-w-[120px]">{saving?'Đang lưu...':'Lưu'}</button>
+      <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+  <button disabled={saving || !title.trim()} className="btn btn-primary w-full sm:w-auto md:min-w-[120px]">{saving?'Đang lưu...':'Lưu'}</button>
         {!title.trim() && <span className="text-xs text-amber-600 dark:text-amber-400">Cần tiêu đề.</span>}
       </div>
     </form>

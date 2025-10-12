@@ -72,7 +72,7 @@ export default function ResetPasswordPage(){
                 <div className="flex-1 h-1.5 rounded bg-gray-200 dark:bg-gray-800 overflow-hidden">
                   <div className={`h-full transition-all duration-300 ${strength<=1?'bg-red-500':strength===2?'bg-amber-500':strength===3?'bg-yellow-500':strength===4?'bg-emerald-500':'bg-green-600'}`} style={{ width: `${(strength/5)*100}%` }} />
                 </div>
-                <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 min-w-[54px] text-right">{strengthLabel}</span>
+                <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 md:min-w-[54px] text-right">{strengthLabel}</span>
               </div>
               <p className="text-[10px] text-gray-400 dark:text-gray-500 leading-snug">Yêu cầu: ≥8 ký tự, chữ hoa, chữ thường, số & ký tự đặc biệt, và khác mật khẩu cũ.</p>
             </div>

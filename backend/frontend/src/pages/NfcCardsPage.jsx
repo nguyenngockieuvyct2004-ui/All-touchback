@@ -144,9 +144,9 @@ export default function NfcCardsPage(){
 
   return <div className="space-y-6">
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-semibold tracking-tight">NFC Cards</h1>
-      <button onClick={createCard} disabled={creating} className="btn btn-primary min-w-[120px]">{creating?'Đang tạo...':'Tạo thẻ'}</button>
-    </div>
+        <h1 className="text-2xl font-semibold tracking-tight">NFC Cards</h1>
+        <button onClick={createCard} disabled={creating} className="btn btn-primary md:min-w-[120px] w-full md:w-auto">{creating?'Đang tạo...':'Tạo thẻ'}</button>
+      </div>
     <ErrorMessage error={error} />
     {!cards.length && <EmptyState title="Chưa có thẻ" description="Tạo thẻ mới để gắn với các memories." action={<button onClick={createCard} disabled={creating} className="btn btn-primary">Tạo thẻ</button>} />}
     {!!cards.length && <div className="grid gap-6 md:grid-cols-2">
@@ -173,8 +173,8 @@ export default function NfcCardsPage(){
             </label>)}
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={()=>link(card)} disabled={linking || !selected.length} className="btn btn-outline btn-sm min-w-[110px]">{linking?'Đang gắn...':'Gắn vào thẻ'}</button>
-            {!!selected.length && <span className="text-[11px] text-muted-foreground">{selected.length} mục đang chọn</span>}
+            <button onClick={()=>link(card)} disabled={linking || !selected.length} className="btn btn-outline btn-sm md:min-w-[110px] w-full md:w-auto">{linking?'Đang gắn...':'Gắn vào thẻ'}</button>
+            {!!selected.length && <span className="hidden md:inline-block text-[11px] text-muted-foreground">{selected.length} mục đang chọn</span>}
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export default function NfcCardsPage(){
           {/* Cover preview */}
           <div className="space-y-2">
             <div className="w-full aspect-[16/6] rounded-lg overflow-hidden bg-muted relative">
-              {card.profile?.cover ? <img src={card.profile.cover} alt="cover" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-xs text-muted-foreground">Chưa có cover</div>}
+                {card.profile?.cover ? <img loading="lazy" src={card.profile.cover} alt="cover" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-xs text-muted-foreground">Chưa có cover</div>}
               <div className="absolute bottom-2 right-2 flex gap-2">
                 {card.profile?.cover && <button type="button" onClick={()=> { onProfileFieldChange(card._id,'profile.cover',''); }} className="btn btn-outline btn-sm">Xoá</button>}
                 <button type="button" onClick={()=>uploadCover(card)} className="btn btn-outline btn-sm" disabled={!!uploadingAvatar['cover_'+card._id]}>{uploadingAvatar['cover_'+card._id]?'Đang tải...':'Tải cover'}</button>
@@ -207,7 +207,7 @@ export default function NfcCardsPage(){
           </div>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-muted border">
-              {card.profile?.avatar ? <img src={card.profile.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-sm">🪪</div>}
+            {card.profile?.avatar ? <img loading="lazy" src={card.profile.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-sm">🪪</div>}
             </div>
             <button type="button" className="btn btn-outline btn-sm" onClick={()=>uploadAvatar(card)} disabled={!!uploadingAvatar[card._id]}>
               {uploadingAvatar[card._id] ? 'Đang tải...' : 'Tải ảnh đại diện'}
@@ -266,8 +266,8 @@ export default function NfcCardsPage(){
             ))}
           </div>
 
-          <div className="pt-1 flex items-center gap-4">
-            <button onClick={()=>saveProfile(card)} disabled={savingProfileId===card._id} className="btn btn-primary min-w-[120px]">{savingProfileId===card._id? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
+          <div className="pt-1 flex flex-col md:flex-row items-center gap-4">
+            <button onClick={()=>saveProfile(card)} disabled={savingProfileId===card._id} className="btn btn-primary md:min-w-[120px] w-full md:w-auto">{savingProfileId===card._id? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
             {lastSaved[card._id] && (
               <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-fadeInUp">
                 <span>Đã lưu</span>
