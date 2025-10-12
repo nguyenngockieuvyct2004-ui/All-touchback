@@ -17,6 +17,7 @@ const nfcCardSchema = new Schema(
       website: String,
       address: String,
       avatar: String, // URL to avatar image
+      cover: String, // URL to cover image
       socials: [
         new Schema(
           {

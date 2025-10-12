@@ -45,6 +45,8 @@ const profileSchema = Joi.object({
   website: Joi.string().uri({ allowRelative: false }).allow("", null),
   address: Joi.string().allow("", null),
   avatar: Joi.string().uri().allow("", null),
+  // allow relative or absolute path for cover (no uri constraint)
+  cover: Joi.string().allow("", null),
   socials: Joi.array()
     .items(
       Joi.object({
@@ -68,6 +70,10 @@ export async function updateCard(req, res, next) {
     const data = await updateSchema.validateAsync(req.body, {
       stripUnknown: true,
     });
+    // Support explicit remove cover if client sends profile.cover === "__REMOVE__"
+    if (data.profile && data.profile.cover === "__REMOVE__") {
+      data.profile.cover = "";
+    }
     if (data.primaryMemoryId === "") data.primaryMemoryId = null;
     const updated = await NfcCard.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },

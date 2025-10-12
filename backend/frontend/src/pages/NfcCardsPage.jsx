@@ -107,6 +107,29 @@ export default function NfcCardsPage(){
     input.click();
   }
 
+  function uploadCover(card){
+    const id = card._id;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async () => {
+      const file = input.files && input.files[0];
+      if(!file) return;
+      try{
+        setUploadingAvatar(s=> ({...s, ['cover_'+id]: true}));
+        const fd = new FormData();
+        fd.append('files', file);
+        const r = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+        const url = r.data?.files?.[0]?.url;
+        if(!url){ alert('Tải file thất bại'); return; }
+        const profile = { ...(card.profile||{}), cover: url };
+        updateLocalCard(id, { profile });
+      } catch(e){ alert(e.response?.data?.message || 'Tải file thất bại'); }
+      finally{ setUploadingAvatar(s=> ({...s, ['cover_'+id]: false})); }
+    };
+    input.click();
+  }
+
   async function saveProfile(card){
     setSavingProfileId(card._id);
     setError('');
@@ -168,6 +191,20 @@ export default function NfcCardsPage(){
         {/* Profile form */}
         <div className="pt-2 border-t border-border space-y-3">
           <h4 className="text-sm font-medium">Hồ sơ danh thiếp</h4>
+          {/* Cover preview */}
+          <div className="space-y-2">
+            <div className="w-full aspect-[16/6] rounded-lg overflow-hidden bg-muted relative">
+              {card.profile?.cover ? <img src={card.profile.cover} alt="cover" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-xs text-muted-foreground">Chưa có cover</div>}
+              <div className="absolute bottom-2 right-2 flex gap-2">
+                {card.profile?.cover && <button type="button" onClick={()=> { onProfileFieldChange(card._id,'profile.cover',''); }} className="btn btn-outline btn-sm">Xoá</button>}
+                <button type="button" onClick={()=>uploadCover(card)} className="btn btn-outline btn-sm" disabled={!!uploadingAvatar['cover_'+card._id]}>{uploadingAvatar['cover_'+card._id]?'Đang tải...':'Tải cover'}</button>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="label">Ảnh cover (URL)</label>
+              <input className="input" value={card.profile?.cover||''} onChange={e=> onProfileFieldChange(card._id, 'profile.cover', e.target.value)} placeholder="https://...jpg" />
+            </div>
+          </div>
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden bg-muted border">
               {card.profile?.avatar ? <img src={card.profile.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-sm">🪪</div>}
@@ -208,6 +245,10 @@ export default function NfcCardsPage(){
             <div className="sm:col-span-2 space-y-1">
               <label className="label">Ảnh đại diện (URL)</label>
               <input className="input" value={card.profile?.avatar||''} onChange={e=> onProfileFieldChange(card._id, 'profile.avatar', e.target.value)} placeholder="https://...jpg" />
+            </div>
+            <div className="sm:col-span-2 space-y-1">
+              <label className="label">Ảnh cover (URL)</label>
+              <input className="input" value={card.profile?.cover||''} onChange={e=> onProfileFieldChange(card._id, 'profile.cover', e.target.value)} placeholder="https://...jpg" />
             </div>
           </div>
 
