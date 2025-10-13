@@ -158,12 +158,12 @@ export default function PublicCardPage() {
           )}
 
           {/* Map placeholder if address */}
-          {profile.address && (
+          {/* {profile.address && (
             <section className="mt-8 px-6 space-y-4">
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className="inline-block w-1 h-5 rounded bg-[#031a2c] dark:bg-sky-500" />Bản đồ</h2>
-              <div className="w-full aspect-[5/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 relative">
+              <div className="w-full aspect-[5/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 relative"> */}
                 {/* Hide iframe on small screens to save resources; provide link instead */}
-                <div className="hidden sm:block absolute inset-0">
+                {/* <div className="hidden sm:block absolute inset-0">
                   <iframe
                     title="map"
                     className="absolute inset-0 w-full h-full"
@@ -175,7 +175,7 @@ export default function PublicCardPage() {
                 <a className="block sm:hidden w-full h-full flex items-center justify-center text-sm text-blue-600 dark:text-blue-400" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`} target="_blank" rel="noreferrer">Mở bản đồ trên Google Maps</a>
               </div>
             </section>
-          )}
+          )} */}
 
           <footer className="mt-12 px-6 text-center pb-10 text-[11px] text-gray-500 dark:text-gray-500">© 2025 TouchBack</footer>
         </>

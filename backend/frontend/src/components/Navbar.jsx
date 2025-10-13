@@ -65,6 +65,7 @@ export default function Navbar(){
             <NavLink to="/cart" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Giỏ hàng</NavLink>
           </nav>
         </div>
+        
 
         {/* Right controls: desktop auth or user info + mobile menu */}
         <div className="flex items-center gap-3">
@@ -80,6 +81,11 @@ export default function Navbar(){
               <button onClick={()=>{logout(); navigate('/');}} className="text-xs md:text-sm px-3 h-9 rounded-md border border-white/30 hover:border-white/50 bg-white/10 hover:bg-white/15 text-white transition">Thoát</button>
             </div>
           )}
+  {/* Desktop theme toggle (visible on md+) */}
+          <div className="hidden md:flex items-center ml-3">
+            <ThemeToggle />
+          </div>
+        
 
           {/* Mobile hamburger */}
           <button aria-label="Toggle menu" onClick={()=> setOpen(s=>!s)} className="md:hidden inline-flex items-center justify-center p-2 rounded-md bg-white/10 hover:bg-white/15">
