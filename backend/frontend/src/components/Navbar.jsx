@@ -61,8 +61,9 @@ export default function Navbar(){
             <NavLink to="/products" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Sản phẩm</NavLink>
             {user && <NavLink to="/memories" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Memories</NavLink>}
             {user && <NavLink to="/nfc" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>NFC</NavLink>}
-            {user && (user.role === 'admin' || user.role==='manager') && <NavLink to="/admin/products" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Admin</NavLink>}
+            {/* Admin is not shown in public navbar to keep it separate */}
             <NavLink to="/cart" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Giỏ hàng</NavLink>
+            {user && <NavLink to="/orders" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-white/15 text-white shadow-sm' : 'hover:bg-white/10 text-white/90'}`}>Đơn hàng</NavLink>}
           </nav>
         </div>
         
@@ -112,7 +113,8 @@ export default function Navbar(){
               {user && <button onClick={()=>{ setOpen(false); navigate('/memories'); }} className="text-left px-3 py-2 rounded-md text-sm w-full text-white hover:bg-white/10">Memories</button>}
               {user && <button onClick={()=>{ setOpen(false); navigate('/nfc'); }} className="text-left px-3 py-2 rounded-md text-sm w-full text-white hover:bg-white/10">NFC</button>}
               <button onClick={()=>{ setOpen(false); navigate('/cart'); }} className="text-left px-3 py-2 rounded-md text-sm w-full text-white hover:bg-white/10">Giỏ hàng</button>
-              {(user && (user.role==='admin' || user.role==='manager')) && <button onClick={()=>{ setOpen(false); navigate('/admin/products'); }} className="text-left px-3 py-2 rounded-md text-sm w-full text-white hover:bg-white/10">Admin</button>}
+              {/* Admin entry hidden from mobile public menu */}
+              {user && <button onClick={()=>{ setOpen(false); navigate('/orders'); }} className="text-left px-3 py-2 rounded-md text-sm w-full text-white hover:bg-white/10">Đơn hàng</button>}
             </nav>
 
             <div className="mt-auto border-t border-white/5 pt-3 flex flex-col gap-2">

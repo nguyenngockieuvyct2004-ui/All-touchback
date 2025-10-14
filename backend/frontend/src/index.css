@@ -1,3 +1,16 @@
+/* Hologram theme styles for sci-fi vibe */
+.holo-gradient { 
+  background: radial-gradient(800px 320px at 20% -20%, rgba(0, 229, 255, 0.4), transparent), radial-gradient(900px 360px at 80% -30%, rgba(168, 85, 247, 0.40), transparent), radial-gradient(1400px 400px at 50% -10%, rgba(255,255,255,0.06), transparent); 
+}
+.text-gradient { 
+  background: linear-gradient(90deg, #5eead4, #60a5fa, #c084fc); 
+  -webkit-background-clip: text; 
+  background-clip: text; 
+  color: transparent; 
+}
+.theme-transition { 
+  transition: background-color .25s ease, color .25s ease, border-color .25s ease; 
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

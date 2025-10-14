@@ -16,6 +16,9 @@ import nfcRoutes from "./routes/nfcRoutes.js";
 import chatRoutes from "./routes/chatRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import publicRoutes from "./routes/publicRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import adminUserRoutes from "./routes/adminUserRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -60,12 +63,15 @@ app.get("/health", (_req, res) => {
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 app.use("/cart", cartRoutes);
+app.use("/orders", orderRoutes);
 app.use("/memories", memoryRoutes);
 app.use("/nfc", nfcRoutes);
 app.use("/m", nfcRoutes); // public slug resolve
 app.use("/chat", chatRoutes);
 app.use("/upload", uploadRoutes);
 app.use("/public", publicRoutes);
+app.use("/admin/users", adminUserRoutes);
+app.use("/stats", statsRoutes);
 
 app.use(errorHandler);
 

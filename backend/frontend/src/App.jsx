@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import Layout from './components/Layout.jsx';
 import HomePage from './pages/HomePage.jsx';
@@ -15,10 +15,16 @@ import NfcCardsPage from './pages/NfcCardsPage.jsx';
 import PublicMemoryPage from './pages/PublicMemoryPage.jsx';
 import PublicCardPage from './pages/PublicCardPage.jsx';
 import AdminProductsPage from './pages/AdminProductsPage.jsx';
+import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
+import AdminUsersPage from './pages/AdminUsersPage.jsx';
+import AdminOrdersPage from './pages/AdminOrdersPage.jsx';
+import AdminLayout from './admin/AdminLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ChatPage from './pages/ChatPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
+import MyOrdersPage from './pages/MyOrdersPage.jsx';
+import { useAuth } from './context/AuthContext.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -49,30 +55,43 @@ function NotFound(){
 
 export default function App(){
   const location = useLocation();
+  const { user } = useAuth();
   return (
-    <Layout>
-      <AnimatePresence mode="wait" initial={false}>
-        <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageWrapper><HomePage /></PageWrapper>} />
-          <Route path="/products" element={<PageWrapper><ProductsPage /></PageWrapper>} />
-          <Route path="/products/:id" element={<PageWrapper><ProductDetailPage /></PageWrapper>} />
-          <Route path="/login" element={<PageWrapper><LoginPage /></PageWrapper>} />
-          <Route path="/register" element={<PageWrapper><RegisterPage /></PageWrapper>} />
-          <Route path="/forgot-password" element={<PageWrapper><ForgotPasswordPage /></PageWrapper>} />
-          <Route path="/reset-password" element={<PageWrapper><ResetPasswordPage /></PageWrapper>} />
-          <Route path="/cart" element={<ProtectedRoute><PageWrapper><CartPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/memories" element={<ProtectedRoute><PageWrapper><MemoriesPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/memories/new" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/memories/:id" element={<ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/memories/:id/edit" element={<ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/nfc" element={<ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/chat" element={<ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="/m/:slug" element={<PageWrapper><PublicMemoryPage /></PageWrapper>} />
-          <Route path="/c/:slug" element={<PageWrapper><PublicCardPage /></PageWrapper>} />
-          <Route path="/admin/products" element={<ProtectedRoute roles={["admin","manager"]}><PageWrapper><AdminProductsPage /></PageWrapper></ProtectedRoute>} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AnimatePresence>
-    </Layout>
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        {/* Admin shell (no public navbar) */}
+        <Route path="/admin" element={<ProtectedRoute roles={["admin","manager"]}><AdminLayout /></ProtectedRoute>}>
+          <Route index element={<PageWrapper><AdminDashboardPage /></PageWrapper>} />
+          <Route path="products" element={<PageWrapper><AdminProductsPage /></PageWrapper>} />
+          <Route path="users" element={<ProtectedRoute roles={["admin"]}><PageWrapper><AdminUsersPage /></PageWrapper></ProtectedRoute>} />
+          <Route path="orders" element={<PageWrapper><AdminOrdersPage /></PageWrapper>} />
+        </Route>
+
+        {/* Public site wrapped per-route with Layout */}
+        <Route path="/" element={
+          (user && (user.role==='admin' || user.role==='manager'))
+            ? <Navigate to="/admin" replace />
+            : <Layout><PageWrapper><HomePage /></PageWrapper></Layout>
+        } />
+        <Route path="/products" element={<Layout><PageWrapper><ProductsPage /></PageWrapper></Layout>} />
+        <Route path="/products/:id" element={<Layout><PageWrapper><ProductDetailPage /></PageWrapper></Layout>} />
+        <Route path="/login" element={<Layout><PageWrapper><LoginPage /></PageWrapper></Layout>} />
+        <Route path="/register" element={<Layout><PageWrapper><RegisterPage /></PageWrapper></Layout>} />
+        <Route path="/forgot-password" element={<Layout><PageWrapper><ForgotPasswordPage /></PageWrapper></Layout>} />
+        <Route path="/reset-password" element={<Layout><PageWrapper><ResetPasswordPage /></PageWrapper></Layout>} />
+        <Route path="/cart" element={<Layout><ProtectedRoute><PageWrapper><CartPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/memories" element={<Layout><ProtectedRoute><PageWrapper><MemoriesPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/memories/new" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/memories/:id" element={<Layout><ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/memories/:id/edit" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/nfc" element={<Layout><ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/chat" element={<Layout><ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/orders" element={<Layout><ProtectedRoute><PageWrapper><MyOrdersPage /></PageWrapper></ProtectedRoute></Layout>} />
+        <Route path="/m/:slug" element={<Layout><PageWrapper><PublicMemoryPage /></PageWrapper></Layout>} />
+        <Route path="/c/:slug" element={<Layout><PageWrapper><PublicCardPage /></PageWrapper></Layout>} />
+
+        <Route path="*" element={<Layout><NotFound /></Layout>} />
+      </Routes>
+    </AnimatePresence>
   );
 }

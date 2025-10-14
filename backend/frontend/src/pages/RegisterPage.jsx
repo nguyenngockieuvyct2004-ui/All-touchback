@@ -33,10 +33,10 @@ export default function RegisterPage(){
   const unmet = useMemo(()=>{
     const list = [];
     if(password.length < 8) list.push('≥8 ký tự');
-    if(!/[a-z]/.test(password)) list.push('chữ thường');
-    if(!/[A-Z]/.test(password)) list.push('chữ hoa');
-    if(!/\d/.test(password)) list.push('số');
-    if(!/[^A-Za-z0-9]/.test(password)) list.push('ký tự đặc biệt');
+    if(!/[a-z]/.test(password)) list.push('Chữ thường');
+    if(!/[A-Z]/.test(password)) list.push('Chữ hoa');
+    if(!/\d/.test(password)) list.push('Số');
+    if(!/[^A-Za-z0-9]/.test(password)) list.push('Ký tự đặc biệt');
     return list;
   },[password]);
 

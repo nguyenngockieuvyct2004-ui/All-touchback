@@ -19,7 +19,13 @@ export default function LoginPage(){
   // Declare early so effects below can use it without temporal dead zone
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-  useEffect(()=>{ if(user) navigate(from, { replace:true }); },[user,from,navigate]);
+  useEffect(()=>{
+    if(user){
+      const isAdmin = user.role === 'admin' || user.role === 'manager';
+      const target = isAdmin ? '/admin' : from;
+      navigate(target, { replace:true });
+    }
+  },[user,from,navigate]);
 
   async function handleSubmit(e){
     e.preventDefault(); setError(''); setLoading(true);

@@ -110,6 +110,9 @@ export async function login(req, res, next) {
     }
     if (!user)
       return res.status(401).json({ message: "Sai thông tin đăng nhập" });
+    if (user.isActive === false) {
+      return res.status(403).json({ message: "Tài khoản đã bị vô hiệu hoá" });
+    }
     const ok = await bcrypt.compare(value.password, user.passwordHash || "");
     if (!ok)
       return res.status(401).json({ message: "Sai thông tin đăng nhập" });
@@ -153,6 +156,9 @@ export async function googleToken(req, res, next) {
         provider: "google",
         role: "customer",
       });
+    }
+    if (user.isActive === false) {
+      return res.status(403).json({ message: "Tài khoản đã bị vô hiệu hoá" });
     }
     const token = signToken(user);
     res.json({

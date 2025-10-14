@@ -21,6 +21,7 @@ const userSchema = new Schema(
       enum: ["admin", "manager", "customer"],
       default: "customer",
     },
+    isActive: { type: Boolean, default: true },
     phone: String,
     links: [{ label: String, url: String }],
     address: String,

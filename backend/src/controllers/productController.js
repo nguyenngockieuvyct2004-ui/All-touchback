@@ -17,6 +17,12 @@ export async function listProducts(_req, res) {
   res.json(products);
 }
 
+export async function getProduct(req, res) {
+  const p = await Product.findById(req.params.id);
+  if (!p) return res.status(404).json({ message: "Not found" });
+  res.json(p);
+}
+
 export async function createProduct(req, res, next) {
   try {
     const data = await productSchema.validateAsync(req.body);
@@ -28,4 +34,27 @@ export async function createProduct(req, res, next) {
   } catch (e) {
     next(e);
   }
+}
+
+export async function updateProduct(req, res, next) {
+  try {
+    // Allow partial updates: make core fields optional for update
+    const data = await productSchema
+      .fork(["code", "category", "name", "price"], (s) => s.optional())
+      .validateAsync(req.body);
+    const p = await Product.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
+    if (!p) return res.status(404).json({ message: "Not found" });
+    res.json(p);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function deleteProduct(req, res) {
+  const p = await Product.findByIdAndDelete(req.params.id);
+  if (!p) return res.status(404).json({ message: "Not found" });
+  res.json({ success: true });
 }
