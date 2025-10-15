@@ -6,6 +6,7 @@ import {
   listOrders,
   updateOrderStatus,
 } from "../controllers/orderController.js";
+import { vnpayIpn, vnpayReturn } from "../controllers/vnpayController.js";
 
 const router = Router();
 
@@ -21,5 +22,9 @@ router.put(
   requireRole(["admin"]),
   updateOrderStatus
 );
+
+// VNPay payment callbacks (public endpoints)
+router.get("/vnpay_ipn", vnpayIpn); // IPN server to server
+router.get("/vnpay_return", vnpayReturn); // customer browser redirect
 
 export default router;

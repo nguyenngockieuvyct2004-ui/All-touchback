@@ -2,6 +2,7 @@ import Joi from "joi";
 import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
+import { buildVnpayPaymentUrl } from "./vnpayController.js";
 
 const checkoutSchema = Joi.object({
   // Accept either free text or structured form 'prov|dist|ward|detail'
@@ -46,7 +47,7 @@ export async function checkout(req, res, next) {
       userId: req.user.id,
       items,
       total,
-      status: "pending",
+      status: paymentMethod === "cod" ? "pending" : "pending", // may adjust later
       shippingAddress,
       phone,
       note,
@@ -55,7 +56,26 @@ export async function checkout(req, res, next) {
     // Clear cart after placing order
     cart.items = [];
     await cart.save();
-    res.status(201).json(order);
+
+    if (paymentMethod === "bank") {
+      try {
+        // Tạo link thanh toán VNPay (hàm tách riêng trong vnpayController)
+        const { payUrl, vnpTxnRef } = buildVnpayPaymentUrl({
+          order,
+          total,
+          req,
+        });
+        order.payment = { provider: "vnpay", vnpTxnRef };
+        await order.save();
+        return res.status(201).json({ order, payUrl });
+      } catch (err) {
+        return res
+          .status(500)
+          .json({ message: err.message || "Lỗi tạo link VNPay" });
+      }
+    }
+
+    res.status(201).json({ order });
   } catch (e) {
     next(e);
   }
@@ -91,3 +111,5 @@ export async function updateOrderStatus(req, res) {
   if (!order) return res.status(404).json({ message: "Not found" });
   res.json(order);
 }
+
+// Các hàm vnpayIpn & vnpayReturn đã được tách sang vnpayController.js

@@ -28,6 +28,20 @@ const orderSchema = new Schema(
       enum: ["cod", "bank", "momo"],
       default: "cod",
     },
+    // Extended payment data for gateways (VNPay etc.)
+    payment: {
+      provider: String, // e.g. 'vnpay'
+      vnpTxnRef: String,
+      vnpTransactionNo: String,
+      vnpBankCode: String,
+      vnpCardType: String,
+      vnpPayDate: String,
+      vnpResponseCode: String,
+      vnpTransactionStatus: String,
+      rawReturnData: Schema.Types.Mixed,
+      rawIpnData: Schema.Types.Mixed,
+      paidAt: Date,
+    },
   },
   { timestamps: true }
 );
