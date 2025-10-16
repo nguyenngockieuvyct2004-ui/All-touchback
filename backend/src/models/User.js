@@ -25,6 +25,19 @@ const userSchema = new Schema(
     phone: String,
     links: [{ label: String, url: String }],
     address: String,
+    // Business card style profile to prefill NFC wizard
+    profile: {
+      avatar: String,
+      cover: String,
+      name: String,
+      title: String,
+      company: String,
+      phone: String,
+      email: String,
+      website: String,
+      address: String,
+      socials: [{ label: String, url: String }],
+    },
   },
   { timestamps: true }
 );

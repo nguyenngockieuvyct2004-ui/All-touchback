@@ -5,10 +5,9 @@ import EmptyState from '../components/EmptyState.jsx';
 
 export default function NfcCardsPage(){
   const [cards,setCards] = useState([]);
-  const [memories,setMemories] = useState([]);
-  const [selected,setSelected] = useState([]);
+  // Memory selection will be handled elsewhere per request
   const [error,setError] = useState('');
-  const [creating,setCreating] = useState(false);
+  const [creating,setCreating] = useState(false); // deprecated: auto-provisioned on paid
   const [linking,setLinking] = useState(false);
   const [savingProfileId, setSavingProfileId] = useState(null);
   const [loadingMem, setLoadingMem] = useState({}); // {cardId: boolean}
@@ -16,42 +15,15 @@ export default function NfcCardsPage(){
   const [lastSaved, setLastSaved] = useState({}); // {cardId: timestamp}
 
   useEffect(()=>{
-    api.get('/memories').then(r=> setMemories(r.data)).catch(()=>{});
     api.get('/nfc').then(async r=>{
       const list = r.data||[]; setCards(list);
-      // fetch card-linked memories for primary selection
-      for (const c of list){
-        setLoadingMem(s=> ({...s, [c._id]: true}));
-        try{
-          const resp = await api.get(`/nfc/${c._id}/memories`);
-          setMemories(prev => prev); // keep global
-          setCards(cs=> cs.map(x=> x._id===c._id? { ...x, __cardMems: resp.data } : x));
-        } finally { setLoadingMem(s=> ({...s, [c._id]: false})); }
-      }
+      // We no longer prefetch memories for cards here
     }).catch(()=>{});
   },[]);
 
-  async function createCard(){
-    setCreating(true); setError('');
-    try {
-      const r = await api.post('/nfc');
-      setCards(c=>[r.data, ...c]);
-    } catch(e){
-      setError(e.response?.data?.message || 'Tạo thẻ thất bại');
-    } finally { setCreating(false); }
-  }
+  // Card creation is now automatic when order status becomes 'paid'
 
-  async function link(card){
-    if(!selected.length) return;
-    setLinking(true); setError('');
-    try {
-      await api.post(`/nfc/${card._id}/link`, { memoryIds: selected });
-      // naive update
-      setCards(cs=> cs.map(c=> c._id===card._id ? { ...c, linkedMemoryIds: selected } : c));
-      setSelected([]);
-    } catch(e){ setError(e.response?.data?.message || 'Gắn thất bại'); }
-    finally { setLinking(false); }
-  }
+  // Linking memories is moved out from this page
 
   function updateLocalCard(id, patch){
     setCards(cs=> cs.map(c=> (c._id===id ? { ...c, ...patch } : c)));
@@ -145,10 +117,9 @@ export default function NfcCardsPage(){
   return <div className="space-y-6">
     <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold tracking-tight">NFC Cards</h1>
-        <button onClick={createCard} disabled={creating} className="btn btn-primary md:min-w-[120px] w-full md:w-auto">{creating?'Đang tạo...':'Tạo thẻ'}</button>
       </div>
     <ErrorMessage error={error} />
-    {!cards.length && <EmptyState title="Chưa có thẻ" description="Tạo thẻ mới để gắn với các memories." action={<button onClick={createCard} disabled={creating} className="btn btn-primary">Tạo thẻ</button>} />}
+  {!cards.length && <EmptyState title="Chưa có thẻ" description="Thẻ sẽ được tự động tạo sau khi đơn hàng được đánh dấu 'paid' (đã thanh toán)." />}
     {!!cards.length && <div className="grid gap-6 md:grid-cols-2">
       {cards.map(card=> {
         const isActive = (card.status ? card.status === 'active' : card.isActive !== false);
@@ -162,7 +133,6 @@ export default function NfcCardsPage(){
             {!isActive && <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 text-[11px] border border-amber-500/20">Chưa kích hoạt</span>}
             {isActive ? (
               <>
-                <a href={`/m/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem memory</a>
                 <a href={`/c/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem danh thiếp</a>
               </>
             ) : (
@@ -170,32 +140,9 @@ export default function NfcCardsPage(){
             )}
           </div>
         </div>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">Chọn memories để gắn</p>
-            {card.linkedMemoryIds?.length ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 text-[11px] border border-emerald-500/20">{card.linkedMemoryIds.length} đã gắn</span>: null}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {memories.map(m=> <label key={m._id} className={"relative cursor-pointer select-none text-xs px-2 py-1 rounded-md border transition shadow-sm "+(selected.includes(m._id)?'bg-primary text-white border-primary shadow-primary/40':'bg-muted/40 hover:bg-muted border-border')}>
-              <input type="checkbox" className="hidden" checked={selected.includes(m._id)} onChange={()=> setSelected(sel=> sel.includes(m._id)? sel.filter(x=>x!==m._id): [...sel,m._id])} />
-              <span>{m.title}</span>
-            </label>)}
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={()=>link(card)} disabled={linking || !selected.length} className="btn btn-outline btn-sm md:min-w-[110px] w-full md:w-auto">{linking?'Đang gắn...':'Gắn vào thẻ'}</button>
-            {!!selected.length && <span className="hidden md:inline-block text-[11px] text-muted-foreground">{selected.length} mục đang chọn</span>}
-          </div>
-        </div>
+        {/* Memory linking removed per requirement - will be handled elsewhere */}
 
-        {/* Primary memory selector */}
-        <div className="space-y-1">
-          <label className="label">Memory chính</label>
-          <select className="input" value={card.primaryMemoryId || ''} onChange={(e)=> updateLocalCard(card._id, { primaryMemoryId: e.target.value || null })}>
-            <option value="">— Lấy public mới nhất —</option>
-            {(card.__cardMems||[]).map(m=> <option key={m.id} value={m.id}>{m.title || '(Không tiêu đề)'} {m.isPublic? '' : '· (private)'}</option>)}
-          </select>
-          {loadingMem[card._id] && <div className="text-[11px] text-muted-foreground">Đang tải danh sách...</div>}
-        </div>
+        {/* Primary memory selector removed */}
 
         {/* Profile form */}
         <div className="pt-2 border-t border-border space-y-3">
@@ -208,10 +155,6 @@ export default function NfcCardsPage(){
                 {card.profile?.cover && <button type="button" onClick={()=> { onProfileFieldChange(card._id,'profile.cover',''); }} className="btn btn-outline btn-sm">Xoá</button>}
                 <button type="button" onClick={()=>uploadCover(card)} className="btn btn-outline btn-sm" disabled={!!uploadingAvatar['cover_'+card._id]}>{uploadingAvatar['cover_'+card._id]?'Đang tải...':'Tải cover'}</button>
               </div>
-            </div>
-            <div className="space-y-1">
-              <label className="label">Ảnh cover (URL)</label>
-              <input className="input" value={card.profile?.cover||''} onChange={e=> onProfileFieldChange(card._id, 'profile.cover', e.target.value)} placeholder="https://...jpg" />
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -251,14 +194,7 @@ export default function NfcCardsPage(){
               <label className="label">Địa chỉ</label>
               <input className="input" value={card.profile?.address||''} onChange={e=> onProfileFieldChange(card._id, 'profile.address', e.target.value)} placeholder="Địa chỉ" />
             </div>
-            <div className="sm:col-span-2 space-y-1">
-              <label className="label">Ảnh đại diện (URL)</label>
-              <input className="input" value={card.profile?.avatar||''} onChange={e=> onProfileFieldChange(card._id, 'profile.avatar', e.target.value)} placeholder="https://...jpg" />
-            </div>
-            <div className="sm:col-span-2 space-y-1">
-              <label className="label">Ảnh cover (URL)</label>
-              <input className="input" value={card.profile?.cover||''} onChange={e=> onProfileFieldChange(card._id, 'profile.cover', e.target.value)} placeholder="https://...jpg" />
-            </div>
+            {/* URL inputs for avatar/cover removed; upload dùng nút ở trên */}
           </div>
 
           <div className="space-y-2">

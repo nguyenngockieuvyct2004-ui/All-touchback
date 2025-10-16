@@ -1,0 +1,96 @@
+import React from 'react';
+
+export default function AboutPage(){
+  return (
+    <div className="page">
+      {/* Hero */}
+      <section className="mt-2">
+        <div className="hero">
+          <div className="hero-inner text-left">
+            <div className="hero-glow" />
+            <div className="max-w-3xl">
+              <p className="uppercase tracking-wider text-xs text-gray-500 dark:text-gray-400">About Us – NFC Memory</p>
+              <h1 className="mt-2 text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white" style={{fontFamily:'var(--font-display, ui-serif)'}}>A touch that brings memories home.</h1>
+              <p className="mt-3 text-gray-600 dark:text-gray-300">Where technology remembers what your heart holds.</p>
+              <p className="mt-4 text-sm italic text-gray-500 dark:text-gray-400">(nằm trong banner hologram)</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Story and mission */}
+      <section className="section grid gap-10 md:grid-cols-2">
+        <div className="space-y-4">
+          <h2 className="text-2xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>Mục đích của trang</h2>
+          <p>Trang Giới thiệu của chúng tôi không chỉ nói về một thương hiệu, mà kể lại hành trình của một ký ức được tìm thấy giữa cơn mưa. NFC Memory được tạo ra để người ta nhớ rằng: Có những điều nhỏ bé nhưng vô giá – ký ức, cảm xúc, và những người ta từng yêu thương.</p>
+          <h3 className="text-xl mt-6" style={{fontFamily:'var(--font-display, ui-serif)'}}>1. Thông tin cơ bản</h3>
+          <p className="font-semibold">Giới thiệu doanh nghiệp</p>
+          <p>NFC Memory là dự án công nghệ cảm xúc – nơi mỗi chiếc thẻ NFC trở thành một “cánh cửa” mở ra thế giới ký ức riêng của bạn. Chỉ cần một cú chạm, hình ảnh, video, âm thanh, lời nhắn… sẽ hiện ra, như thể ký ức vẫn đang sống ở đó – lặng lẽ và dịu dàng. Mỗi chiếc thẻ không chỉ lưu trữ dữ liệu, mà lưu giữ cảm xúc, để khi ký ức lạc mất, nó vẫn biết đường quay về.</p>
+
+          <p className="font-semibold mt-4">Lịch sử hình thành</p>
+          <p> Câu chuyện bắt đầu từ một buổi chiều mưa ở trạm xe buýt. Hôm ấy, là một buổi chiều bình thường… Tôi ngồi ở trạm xe bus, tay cầm chiếc ví nhỏ, bên trong là vài tấm ảnh cũ. Ảnh tôi và bà – người đã mất cách đây 2 năm. Tôi vẫn giữ thói quen mang nó theo, như thể chỉ cần có tấm ảnh, bà vẫn ở cạnh mình. Nhưng chỉ một giây bất cẩn thôi… Chiếc ví rơi lại trên băng ghế, giữa tiếng mưa và dòng người vội vã. Tôi quay lại tìm, nhưng chẳng còn thấy nó nữa. Thứ duy nhất còn lại là cảm giác trống rỗng đến nghẹt thở. Mất một món đồ thì có thể mua lại. Nhưng mất ký ức… thì biết tìm ở đâu?</p>
+          <p>Vài ngày sau, có người lạ gửi tin nhắn cho tôi: “Tôi nhặt được ví của bạn và tôi muốn gửi trả nó về cho bạn.” Khoảnh khắc ấy, tôi bật khóc. Không phải vì được trả chiếc ví mà tôi hy vọng tấm ảnh của tôi và bà đã trở về lại cạnh tôi. Nhưng trớ trêu thay khi nhận lại được ví thì chiếc ảnh đã nhoè đi và rách vài chỗ bởi cơn mưa ngày hôm đó. Từ giây phút đó, tôi tự hỏi: Nếu có một cách để mỗi ký ức đều có “định danh” riêng, một cách để bất kỳ ai khi chạm vào - đều có thể cảm nhận được câu chuyện bên trong… thì sẽ ra sao? Và thế là, NFC Memory ra đời.</p>
+          <blockquote className="p-4 rounded-lg bg-amber-50/80 dark:bg-gray-800 border border-amber-100 dark:border-gray-700">
+            <p className="font-medium">“Khi ký ức biết tìm về, công nghệ không còn là thứ lạnh lẽo mà là cầu nối của cảm xúc.”</p>
+          </blockquote>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>2. Định hướng và giá trị</h3>
+          <p className="font-semibold">Sứ mệnh</p>
+          <p>Chúng tôi muốn biến công nghệ thành cầu nối giữa con người và ký ức. Để mỗi người có thể lưu giữ, chạm lại và sẻ chia những điều quý giá – không qua những phím bấm phức tạp, mà bằng một cú chạm giản đơn.</p>
+          <p className="font-semibold">Tầm nhìn</p>
+          <p>Trở thành nền tảng lưu trữ ký ức số nhân văn nơi công nghệ không làm phai mờ cảm xúc, mà giúp nó được lưu lại bền lâu.</p>
+          <p className="font-semibold">Giá trị cốt lõi</p>
+          <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+            <li>Cảm xúc: Mỗi chiếc thẻ là một câu chuyện.</li>
+            <li>Nhân văn: Mọi công nghệ đều nên bắt đầu từ trái tim.</li>
+            <li>Bảo mật: Ký ức của bạn – chỉ thuộc về bạn.</li>
+            <li>Tối giản: Một cú chạm – ngàn cảm xúc.</li>
+            <li>Chân thật: Chúng tôi không làm công nghệ để phô diễn, mà để sẻ chia.</li>
+          </ul>
+          <p className="font-semibold">Phương châm hoạt động</p>
+          <p>“Chúng tôi không bán thẻ NFC. Chúng tôi gửi đi những mảnh ký ức – để ai đó có thể tìm lại chính mình.”</p>
+        </div>
+      </section>
+
+      {/* Team, contact, partners */}
+      <section className="section">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div className="card">
+            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>3. Đội ngũ nhân sự</h3>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">NFC Memory được tạo nên bởi nhóm bạn trẻ đến từ Cần Thơ, những người tin rằng công nghệ có thể có trái tim. Chúng tôi là những kẻ mộng mơ giữa thế giới số - người kể chuyện, nhà thiết kế, lập trình viên - cùng chung một niềm tin rằng: Cảm xúc là ngôn ngữ phổ quát nhất mà công nghệ có thể nói được. Chúng tôi làm việc không chỉ để tạo ra sản phẩm, mà để mỗi thẻ NFC ra đời đều mang hơi ấm của con người - một chút hoài niệm, một chút dịu dàng, và rất nhiều yêu thương.</p>
+          </div>
+          <div className="card">
+            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>4. Thông tin liên hệ</h3>
+            <ul className="mt-3 space-y-1 text-gray-700 dark:text-gray-300">
+              <li>📍 Trụ sở: Thành phố Cần Thơ, Việt Nam</li>
+              <li>💌 Email: contact@nfcmemory.vn</li>
+              <li>🌐 Website: www.nfcmemory.vn</li>
+              <li>📞 Hotline: 090x xxx xxx</li>
+            </ul>
+            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Mọi hành trình đều bắt đầu từ một ký ức nhỏ. Hãy kể cho chúng tôi nghe câu chuyện của bạn.</p>
+          </div>
+          <div className="card">
+            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>5. Đối tác & đồng hành</h3>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">Chúng tôi đồng hành cùng những người trẻ, những đơn vị sáng tạo và những thương hiệu tin vào cảm xúc.</p>
+            <ul className="mt-3 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+              <li>Studio ảnh cưới & quà tặng cá nhân hóa – nơi ký ức được tái hiện qua từng tấm hình.</li>
+              <li>Nhà thiết kế trẻ & đơn vị in ấn – nơi những ý tưởng mỏng manh trở thành hiện thực.</li>
+              <li>Cộng đồng công nghệ NFC/AR/VR – cùng nhau làm nên trải nghiệm ký ức sống động.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="panel">
+          <p className="text-center max-w-3xl mx-auto text-lg md:text-xl font-medium">
+            “Một ngày nào đó, khi bạn chạm vào chiếc thẻ nhỏ ấy, và thấy ký ức trở về - bạn sẽ hiểu vì sao chúng tôi tồn tại.”
+            <span className="block mt-2 text-sm text-gray-500">– NFC Memory</span>
+          </p>
+        </div>
+      </section>
+    </div>
+  );
+}

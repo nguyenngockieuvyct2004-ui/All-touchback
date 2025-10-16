@@ -71,7 +71,7 @@ export default function ChatWidget(){
     <div className="fixed z-50 right-4 bottom-4">
       {/* Toggle button */}
       {!open && (
-        <button onClick={()=>setOpen(true)} className="btn btn-lg rounded-full shadow-glow flex items-center gap-2">
+  <button onClick={()=>setOpen(true)} className="btn btn-lg rounded-full flex items-center gap-2" style={{boxShadow:'0 0 0 2px rgba(59,130,246,0.20)', borderRadius:12}}>
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Trợ lý AI TouchBack</span>
         </button>

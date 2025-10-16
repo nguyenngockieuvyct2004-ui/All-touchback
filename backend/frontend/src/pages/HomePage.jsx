@@ -12,9 +12,9 @@ export default function HomePage(){
         <section className="space-y-8">
           <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">Tính năng nổi bật</h2>
           <div className="grid-auto">
-            {features.map(f=> <div key={f.title} className="card card-hover group">
-              <div className="absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition bg-gradient-to-br from-brand-600/10 to-brand-400/10 pointer-events-none" />
-              <h3 className="font-medium text-lg mb-2 group-hover:text-brand-600 dark:group-hover:text-brand-400 transition">{f.title}</h3>
+            {features.map(f=> <div key={f.title} className="card card-hover group bg-[#fffdfa] dark:bg-gray-900 border-black/10 dark:border-gray-800">
+              <div className="absolute -inset-px rounded-xl opacity-0 group-hover:opacity-100 transition bg-black/5 dark:bg-white/5 pointer-events-none" />
+              <h3 className="font-medium text-lg mb-2 transition text-gray-900 dark:text-gray-100">{f.title}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{f.desc}</p>
             </div>)}
           </div>
@@ -23,11 +23,11 @@ export default function HomePage(){
           <h2 className="text-xl font-semibold">Số liệu nhanh</h2>
           <StatGroup stats={stats} />
         </section>
-        <section className="panel text-center py-16 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-600/10 to-brand-400/10" />
+        <section className="panel text-center py-16 relative overflow-hidden bg-[#fffdfa] dark:bg-gray-900 border-black/10 dark:border-gray-800">
+          <div className="absolute inset-0 bg-gradient-to-r from-black/5 dark:from-white/5 to-transparent" />
           <div className="relative space-y-6">
             <h2 className="text-2xl md:text-3xl font-semibold">Bắt đầu tạo kỷ niệm của bạn</h2>
-            <p className="max-w-2xl mx-auto text-sm md:text-base text-gray-600 dark:text-gray-400">Đăng ký ngay để trải nghiệm việc kết nối kỷ niệm với thẻ NFC và chia sẻ tức thì.</p>
+            <p className="max-w-2xl mx-auto text-sm md:text-base text-gray-700 dark:text-gray-400">Đăng ký ngay để trải nghiệm việc kết nối kỷ niệm với thẻ NFC và chia sẻ tức thì.</p>
             {!user ? (
               <div className="flex gap-4 justify-center">
                 <Link to="/register" className="btn btn-lg">Đăng ký miễn phí</Link>
@@ -54,9 +54,9 @@ function Hero(){
       <div className="hero-inner relative">
         <div className="mx-auto max-w-3xl space-y-8">
           <div className="space-y-4">
-            <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-600/10 text-brand-600 dark:text-brand-400 text-xs font-medium ring-1 ring-brand-600/20">Phiên bản demo</p>
-            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight text-gradient">Kết nối kỷ niệm với công nghệ NFC</h1>
-            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">TouchBack giúp bạn lưu giữ, tổ chức và chia sẻ kỷ niệm thông qua thẻ NFC và liên kết rút gọn bảo mật.</p>
+            <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 text-gray-800 dark:text-brand-300 text-xs font-medium">Phiên bản demo</p>
+            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">Kết nối kỷ niệm với công nghệ NFC</h1>
+            <p className="text-base md:text-lg text-gray-700 dark:text-gray-400 leading-relaxed">TouchBack giúp bạn lưu giữ, tổ chức và chia sẻ kỷ niệm thông qua thẻ NFC và liên kết rút gọn bảo mật.</p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
             {!user ? (

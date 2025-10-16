@@ -8,6 +8,11 @@ import {
   forgotPassword,
   resetPassword,
 } from "../controllers/authController.js";
+import { authRequired } from "../middleware/auth.js";
+import {
+  getMyProfile,
+  updateMyProfile,
+} from "../controllers/profileController.js";
 // Simple in-memory rate limit (development / small scale). For production replace with Redis.
 const buckets = new Map();
 function rateLimit(keyBase, limit, windowMs) {
@@ -57,5 +62,9 @@ router.get(
   }),
   googleCallback
 );
+
+// Profile endpoints
+router.get("/me/profile", authRequired, getMyProfile);
+router.put("/me/profile", authRequired, updateMyProfile);
 
 export default router;

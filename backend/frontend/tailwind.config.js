@@ -9,17 +9,18 @@ export default {
     },
     extend: {
       colors: {
+        // Softer brand palette leaning towards the warm neutral hero in the mock
         brand: {
-          50: "#eef5ff",
-          100: "#d9e9ff",
-          200: "#b3d3ff",
-          300: "#84b9ff",
-          400: "#4693ff",
-          500: "#2563eb",
-          600: "#1d4fd8",
-          700: "#1d43ad",
-          800: "#1e3a8a",
-          900: "#1e335f",
+          50: "#f3f6ff",
+          100: "#e7eeff",
+          200: "#cfe0ff",
+          300: "#aecdff",
+          400: "#7fb1ff",
+          500: "#4f8dff",
+          600: "#2563eb",
+          700: "#1e49c9",
+          800: "#1f3a8a",
+          900: "#182b63",
         },
       },
       boxShadow: {

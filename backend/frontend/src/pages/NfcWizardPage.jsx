@@ -1,14 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import api from '../lib/api.js';
+import { toast } from '../lib/toast.js';
 
 export default function NfcWizardPage(){
   const [sp] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const orderId = sp.get('orderId') || null;
+  const initialCardId = sp.get('cardId') || null;
 
   const [step, setStep] = useState(1);
+  const [cardId, setCardId] = useState(initialCardId);
+  const [cardInfo, setCardInfo] = useState(null);
   const [profile, setProfile] = useState({
     fullName: user?.fullName || user?.name || '',
     email: user?.email || '',
@@ -28,10 +33,77 @@ export default function NfcWizardPage(){
   }, [step, profile, designId]);
 
   const onSubmit = async () => {
-    // TODO: POST /nfc (create) or PATCH existing unactivated cards created after payment
-    // payload: { orderId, profile, designId, featuredMemoryIds: featured }
-    navigate('/nfc');
+    try{
+      // Yêu cầu có cardId (thẻ đã được tạo tự động khi thanh toán thành công)
+      let targetId = cardId;
+      if (!targetId){
+        const r = await api.get('/nfc');
+        const list = r.data || [];
+        if (!list.length) throw new Error('Chưa có thẻ nào. Vui lòng hoàn tất thanh toán để hệ thống tạo thẻ tự động.');
+        // chọn thẻ chưa cấu hình tên nếu có, nếu không lấy thẻ mới nhất
+        const candidate = list.find(c => !c.profile || !c.profile.name) || list[0];
+        targetId = candidate._id;
+      }
+
+      // 1) Cập nhật profile cho thẻ đã có
+      await api.put(`/nfc/${targetId}`, {
+        title: designId ? `Design #${designId}` : undefined,
+        profile: {
+          name: profile.fullName,
+          email: profile.email,
+          phone: profile.phone,
+          title: profile.title,
+          company: profile.company,
+          website: profile.website,
+        }
+      });
+
+      // 2) Gắn memories nổi bật (nếu có)
+      if (featured?.length){
+        await api.post(`/nfc/${targetId}/link`, { memoryIds: featured });
+      }
+
+      toast.success('Đã cập nhật thẻ NFC');
+      navigate('/nfc');
+    }catch(e){
+      toast.error(e.response?.data?.message || 'Không tạo được thẻ');
+    }
   };
+
+  // Prefill from saved profile
+  useEffect(()=>{
+    let cancelled = false;
+    api.get('/auth/me/profile').then(r=>{
+      if (cancelled) return;
+      const p = r.data?.profile || {};
+      setProfile(prev => ({
+        fullName: p.name || prev.fullName || user?.fullName || user?.name || '',
+        email: p.email || prev.email || user?.email || '',
+        phone: p.phone || prev.phone || '',
+        title: p.title || prev.title || '',
+        company: p.company || prev.company || '',
+        website: p.website || prev.website || '',
+      }));
+    }).catch(()=>{});
+    return () => { cancelled = true; };
+  }, [user?.email, user?.fullName, user?.name]);
+
+  // Lấy card mặc định để cấu hình nếu URL không truyền cardId
+  useEffect(()=>{
+    let cancelled = false;
+    api.get('/nfc').then(r=>{
+      if (cancelled) return;
+      const list = r.data || [];
+      if (initialCardId){
+        const found = list.find(x=> x._id===initialCardId);
+        if (found){ setCardId(found._id); setCardInfo(found); return; }
+      }
+      const candidate = list.find(c => !c.profile || !c.profile.name) || list[0];
+      if (candidate){ setCardId(candidate._id); setCardInfo(candidate); }
+    }).catch(()=>{});
+    return ()=>{ cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -44,6 +116,10 @@ export default function NfcWizardPage(){
 
       {step===1 && (
         <section className="space-y-3">
+          {cardInfo && (
+            <p className="text-xs text-gray-500">Đang cấu hình thẻ: <span className="font-mono">{cardInfo.slug}</span></p>
+          )}
+          <p className="text-xs text-gray-500">Đã tự động lấy dữ liệu từ hồ sơ của bạn (nếu có). Bạn có thể chỉnh sửa trước khi tiếp tục.</p>
           <div className="grid sm:grid-cols-2 gap-3">
             <input className="input" placeholder="Họ tên" value={profile.fullName} onChange={e=>setProfile(p=>({...p, fullName:e.target.value}))}/>
             <input className="input" placeholder="Email" value={profile.email} onChange={e=>setProfile(p=>({...p, email:e.target.value}))}/>

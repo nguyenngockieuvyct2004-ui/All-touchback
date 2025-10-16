@@ -26,8 +26,10 @@ import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import MyOrdersPage from './pages/MyOrdersPage.jsx';
 import { useAuth } from './context/AuthContext.jsx';
 import CheckoutSuccessPage from './pages/CheckoutSuccessPage.jsx';
-import NfcWizardPage from './pages/NfcWizardPage.jsx';
 import NfcActivatePage from './pages/NfcActivatePage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -78,6 +80,7 @@ export default function App(){
         } />
         <Route path="/products" element={<Layout><PageWrapper><ProductsPage /></PageWrapper></Layout>} />
         <Route path="/products/:id" element={<Layout><PageWrapper><ProductDetailPage /></PageWrapper></Layout>} />
+  <Route path="/about" element={<Layout><PageWrapper><AboutPage /></PageWrapper></Layout>} />
         <Route path="/login" element={<Layout><PageWrapper><LoginPage /></PageWrapper></Layout>} />
         <Route path="/register" element={<Layout><PageWrapper><RegisterPage /></PageWrapper></Layout>} />
         <Route path="/forgot-password" element={<Layout><PageWrapper><ForgotPasswordPage /></PageWrapper></Layout>} />
@@ -88,9 +91,11 @@ export default function App(){
         <Route path="/memories/new" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories/:id" element={<Layout><ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories/:id/edit" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
-        <Route path="/nfc" element={<Layout><ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute></Layout>} />
-  <Route path="/nfc/new" element={<Layout><ProtectedRoute><PageWrapper><NfcWizardPage /></PageWrapper></ProtectedRoute></Layout>} />
+    <Route path="/nfc" element={<Layout><ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute></Layout>} />
+    <Route path="/nfc/new" element={<Navigate to="/nfc" replace />} />
   <Route path="/nfc/activate" element={<Layout><PageWrapper><NfcActivatePage /></PageWrapper></Layout>} />
+    <Route path="/profile" element={<Layout><ProtectedRoute><PageWrapper><ProfilePage /></PageWrapper></ProtectedRoute></Layout>} />
+    <Route path="/change-password" element={<Layout><ProtectedRoute><PageWrapper><ChangePasswordPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/chat" element={<Layout><ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/orders" element={<Layout><ProtectedRoute><PageWrapper><MyOrdersPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/m/:slug" element={<Layout><PageWrapper><PublicMemoryPage /></PageWrapper></Layout>} />

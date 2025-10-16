@@ -21,7 +21,7 @@ export default function ProductsPage(){
 
   return <div className="space-y-6">
     <div className="flex items-center justify-between">
-      <h1 className="text-2xl font-semibold tracking-tight">Sản phẩm</h1>
+      <h1 className="text-3xl font-semibold tracking-tight" style={{fontFamily:'var(--font-display, ui-serif)'}}>Sản phẩm</h1>
     </div>
     <ErrorMessage error={error} />
     {loading && <div className="grid-auto">{Array.from({length:6}).map((_,i)=><ProductCardSkeleton key={i} />)}</div>}

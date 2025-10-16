@@ -21,11 +21,13 @@ export async function provisionCardsForOrder(order) {
       const card = await NfcCard.create({
         userId: order.userId,
         slug,
-        status: "unactivated",
+        // Auto-activate when order is marked as paid
+        status: "active",
+        isActive: true,
         orderId: order._id,
         productId: item.productId,
         productCode: product?.code,
-        activationCode: randomCode(),
+        // activationCode: randomCode(), // not needed when auto-activating
         // prefill title from product name for easy identification
         title: `${product?.name || "NFC Card"} #${i + 1}`,
       });
