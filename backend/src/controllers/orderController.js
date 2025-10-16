@@ -3,6 +3,8 @@ import Cart from "../models/Cart.js";
 import Product from "../models/Product.js";
 import Order from "../models/Order.js";
 import { buildVnpayPaymentUrl } from "./vnpayController.js";
+import { provisionCardsForOrder } from "../services/provisioningService.js";
+import NfcCard from "../models/NfcCard.js";
 
 const checkoutSchema = Joi.object({
   // Accept either free text or structured form 'prov|dist|ward|detail'
@@ -103,13 +105,28 @@ export async function updateOrderStatus(req, res) {
       .required(),
   });
   const { status } = await schema.validateAsync(req.body);
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { status },
-    { new: true }
-  );
+  const prev = await Order.findById(req.params.id);
+  if (!prev) return res.status(404).json({ message: "Not found" });
+  const was = prev.status;
+  prev.status = status;
+  const order = await prev.save();
+  if (was !== "paid" && status === "paid") {
+    try {
+      await provisionCardsForOrder(order);
+    } catch (e) {
+      console.error("Provision cards error:", e);
+    }
+  }
   if (!order) return res.status(404).json({ message: "Not found" });
   res.json(order);
 }
 
 // Các hàm vnpayIpn & vnpayReturn đã được tách sang vnpayController.js
+
+export async function getOrderCards(req, res) {
+  const orderId = req.params.id;
+  const order = await Order.findOne({ _id: orderId, userId: req.user.id });
+  if (!order) return res.status(404).json({ message: "Not found" });
+  const cards = await NfcCard.find({ orderId }).sort({ createdAt: 1 });
+  res.json(cards);
+}

@@ -25,6 +25,9 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
 import ResetPasswordPage from './pages/ResetPasswordPage.jsx';
 import MyOrdersPage from './pages/MyOrdersPage.jsx';
 import { useAuth } from './context/AuthContext.jsx';
+import CheckoutSuccessPage from './pages/CheckoutSuccessPage.jsx';
+import NfcWizardPage from './pages/NfcWizardPage.jsx';
+import NfcActivatePage from './pages/NfcActivatePage.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -80,11 +83,14 @@ export default function App(){
         <Route path="/forgot-password" element={<Layout><PageWrapper><ForgotPasswordPage /></PageWrapper></Layout>} />
         <Route path="/reset-password" element={<Layout><PageWrapper><ResetPasswordPage /></PageWrapper></Layout>} />
         <Route path="/cart" element={<Layout><ProtectedRoute><PageWrapper><CartPage /></PageWrapper></ProtectedRoute></Layout>} />
+  <Route path="/checkout/success" element={<Layout><ProtectedRoute><PageWrapper><CheckoutSuccessPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories" element={<Layout><ProtectedRoute><PageWrapper><MemoriesPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories/new" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories/:id" element={<Layout><ProtectedRoute><PageWrapper><MemoryViewPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/memories/:id/edit" element={<Layout><ProtectedRoute><PageWrapper><MemoryEditPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/nfc" element={<Layout><ProtectedRoute><PageWrapper><NfcCardsPage /></PageWrapper></ProtectedRoute></Layout>} />
+  <Route path="/nfc/new" element={<Layout><ProtectedRoute><PageWrapper><NfcWizardPage /></PageWrapper></ProtectedRoute></Layout>} />
+  <Route path="/nfc/activate" element={<Layout><PageWrapper><NfcActivatePage /></PageWrapper></Layout>} />
         <Route path="/chat" element={<Layout><ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/orders" element={<Layout><ProtectedRoute><PageWrapper><MyOrdersPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/m/:slug" element={<Layout><PageWrapper><PublicMemoryPage /></PageWrapper></Layout>} />

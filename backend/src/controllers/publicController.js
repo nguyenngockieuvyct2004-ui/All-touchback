@@ -3,7 +3,11 @@ import Memory from "../models/Memory.js";
 
 export async function getPublicCard(req, res) {
   const slug = req.params.slug;
-  const card = await NfcCard.findOne({ slug, isActive: true }).lean();
+  const card = await NfcCard.findOne({ slug }).lean();
+  // If using new status field and legacy isActive true, ensure active only
+  if (card.status && card.status !== "active") {
+    return res.status(404).json({ message: "Not found" });
+  }
   if (!card) return res.status(404).json({ message: "Not found" });
 
   let primary = null;

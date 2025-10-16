@@ -6,7 +6,20 @@ const nfcCardSchema = new Schema(
     slug: { type: String, unique: true, required: true },
     title: String,
     linkedMemoryIds: [{ type: Types.ObjectId, ref: "Memory" }],
+    // Legacy active flag (kept for backward compat). Use 'status' for new flow
     isActive: { type: Boolean, default: true },
+    // Commercial flow additions
+    status: {
+      type: String,
+      enum: ["unactivated", "active", "disabled"],
+      default: "active",
+      index: true,
+    },
+    orderId: { type: Types.ObjectId, ref: "Order", index: true },
+    productId: { type: Types.ObjectId, ref: "Product", index: true },
+    productCode: { type: String },
+    activationCode: { type: String, index: true }, // used for gift/claim
+    tagUid: { type: String, unique: true, sparse: true }, // NFC chip UID
     // Optional business card profile for public card page
     profile: {
       name: String,

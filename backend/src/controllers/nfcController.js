@@ -2,6 +2,7 @@ import NfcCard from "../models/NfcCard.js";
 import Memory from "../models/Memory.js";
 import { generateSlug } from "../utils/generateSlug.js";
 import Joi from "joi";
+import { activateCardByCodeOrTag } from "../services/provisioningService.js";
 
 const linkSchema = Joi.object({
   memoryIds: Joi.array().items(Joi.string()).default([]),
@@ -114,11 +115,32 @@ export async function listCardMemories(req, res, next) {
 }
 
 export async function resolveSlug(req, res) {
-  const card = await NfcCard.findOne({ slug: req.params.slug, isActive: true });
+  const card = await NfcCard.findOne({ slug: req.params.slug });
   if (!card) return res.status(404).json({ message: "Not found" });
+  if (card.status && card.status !== "active") {
+    return res.status(404).json({ message: "Not found" });
+  }
   const memories = await Memory.find({
     _id: { $in: card.linkedMemoryIds },
     isPublic: true,
   }).sort({ createdAt: -1 });
   res.json({ card: { slug: card.slug, title: card.title }, memories });
+}
+
+export async function activateCard(req, res) {
+  const schema = Joi.object({
+    activationCode: Joi.string().allow("", null),
+    tagUid: Joi.string().allow("", null),
+  });
+  const { activationCode, tagUid } = await schema.validateAsync(req.body || {});
+  try {
+    const card = await activateCardByCodeOrTag({
+      userId: req.user?.id,
+      activationCode,
+      tagUid,
+    });
+    res.json(card);
+  } catch (e) {
+    res.status(400).json({ message: e.message || "Không kích hoạt được thẻ" });
+  }
 }

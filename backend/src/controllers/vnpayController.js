@@ -4,6 +4,7 @@
 import crypto from "crypto";
 import qs from "qs";
 import Order from "../models/Order.js";
+import { provisionCardsForOrder } from "../services/provisioningService.js";
 
 // Sắp xếp & encode tham số giống đúng format của code demo VNPay
 // Quan trọng để hash trùng khớp (space => '+')
@@ -119,6 +120,11 @@ export async function vnpayIpn(req, res) {
           paidAt: new Date(),
         };
         await order.save();
+        try {
+          await provisionCardsForOrder(order);
+        } catch (e) {
+          console.error("Provision cards error (IPN):", e);
+        }
       } else {
         order.payment = {
           ...order.payment,

@@ -150,15 +150,24 @@ export default function NfcCardsPage(){
     <ErrorMessage error={error} />
     {!cards.length && <EmptyState title="Chưa có thẻ" description="Tạo thẻ mới để gắn với các memories." action={<button onClick={createCard} disabled={creating} className="btn btn-primary">Tạo thẻ</button>} />}
     {!!cards.length && <div className="grid gap-6 md:grid-cols-2">
-      {cards.map(card=> <div key={card._id} className="panel space-y-4">
+      {cards.map(card=> {
+        const isActive = (card.status ? card.status === 'active' : card.isActive !== false);
+        return <div key={card._id} className="panel space-y-4">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
             <h3 className="font-semibold text-base flex items-center gap-2">Slug: <span className="font-mono text-primary text-sm bg-primary/5 px-2 py-0.5 rounded border border-primary/20">{card.slug}</span></h3>
             <div className="text-[11px] text-muted-foreground">ID: {card._id}</div>
           </div>
           <div className="flex items-center gap-3">
-            <a href={`/m/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem memory</a>
-            <a href={`/c/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem danh thiếp</a>
+            {!isActive && <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 px-2 py-0.5 text-[11px] border border-amber-500/20">Chưa kích hoạt</span>}
+            {isActive ? (
+              <>
+                <a href={`/m/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem memory</a>
+                <a href={`/c/${card.slug}`} target="_blank" rel="noreferrer" className="text-xs link">Xem danh thiếp</a>
+              </>
+            ) : (
+              <a href="/nfc/activate" className="text-xs link">Kích hoạt</a>
+            )}
           </div>
         </div>
         <div className="space-y-3">
@@ -275,7 +284,7 @@ export default function NfcCardsPage(){
             )}
           </div>
         </div>
-      </div>)}
+      </div>})}
     </div>}
   </div>;
 }
