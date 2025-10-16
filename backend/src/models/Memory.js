@@ -13,6 +13,9 @@ const memorySchema = new Schema(
   {
     userId: { type: Types.ObjectId, ref: "User", required: true },
     cardId: { type: Types.ObjectId, ref: "NfcCard" },
+    // Nếu memory được tạo tự động từ đơn hàng
+    orderId: { type: Types.ObjectId, ref: "Order" },
+    productId: { type: Types.ObjectId, ref: "Product" },
     title: { type: String, required: true },
     description: String,
     media: [mediaSchema],

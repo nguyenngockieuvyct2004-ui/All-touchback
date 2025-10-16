@@ -7,6 +7,9 @@ const cartSchema = new Schema(
       {
         productId: { type: Types.ObjectId, ref: "Product" },
         quantity: { type: Number, default: 1 },
+        // Mục đích sử dụng do khách chọn ở trang sản phẩm
+        // 'nfc' = Danh thiếp NFC, 'memory' = Lưu trữ ảnh/video
+        purpose: { type: String, enum: ["nfc", "memory"], default: "nfc" },
         priceSnapshot: Number,
       },
     ],

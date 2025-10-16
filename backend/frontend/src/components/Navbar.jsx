@@ -71,8 +71,11 @@ export default function Navbar(){
 
           <nav className="hidden md:flex items-center gap-1">
             <NavLink to="/products" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Sản phẩm</NavLink>
-            {user && <NavLink to="/memories" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Memories</NavLink>}
-            {user && <NavLink to="/nfc" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>NFC</NavLink>}
+            {user && <NavLink to="/memories" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Lưu trữ ký ức</NavLink>}
+            {user && <NavLink to="/nfc" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Danh thiếp</NavLink>}
+            <NavLink to="/ar" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>AR</NavLink>
+            <NavLink to="/hologram" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Hologram</NavLink>
+            <NavLink to="/education" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Giáo dục</NavLink>
             <NavLink to="/about" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Về chúng tôi</NavLink>
           </nav>
         </div>
@@ -144,6 +147,9 @@ export default function Navbar(){
               <button ref={firstFocusableRef} onClick={()=>{ setOpen(false); navigate('/products'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Sản phẩm</button>
               {user && <button onClick={()=>{ setOpen(false); navigate('/memories'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Memories</button>}
               {user && <button onClick={()=>{ setOpen(false); navigate('/nfc'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">NFC</button>}
+              <button onClick={()=>{ setOpen(false); navigate('/ar'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">AR</button>
+              <button onClick={()=>{ setOpen(false); navigate('/hologram'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hologram</button>
+              <button onClick={()=>{ setOpen(false); navigate('/education'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giáo dục</button>
               <button onClick={()=>{ setOpen(false); navigate('/about'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">About</button>
               <button onClick={()=>{ setOpen(false); navigate('/cart'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giỏ hàng</button>
             </nav>

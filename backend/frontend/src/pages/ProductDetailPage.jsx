@@ -13,6 +13,8 @@ export default function ProductDetailPage(){
   const [adding,setAdding] = useState(false);
   const [addMsg,setAddMsg] = useState('');
   const [activeIdx, setActiveIdx] = useState(0);
+  // Lựa chọn mục đích mua: 'memory' (A) hay 'nfc' (B)
+  const [purpose,setPurpose] = useState('memory');
 
   useEffect(()=>{
     api.get(`/products`)
@@ -24,7 +26,7 @@ export default function ProductDetailPage(){
   async function addToCart(){
     setAdding(true); setAddMsg('');
     try {
-      await api.post('/cart/add', { productId: id, quantity: 1 });
+      await api.post('/cart/add', { productId: id, quantity: 1, purpose });
       setAddMsg('Đã thêm vào giỏ hàng');
     } catch(e){
       setAddMsg(e.response?.data?.message || 'Lỗi thêm giỏ hàng');
@@ -88,7 +90,20 @@ export default function ProductDetailPage(){
       <div className="prose max-w-none dark:prose-invert prose-sm leading-relaxed">
         {product.description?.split('\n').map((l,i)=><p key={i}>{l}</p>)}
       </div>
-      <div className="flex items-center gap-4">
+      {/* Chọn mục đích sử dụng (theo yêu cầu: A hoặc B) */}
+      <div className="space-y-3">
+        <div className="grid sm:grid-cols-2 gap-2">
+          <button type="button" onClick={()=>setPurpose('memory')} className={`p-3 rounded-lg border transition text-left ${purpose==='memory' ? 'border-brand-600 bg-brand-50/60 dark:bg-brand-900/20' : 'border-border hover:border-foreground/30'}`}>
+            <div className="font-medium">A. Lưu trữ ảnh/video</div>
+            <div className="text-xs text-muted-foreground">Sau khi thanh toán, hệ thống sẽ tự tạo trang Memories để bạn tải ảnh/video, tiêu đề và nội dung.</div>
+          </button>
+          <button type="button" onClick={()=>setPurpose('nfc')} className={`p-3 rounded-lg border transition text-left ${purpose==='nfc' ? 'border-brand-600 bg-brand-50/60 dark:bg-brand-900/20' : 'border-border hover:border-foreground/30'}`}>
+            <div className="font-medium">B. Danh thiếp</div>
+            <div className="text-xs text-muted-foreground">Sau khi thanh toán, hệ thống sẽ tự tạo thẻ NFC ở trang /nfc để bạn điền hồ sơ và chia sẻ.</div>
+          </button>
+        </div>
+      </div>
+      <div className="flex items-center gap-4 pt-2">
         <button onClick={addToCart} disabled={adding} className="btn btn-primary">
           {adding? 'Đang thêm...' : 'Thêm vào giỏ'}
         </button>

@@ -30,6 +30,7 @@ import NfcActivatePage from './pages/NfcActivatePage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
+import ComingSoon from './pages/ComingSoon.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -81,6 +82,10 @@ export default function App(){
         <Route path="/products" element={<Layout><PageWrapper><ProductsPage /></PageWrapper></Layout>} />
         <Route path="/products/:id" element={<Layout><PageWrapper><ProductDetailPage /></PageWrapper></Layout>} />
   <Route path="/about" element={<Layout><PageWrapper><AboutPage /></PageWrapper></Layout>} />
+    {/* Coming soon sections */}
+    <Route path="/ar" element={<Layout><PageWrapper><ComingSoon title="AR (Augmented Reality)" subtitle="Khám phá thế giới mở rộng với AR của TouchBack." /></PageWrapper></Layout>} />
+    <Route path="/hologram" element={<Layout><PageWrapper><ComingSoon title="Hologram" subtitle="Hiển thị 3D sống động—tính năng đang được hoàn thiện." /></PageWrapper></Layout>} />
+    <Route path="/education" element={<Layout><PageWrapper><ComingSoon title="Giáo dục" subtitle="Nâng cao trải nghiệm học tập—sắp ra mắt!" /></PageWrapper></Layout>} />
         <Route path="/login" element={<Layout><PageWrapper><LoginPage /></PageWrapper></Layout>} />
         <Route path="/register" element={<Layout><PageWrapper><RegisterPage /></PageWrapper></Layout>} />
         <Route path="/forgot-password" element={<Layout><PageWrapper><ForgotPasswordPage /></PageWrapper></Layout>} />

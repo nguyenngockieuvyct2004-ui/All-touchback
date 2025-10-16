@@ -1,5 +1,6 @@
 import NfcCard from "../models/NfcCard.js";
 import Product from "../models/Product.js";
+import Memory from "../models/Memory.js";
 import { generateSlug } from "../utils/generateSlug.js";
 
 function randomCode(len = 8) {
@@ -17,21 +18,37 @@ export async function provisionCardsForOrder(order) {
     const quantity = Math.max(1, item.quantity || 1);
     const product = await Product.findById(item.productId).lean();
     for (let i = 0; i < quantity; i++) {
-      const slug = generateSlug();
-      const card = await NfcCard.create({
-        userId: order.userId,
-        slug,
-        // Auto-activate when order is marked as paid
-        status: "active",
-        isActive: true,
-        orderId: order._id,
-        productId: item.productId,
-        productCode: product?.code,
-        // activationCode: randomCode(), // not needed when auto-activating
-        // prefill title from product name for easy identification
-        title: `${product?.name || "NFC Card"} #${i + 1}`,
-      });
-      results.push(card);
+      const purpose = item.purpose || "nfc";
+      if (purpose === "memory") {
+        // Tạo sẵn 1 Memory trống để khách vào /memories sửa nội dung
+        const memory = await Memory.create({
+          userId: order.userId,
+          orderId: order._id,
+          productId: item.productId,
+          title: `${product?.name || "Bộ nhớ"} #${i + 1}`,
+          description: "",
+          media: [],
+          tags: [],
+          isPublic: true,
+        });
+        results.push(memory);
+      } else {
+        const slug = generateSlug();
+        const card = await NfcCard.create({
+          userId: order.userId,
+          slug,
+          // Auto-activate when order is marked as paid
+          status: "active",
+          isActive: true,
+          orderId: order._id,
+          productId: item.productId,
+          productCode: product?.code,
+          // activationCode: randomCode(), // not needed when auto-activating
+          // prefill title from product name for easy identification
+          title: `${product?.name || "NFC Card"} #${i + 1}`,
+        });
+        results.push(card);
+      }
     }
   }
   return results;

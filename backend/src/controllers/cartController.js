@@ -5,6 +5,8 @@ import Joi from "joi";
 const addSchema = Joi.object({
   productId: Joi.string().required(),
   quantity: Joi.number().integer().min(1).default(1),
+  // 'nfc' (danh thiếp) hoặc 'memory' (lưu ảnh/video)
+  purpose: Joi.string().valid("nfc", "memory").default("nfc"),
 });
 
 export async function getCart(req, res) {
@@ -19,6 +21,7 @@ export async function getCart(req, res) {
     items: cart.items.map((it) => ({
       productId: it.productId?._id,
       quantity: it.quantity,
+      purpose: it.purpose,
       priceSnapshot: it.priceSnapshot,
       product: it.productId
         ? {
@@ -37,7 +40,9 @@ export async function getCart(req, res) {
 
 export async function addToCart(req, res, next) {
   try {
-    const { productId, quantity } = await addSchema.validateAsync(req.body);
+    const { productId, quantity, purpose } = await addSchema.validateAsync(
+      req.body
+    );
     const product = await Product.findById(productId);
     if (!product) return res.status(404).json({ message: "Product not found" });
     let cart = await Cart.findOne({ userId: req.user.id });
@@ -45,8 +50,18 @@ export async function addToCart(req, res, next) {
     const existing = cart.items.find(
       (i) => i.productId.toString() === productId
     );
-    if (existing) existing.quantity += quantity;
-    else cart.items.push({ productId, quantity, priceSnapshot: product.price });
+    if (existing) {
+      existing.quantity += quantity;
+      // Cập nhật purpose nếu người dùng vừa chọn khác
+      if (purpose) existing.purpose = purpose;
+    } else {
+      cart.items.push({
+        productId,
+        quantity,
+        priceSnapshot: product.price,
+        purpose,
+      });
+    }
     await cart.save();
     // populate product for immediate response consistency
     await cart.populate("items.productId");

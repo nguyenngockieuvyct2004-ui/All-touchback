@@ -71,6 +71,11 @@ export default function CartPage(){
               <div className="min-w-0">
                 <p className="font-medium text-sm truncate">{i.product?.name || 'Sản phẩm đã xoá'}</p>
                 <p className="text-xs text-muted-foreground">Đơn giá: {(i.product?.price||0).toLocaleString()} đ</p>
+                {i.purpose && (
+                  <span className="inline-flex items-center gap-1 text-[11px] mt-1 px-1.5 py-0.5 rounded border border-black/10 dark:border-white/10">
+                    {i.purpose==='memory' ? 'Lưu ảnh/video' : 'Danh thiếp'}
+                  </span>
+                )}
               </div>
             </div>
           </div>

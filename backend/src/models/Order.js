@@ -6,6 +6,8 @@ const orderItemSchema = new Schema(
     name: String,
     price: Number,
     quantity: Number,
+    // Lưu lại lựa chọn của khách cho từng sản phẩm trong đơn
+    purpose: { type: String, enum: ["nfc", "memory"], default: "nfc" },
   },
   { _id: false }
 );

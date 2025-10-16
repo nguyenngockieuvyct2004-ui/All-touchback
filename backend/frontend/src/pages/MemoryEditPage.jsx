@@ -14,7 +14,7 @@ export default function MemoryEditPage(){
   const [error,setError] = useState('');
   const [saving,setSaving] = useState(false);
 
-  // Inputs for adding a media item
+  // Form chỉnh sửa: theo yêu cầu bỏ phần nhập URL ảnh khi tạo
   const [mType, setMType] = useState('image');
   const [mUrl, setMUrl] = useState('');
   const [mCaption, setMCaption] = useState('');
@@ -83,25 +83,11 @@ export default function MemoryEditPage(){
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="label">Đính kèm ảnh/video</label>
-          <span className="text-[11px] text-muted-foreground">Tải file từ máy hoặc dán URL, tối đa 20 mục.</span>
+          <span className="text-[11px] text-muted-foreground">Tải file từ máy của bạn, tối đa 20 mục.</span>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
-          <select value={mType} onChange={e=>setMType(e.target.value)} className="input h-10 w-full sm:w-28">
-            <option value="image">Ảnh</option>
-            <option value="video">Video</option>
-          </select>
-          <input value={mUrl} onChange={e=>setMUrl(e.target.value)} className="input h-10 flex-1 w-full" placeholder={mType==='image'? 'https://... (ảnh)' : 'https://... (video)'} />
-          <input value={mCaption} onChange={e=>setMCaption(e.target.value)} className="input h-10 flex-1 w-full" placeholder="Chú thích (tuỳ chọn)" />
-          <button type="button" className="btn h-10 whitespace-nowrap w-full sm:w-auto" onClick={()=>{
-            const url = mUrl.trim();
-            if(!url) return;
-            const next = [...media, { type: mType, url, caption: mCaption.trim()||undefined }];
-            if(next.length>20) { alert('Quá 20 media'); return; }
-            setMedia(next); setMUrl(''); setMCaption('');
-          }}>Thêm</button>
-        </div>
+        {/* Theo yêu cầu: bỏ trường URL khi thêm mới, ưu tiên upload từ thiết bị. Vẫn giữ input chú thích khi xem lại từng mục. */}
 
-        {/* Upload from device */}
+        {/* Upload từ thiết bị */}
         <div className="flex items-center gap-2">
           <input type="file" accept="image/*,video/*" multiple className="input h-10 p-2" onChange={async (e)=>{
             const files = Array.from(e.target.files||[]);

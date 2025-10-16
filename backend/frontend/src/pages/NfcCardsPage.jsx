@@ -140,9 +140,9 @@ export default function NfcCardsPage(){
             )}
           </div>
         </div>
-        {/* Memory linking removed per requirement - will be handled elsewhere */}
+  {/* Theo yêu cầu: bỏ chức năng liên kết memory từ trang NFC */}
 
-        {/* Primary memory selector removed */}
+  {/* Bỏ selector chọn primary memory */}
 
         {/* Profile form */}
         <div className="pt-2 border-t border-border space-y-3">

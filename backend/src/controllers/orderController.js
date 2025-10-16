@@ -43,6 +43,7 @@ export async function checkout(req, res, next) {
         name: i.productId.name,
         price: i.productId.price,
         quantity: i.quantity,
+        purpose: i.purpose || "nfc",
       }));
     const total = items.reduce((s, i) => s + i.price * i.quantity, 0);
     const order = await Order.create({

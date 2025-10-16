@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import api from '../lib/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import MemoryCard from '../components/MemoryCard.jsx';
@@ -52,7 +52,7 @@ export default function MemoriesPage(){
           <option value="newest">Mới nhất</option>
           <option value="oldest">Cũ nhất</option>
         </select>
-  <Link to="/memories/new" className="btn btn-primary h-10 px-5 whitespace-nowrap">Tạo mới</Link>
+        {/* Theo yêu cầu: bỏ nút tạo memories thủ công; memories sẽ được tạo tự động khi đơn hàng 'paid' với lựa chọn A */}
       </div>
     </div>
     <ErrorMessage error={error} />
@@ -67,7 +67,7 @@ export default function MemoriesPage(){
     </div>}
     {!loading && !filtered.length && (
       <div className="max-w-xl">
-        <EmptyState title="Chưa có memory" description="Hãy tạo memory đầu tiên của bạn." action={<Link to="/memories/new" className="btn btn-primary">Tạo memory</Link>} />
+        <EmptyState title="Chưa có memory" description="Sau khi thanh toán sản phẩm với lựa chọn 'Lưu trữ ảnh/video', hệ thống sẽ tự tạo trang memories để bạn chỉnh sửa và tải ảnh/video." />
       </div>
     )}
   </div>;
