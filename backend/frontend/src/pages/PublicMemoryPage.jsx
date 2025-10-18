@@ -15,6 +15,9 @@ export default function PublicMemoryPage({ standalone = false }){
   const [dragging, setDragging] = useState(false);
   const [dragStartX, setDragStartX] = useState(0);
   const [dragDX, setDragDX] = useState(0);
+  const visCanvasRef = useRef(null);
+  const tiltRef = useRef(null);
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(()=>{
     setLoading(true);
@@ -24,6 +27,7 @@ export default function PublicMemoryPage({ standalone = false }){
       .finally(()=> setLoading(false));
   },[slug]);
 
+  // Restore timeupdate -> progress for background audio
   useEffect(()=>{
     const a = audioRef.current;
     if(!a) return;
@@ -35,12 +39,71 @@ export default function PublicMemoryPage({ standalone = false }){
     return ()=> a.removeEventListener('timeupdate', onTime);
   },[data?.bgAudioUrl]);
 
+  // Audio visualizer when bgAudioUrl is present
+  useEffect(()=>{
+    if(!data?.bgAudioUrl) return;
+    const audioEl = audioRef.current;
+    const canvas = visCanvasRef.current;
+    if(!audioEl || !canvas) return;
+  // Ensure volume reasonable (do not force mute/unmute toggles)
+  try { if(audioEl.volume === 0) audioEl.volume = 1.0; } catch {}
+    let audioCtx, analyser, source, rafId;
+    const ctx = canvas.getContext('2d');
+    const DPR = window.devicePixelRatio || 1;
+
+    const resize = () => {
+      const w = canvas.clientWidth || 600; const h = canvas.clientHeight || 42;
+      if(canvas.width !== w*DPR || canvas.height !== h*DPR){ canvas.width = w*DPR; canvas.height = h*DPR; }
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    };
+    const draw = (dataArray) => {
+      resize(); const w = canvas.clientWidth; const h = canvas.clientHeight; ctx.clearRect(0,0,w,h);
+      const grad = ctx.createLinearGradient(0,0,w,0); grad.addColorStop(0,'#8b5cf6'); grad.addColorStop(0.5,'#22d3ee'); grad.addColorStop(1,'#60a5fa'); ctx.fillStyle = grad;
+      const barCount = dataArray.length; const barW = Math.max(2, Math.floor(w/(barCount*1.3))); let x = 10;
+      for(let i=0;i<barCount;i++){ const v = dataArray[i]/255; const barH = Math.max(4, v*(h-10)); const y = (h-barH)/2; const r = Math.min(6, barW/2);
+        ctx.beginPath(); ctx.moveTo(x, y+r); ctx.arcTo(x,y, x+r,y, r); ctx.lineTo(x+barW-r, y); ctx.arcTo(x+barW,y, x+barW,y+r, r);
+        ctx.lineTo(x+barW, y+barH-r); ctx.arcTo(x+barW,y+barH, x+barW-r,y+barH, r); ctx.lineTo(x+r, y+barH); ctx.arcTo(x,y+barH, x,y+barH-r, r);
+        ctx.closePath(); ctx.fill(); x += barW+6; }
+    };
+    let bufferLength, dataArray;
+    const setup = () => {
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        bufferLength = analyser.frequencyBinCount;
+        dataArray = new Uint8Array(bufferLength);
+        source = audioCtx.createMediaElementSource(audioEl);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination); // output via Web Audio graph
+        const loop = () => { analyser.getByteFrequencyData(dataArray); draw(dataArray); rafId = requestAnimationFrame(loop); };
+        loop();
+      } catch {}
+    };
+    const onPlay = async () => {
+      try {
+        if(!audioCtx || !source) setup();
+        if(audioCtx && audioCtx.state === 'suspended') await audioCtx.resume();
+      } catch {}
+    };
+    audioEl.addEventListener('play', onPlay);
+    const t = setTimeout(()=>{ if(!source && !audioEl.paused) setup(); }, 300);
+    return ()=>{ clearTimeout(t); audioEl.removeEventListener('play', onPlay); if(rafId) cancelAnimationFrame(rafId); try{ source&&source.disconnect(); analyser&&analyser.disconnect(); audioCtx&&audioCtx.close(); }catch{} };
+  },[data?.bgAudioUrl]);
+
   const firstImage = useMemo(()=> data?.coverImageUrl || data?.media?.find(m=> m.type==='image')?.url || null, [data]);
   const images = useMemo(()=> {
     const all = (data?.media||[]).filter(m=> m.type==='image');
     if(!data?.coverImageUrl) return all;
     return all.filter(m=> m.url !== data.coverImageUrl);
   }, [data]);
+
+  // Auto-play carousel every 5 seconds (pause during drag)
+  useEffect(()=>{
+    if(!images.length || data?.galleryStyle !== 'carousel') return;
+    const id = setInterval(()=>{ if(!dragging) setCurIdx(idx => (idx+1) % images.length); }, 5000);
+    return ()=> clearInterval(id);
+  }, [images.length, data?.galleryStyle, dragging]);
 
   // Nếu standalone: phủ toàn màn hình, tự có nền, không navbar/footer của site
   return (
@@ -64,8 +127,14 @@ export default function PublicMemoryPage({ standalone = false }){
               {/* Nội dung */}
               <div className="p-6 md:p-10">
                 {/* Ảnh preview lớn nếu có */}
-                <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden border border-black/10 bg-white/70 dark:bg-white/5">
-                  <div className="aspect-video grid place-items-center">
+                <div ref={tiltRef} className="max-w-3xl mx-auto rounded-2xl overflow-hidden border border-black/10 bg-white/70 dark:bg-white/5 tb-tilt"
+                     onMouseMove={(e)=>{
+                       const el = tiltRef.current; if(!el) return; const r = el.getBoundingClientRect();
+                       const x = (e.clientX - r.left)/r.width; const y = (e.clientY - r.top)/r.height;
+                       const rx = (0.5 - y) * 6; const ry = (x - 0.5) * 8; el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+                     }}
+                     onMouseLeave={()=>{ const el = tiltRef.current; if(el) el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; }}>
+                  <div className="aspect-video grid place-items-center tb-kenburns">
                     {firstImage ? (
                       <img loading="lazy" src={firstImage} alt={data.title} className="w-full h-full object-cover" />
                     ) : (
@@ -74,15 +143,18 @@ export default function PublicMemoryPage({ standalone = false }){
                   </div>
                   {/* Player thật cho nhạc nền (nếu có) */}
                   {data?.bgAudioUrl && (
-                    <div className="px-5 py-3 border-t border-black/10 bg-white/70 dark:bg-white/5 flex items-center gap-3">
-                      <button
-                        onClick={()=>{ const a = audioRef.current; if(!a) return; if(a.paused){ a.play(); setPlaying(true);} else { a.pause(); setPlaying(false);} }}
-                        className="w-9 h-9 rounded-full bg-white border border-black/10 grid place-items-center text-gray-700 dark:text-gray-300"
-                        aria-label={playing? 'Tạm dừng':'Phát'}
-                      >{playing? '❚❚':'▶'}</button>
-                      <input type="range" min="0" max="100" value={progress} onChange={(e)=>{ const a = audioRef.current; if(!a || !a.duration) return; const v = Number(e.target.value); setProgress(v); a.currentTime = (v/100)*a.duration; }} className="flex-1 h-2 rounded-full accent-indigo-500" />
-                      <div className="text-lg">🎵</div>
-                      <audio ref={audioRef} src={data.bgAudioUrl} autoPlay loop onPlay={()=>setPlaying(true)} onPause={()=>setPlaying(false)} />
+                    <div className="px-5 py-3 border-t border-black/10 bg-white/70 dark:bg-white/5">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={()=>{ const a = audioRef.current; if(!a) return; if(a.paused){ a.play(); setPlaying(true);} else { a.pause(); setPlaying(false);} }}
+                          className="w-9 h-9 rounded-full bg-white border border-black/10 grid place-items-center text-gray-700 dark:text-gray-300"
+                          aria-label={playing? 'Tạm dừng':'Phát'}
+                        >{playing? '❚❚':'▶'}</button>
+                        <input type="range" min="0" max="100" value={progress} onChange={(e)=>{ const a = audioRef.current; if(!a || !a.duration) return; const v = Number(e.target.value); setProgress(v); a.currentTime = (v/100)*a.duration; }} className="flex-1 h-2 rounded-full accent-indigo-500" />
+                        <div className="text-lg">🎵</div>
+                        <audio ref={audioRef} src={data.bgAudioUrl} crossOrigin="anonymous" autoPlay loop onPlay={()=>setPlaying(true)} onPause={()=>setPlaying(false)} />
+                      </div>
+                      <div className="mt-2"><canvas ref={visCanvasRef} className="tb-visualizer" /></div>
                     </div>
                   )}
                 </div>
@@ -184,11 +256,15 @@ export default function PublicMemoryPage({ standalone = false }){
                   <div className="max-w-xl mx-auto text-center text-[13px] md:text-sm text-gray-700 dark:text-gray-300">
                     Tạo ký ức lưu trữ của riêng bạn tại đây
                   </div>
-                  <div className="mt-3 flex justify-center">
+                  <div className="mt-3 flex justify-center gap-3">
                     <a href="/" className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-medium shadow-lg hover:brightness-110 transition">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
                       <span>Về trang chủ TouchBack</span>
                     </a>
+                    <button onClick={()=> setShowQR(true)} className="btn-share">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h3v3h-3v-3zm5 0h3v3h-3v-3zm-5 5h3v3h-3v-3zm5 0h3v3h-3v-3z" fill="currentColor"/></svg>
+                      Chia sẻ
+                    </button>
                   </div>
                 </div>
               </div>
@@ -199,6 +275,18 @@ export default function PublicMemoryPage({ standalone = false }){
           </div>
         )}
       </div>
+      {showQR && (
+        <div className="tb-modal-backdrop" onClick={()=> setShowQR(false)}>
+          <div className="tb-modal-card" onClick={(e)=> e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-3">Quét để mở kỷ niệm</h3>
+            <img className="mx-auto rounded-lg" src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(window.location.href)}`} alt="QR" />
+            <div className="mt-4 flex justify-between gap-2">
+              <button className="btn btn-sm" onClick={()=> navigator.clipboard.writeText(window.location.href)}>Sao chép link</button>
+              <button className="btn btn-sm" onClick={()=> setShowQR(false)}>Đóng</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
