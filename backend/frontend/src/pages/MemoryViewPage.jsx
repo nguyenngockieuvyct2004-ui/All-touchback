@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import api from '../lib/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import { MemoryCardSkeleton } from '../components/Skeleton.jsx';
 
 export default function MemoryViewPage(){
   const { id } = useParams();
+  const navigate = useNavigate();
   const [memory,setMemory] = useState(null);
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState('');
@@ -25,7 +26,20 @@ export default function MemoryViewPage(){
     {!loading && memory && <div className="panel space-y-6">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight gradient-text">{memory.title}</h1>
-        <Link to={`/memories/${id}/edit`} className="btn btn-outline btn-sm">Sửa</Link>
+        <div className="flex items-center gap-2">
+          {memory.slug && (
+            <a href={`/pm/${memory.slug}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Xem public</a>
+          )}
+          <Link to={`/memories/${id}/edit`} className="btn btn-outline btn-sm">Sửa</Link>
+          <button
+            className="btn btn-outline btn-sm"
+            onClick={async ()=>{
+              if(!confirm('Xoá kỷ niệm này?')) return;
+              try{ await api.delete(`/memories/${id}`); navigate('/memories'); }
+              catch(e){ alert(e.response?.data?.message || 'Xoá thất bại'); }
+            }}
+          >Xoá</button>
+        </div>
       </div>
       <div className="prose prose-sm max-w-none dark:prose-invert leading-relaxed whitespace-pre-wrap">
         {memory.description ?? memory.content}

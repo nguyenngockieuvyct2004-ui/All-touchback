@@ -2,7 +2,7 @@ import { Schema, model, Types } from "mongoose";
 
 const mediaSchema = new Schema(
   {
-    type: { type: String, enum: ["image", "video"], required: true },
+    type: { type: String, enum: ["image", "video", "audio"], required: true },
     url: { type: String, required: true },
     caption: String,
   },
@@ -16,9 +16,17 @@ const memorySchema = new Schema(
     // Nếu memory được tạo tự động từ đơn hàng
     orderId: { type: Types.ObjectId, ref: "Order" },
     productId: { type: Types.ObjectId, ref: "Product" },
+    // Slug public để chia sẻ như /m/:slug
+    slug: { type: String, unique: true, index: true },
     title: { type: String, required: true },
     description: String,
     media: [mediaSchema],
+    // Ảnh bìa hiển thị ở đầu trang public (không lặp lại trong gallery)
+    coverImageUrl: String,
+    // Nhạc nền trang public (tệp audio đã upload)
+    bgAudioUrl: String,
+    // Cách hiển thị gallery trên trang public
+    galleryStyle: { type: String, enum: ["grid", "carousel"], default: "grid" },
     tags: [String],
     isPublic: { type: Boolean, default: true },
   },

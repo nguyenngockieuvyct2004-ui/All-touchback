@@ -41,6 +41,12 @@ const upload = multer({
       "video/mp4",
       "video/webm",
       "video/ogg",
+      // Cho phép audio làm nhạc nền
+      "audio/mpeg",
+      "audio/mp3",
+      "audio/ogg",
+      "audio/wav",
+      "audio/webm",
     ];
     if (allowed.includes(file.mimetype)) cb(null, true);
     else cb(new Error("Unsupported file type"));
@@ -53,7 +59,11 @@ router.post("/", authRequired, upload.array("files"), (req, res) => {
   const baseUrl = `${req.protocol}://${req.get("host")}`;
   const files = (req.files || []).map((f) => ({
     url: `${baseUrl}/uploads/${f.filename}`,
-    type: f.mimetype.startsWith("image/") ? "image" : "video",
+    type: f.mimetype.startsWith("image/")
+      ? "image"
+      : f.mimetype.startsWith("video/")
+      ? "video"
+      : "audio",
     originalName: f.originalname,
     size: f.size,
   }));

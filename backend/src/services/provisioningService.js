@@ -20,11 +20,13 @@ export async function provisionCardsForOrder(order) {
     for (let i = 0; i < quantity; i++) {
       const purpose = item.purpose || "nfc";
       if (purpose === "memory") {
+        const slug = generateSlug();
         // Tạo sẵn 1 Memory trống để khách vào /memories sửa nội dung
         const memory = await Memory.create({
           userId: order.userId,
           orderId: order._id,
           productId: item.productId,
+          slug,
           title: `${product?.name || "Bộ nhớ"} #${i + 1}`,
           description: "",
           media: [],

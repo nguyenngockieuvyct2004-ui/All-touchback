@@ -78,3 +78,20 @@ export async function getPublicCardVcard(req, res) {
   );
   res.send(vcf);
 }
+
+export async function getPublicMemory(req, res) {
+  const slug = req.params.slug;
+  const m = await Memory.findOne({ slug, isPublic: true }).lean();
+  if (!m) return res.status(404).json({ message: "Not found" });
+  // Trả về dữ liệu tối thiểu để render public page
+  res.json({
+    title: m.title,
+    description: m.description ?? m.content ?? "",
+    media: m.media || [],
+    coverImageUrl: m.coverImageUrl || null,
+    bgAudioUrl: m.bgAudioUrl || null,
+    galleryStyle: m.galleryStyle || "grid",
+    createdAt: m.createdAt,
+    updatedAt: m.updatedAt,
+  });
+}

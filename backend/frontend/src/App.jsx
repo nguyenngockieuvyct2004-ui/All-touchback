@@ -103,8 +103,10 @@ export default function App(){
     <Route path="/change-password" element={<Layout><ProtectedRoute><PageWrapper><ChangePasswordPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/chat" element={<Layout><ProtectedRoute><PageWrapper><ChatPage /></PageWrapper></ProtectedRoute></Layout>} />
         <Route path="/orders" element={<Layout><ProtectedRoute><PageWrapper><MyOrdersPage /></PageWrapper></ProtectedRoute></Layout>} />
-        <Route path="/m/:slug" element={<Layout><PageWrapper><PublicMemoryPage /></PageWrapper></Layout>} />
-        <Route path="/c/:slug" element={<Layout><PageWrapper><PublicCardPage /></PageWrapper></Layout>} />
+  {/* Public: thẻ danh thiếp (giữ nguyên layout) */}
+  <Route path="/c/:slug" element={<Layout><PageWrapper><PublicCardPage /></PageWrapper></Layout>} />
+  {/* Public: memory full-screen, không navbar/footer */}
+  <Route path="/pm/:slug" element={<PublicMemoryPage standalone />} />
 
         <Route path="*" element={<Layout><NotFound /></Layout>} />
       </Routes>

@@ -20,6 +20,21 @@ export default function MemoryCard({ memory }){
         }}
       />
 
+      {/* Nút mở trang public /pm/:slug (nếu có) */}
+      {memory.slug && (
+        <a
+          href={`/pm/${memory.slug}`}
+          onClick={(e)=> e.stopPropagation()}
+          target="_blank"
+          rel="noreferrer"
+          title="Xem trang kỷ niệm công khai"
+          className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 h-7 rounded-md border border-black/10 dark:border-white/10 bg-white/80 dark:bg-gray-900/70 text-[11px] text-gray-800 dark:text-gray-200 hover:bg-white/90 backdrop-blur-sm"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span>Public</span>
+        </a>
+      )}
+
       {/* Decorative emoji badge */}
       <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 shadow-sm flex items-center justify-center text-base pointer-events-none select-none" aria-hidden>
         {emoji}

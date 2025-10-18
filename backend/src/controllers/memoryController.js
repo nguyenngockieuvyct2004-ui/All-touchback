@@ -1,8 +1,10 @@
 import Memory from "../models/Memory.js";
 import Joi from "joi";
+import { generateSlug } from "../utils/generateSlug.js";
 
 const mediaItem = Joi.object({
-  type: Joi.string().valid("image", "video").required(),
+  // Thêm 'audio' để làm nhạc nền trong public page
+  type: Joi.string().valid("image", "video", "audio").required(),
   url: Joi.string().uri().required(),
   caption: Joi.string().allow("", null),
 });
@@ -11,6 +13,9 @@ const createSchema = Joi.object({
   title: Joi.string().min(1).required(),
   description: Joi.string().allow("", null),
   media: Joi.array().items(mediaItem).max(20).default([]),
+  coverImageUrl: Joi.string().uri().allow("", null),
+  bgAudioUrl: Joi.string().uri().allow("", null),
+  galleryStyle: Joi.string().valid("grid", "carousel").default("grid"),
   tags: Joi.array().items(Joi.string().min(1)).max(15).default([]),
   isPublic: Joi.boolean().default(true),
   cardId: Joi.string().optional(),
@@ -32,6 +37,7 @@ export async function createMemory(req, res, next) {
     const data = await createSchema.validateAsync(req.body, {
       stripUnknown: true,
     });
+    if (!data.slug) data.slug = generateSlug();
     const memory = await Memory.create({ ...data, userId: req.user.id });
     res.status(201).json(memory);
   } catch (e) {
@@ -54,6 +60,15 @@ export async function updateMemory(req, res, next) {
     const data = await partialSchema.validateAsync(req.body, {
       stripUnknown: true,
     });
+    // Nếu memory chưa có slug (cũ), tự gán slug mới để chia sẻ công khai
+    const prev = await Memory.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+    if (!prev) return res.status(404).json({ message: "Not found" });
+    if (!prev.slug) {
+      data.slug = generateSlug();
+    }
     const updated = await Memory.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
       data,

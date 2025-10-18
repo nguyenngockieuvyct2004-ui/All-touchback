@@ -61,7 +61,7 @@ export default function MemoriesPage(){
       {filtered.map(m=> (
         <div key={m._id||m.id} className="relative group">
           <MemoryCard memory={m} />
-          <button onClick={()=>onDelete(m._id||m.id)} className="opacity-0 group-hover:opacity-100 transition absolute top-3 right-3 btn btn-outline btn-sm">Xoá</button>
+          {/* Theo yêu cầu: bỏ nút Xoá ở danh sách */}
         </div>
       ))}
     </div>}
