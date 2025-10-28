@@ -1,94 +1,129 @@
-import React from 'react';
+import React, { useState } from 'react';
+
+const TEAM = [
+  { id: 1, name: 'Nhật Quang', role: 'Giám đốc Marketing (CMO)', img: '/uploads/nhat-quang.jpg', bio: 'Chịu trách nhiệm chiến lược marketing và truyền thông, kết nối cộng đồng.' },
+  { id: 2, name: 'Hoàng Minh', role: 'Giám đốc Thiết kế (DD)', img: '/uploads/hoang-minh.jpg', bio: 'Lãnh đạo thiết kế, chịu trách nhiệm trải nghiệm người dùng và thẩm mỹ sản phẩm.' },
+  { id: 3, name: 'Minh Huy', role: 'Giám đốc Điều hành (CEO)', img: '/uploads/minh-huy.jpg', bio: 'Điều hành hoạt động hàng ngày và đảm bảo tầm nhìn sản phẩm được thực hiện.' },
+  { id: 4, name: 'Mỹ Hằng', role: 'Giám đốc Sản phẩm (CPO)', img: '/uploads/my-hang.jpg', bio: 'Quản lý lộ trình sản phẩm và ưu tiên tính năng theo nhu cầu người dùng.' },
+  { id: 5, name: 'Kiều Vy', role: 'Giám đốc Tài chính (CFO)', img: '/uploads/kieu-vy.jpg', bio: 'Quản lý tài chính, ngân sách và chiến lược phát triển bền vững.' }
+];
 
 export default function AboutPage(){
+  const [openBio, setOpenBio] = useState(null);
   return (
     <div className="page">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Hero */}
-      <section className="mt-2">
-        <div className="hero">
-          <div className="hero-inner text-left">
-            <div className="hero-glow" />
-            <div className="max-w-3xl">
-              <p className="uppercase tracking-wider text-xs text-gray-500 dark:text-gray-400">About Us – NFC Memory</p>
-              <h1 className="mt-2 text-3xl md:text-4xl font-semibold text-gray-900 dark:text-white" style={{fontFamily:'var(--font-display, ui-serif)'}}>A touch that brings memories home.</h1>
-              <p className="mt-3 text-gray-600 dark:text-gray-300">Where technology remembers what your heart holds.</p>
-              <p className="mt-4 text-sm italic text-gray-500 dark:text-gray-400">(nằm trong banner hologram)</p>
+      <section className="mt-6">
+        <div className="rounded-lg overflow-hidden shadow-lg bg-gradient-to-r from-amber-50 to-white dark:from-gray-900 dark:to-gray-800">
+          <div className="px-6 py-12">
+            <div className="max-w-4xl mx-auto space-y-4 flex flex-col items-center text-center">
+              <p className="uppercase tracking-wider text-xs text-gray-500 dark:text-gray-400">Giới thiệu · NFC Memory</p>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight inline-block max-w-3xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>Một chạm — ký ức trở về</h1>
+                <p className="text-lg md:text-xl leading-relaxed max-w-prose text-gray-600 dark:text-gray-300">Lưu giữ khoảnh khắc quý giá. Gặp lại ký ức bằng một chạm — riêng tư, nhẹ nhàng và bền vững.</p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <a href="/create" className="inline-block bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-md shadow">Tạo ký ức</a>
+                <a href="/contact" className="inline-block border border-amber-200 hover:bg-amber-50 text-amber-700 px-4 py-2 rounded-md">Liên hệ</a>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Story and mission */}
-      <section className="section grid gap-10 md:grid-cols-2">
-        <div className="space-y-4">
-          <h2 className="text-2xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>Mục đích của trang</h2>
-          <p>Trang Giới thiệu của chúng tôi không chỉ nói về một thương hiệu, mà kể lại hành trình của một ký ức được tìm thấy giữa cơn mưa. NFC Memory được tạo ra để người ta nhớ rằng: Có những điều nhỏ bé nhưng vô giá – ký ức, cảm xúc, và những người ta từng yêu thương.</p>
-          <h3 className="text-xl mt-6" style={{fontFamily:'var(--font-display, ui-serif)'}}>1. Thông tin cơ bản</h3>
-          <p className="font-semibold">Giới thiệu doanh nghiệp</p>
-          <p>NFC Memory là dự án công nghệ cảm xúc – nơi mỗi chiếc thẻ NFC trở thành một “cánh cửa” mở ra thế giới ký ức riêng của bạn. Chỉ cần một cú chạm, hình ảnh, video, âm thanh, lời nhắn… sẽ hiện ra, như thể ký ức vẫn đang sống ở đó – lặng lẽ và dịu dàng. Mỗi chiếc thẻ không chỉ lưu trữ dữ liệu, mà lưu giữ cảm xúc, để khi ký ức lạc mất, nó vẫn biết đường quay về.</p>
-
-          <p className="font-semibold mt-4">Lịch sử hình thành</p>
-          <p> Câu chuyện bắt đầu từ một buổi chiều mưa ở trạm xe buýt. Hôm ấy, là một buổi chiều bình thường… Tôi ngồi ở trạm xe bus, tay cầm chiếc ví nhỏ, bên trong là vài tấm ảnh cũ. Ảnh tôi và bà – người đã mất cách đây 2 năm. Tôi vẫn giữ thói quen mang nó theo, như thể chỉ cần có tấm ảnh, bà vẫn ở cạnh mình. Nhưng chỉ một giây bất cẩn thôi… Chiếc ví rơi lại trên băng ghế, giữa tiếng mưa và dòng người vội vã. Tôi quay lại tìm, nhưng chẳng còn thấy nó nữa. Thứ duy nhất còn lại là cảm giác trống rỗng đến nghẹt thở. Mất một món đồ thì có thể mua lại. Nhưng mất ký ức… thì biết tìm ở đâu?</p>
-          <p>Vài ngày sau, có người lạ gửi tin nhắn cho tôi: “Tôi nhặt được ví của bạn và tôi muốn gửi trả nó về cho bạn.” Khoảnh khắc ấy, tôi bật khóc. Không phải vì được trả chiếc ví mà tôi hy vọng tấm ảnh của tôi và bà đã trở về lại cạnh tôi. Nhưng trớ trêu thay khi nhận lại được ví thì chiếc ảnh đã nhoè đi và rách vài chỗ bởi cơn mưa ngày hôm đó. Từ giây phút đó, tôi tự hỏi: Nếu có một cách để mỗi ký ức đều có “định danh” riêng, một cách để bất kỳ ai khi chạm vào - đều có thể cảm nhận được câu chuyện bên trong… thì sẽ ra sao? Và thế là, NFC Memory ra đời.</p>
-          <blockquote className="p-4 rounded-lg bg-amber-50/80 dark:bg-gray-800 border border-amber-100 dark:border-gray-700">
-            <p className="font-medium">“Khi ký ức biết tìm về, công nghệ không còn là thứ lạnh lẽo mà là cầu nối của cảm xúc.”</p>
-          </blockquote>
+      {/* Alternate sections: Mission + Story with images */}
+      <section className="section mt-8">
+        {/* Hero-like feature with image on right */}
+        <div className="grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h2 className="text-3xl md:text-4xl font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>Về chúng tôi</h2>
+            <p className="mt-3 text-gray-600 dark:text-gray-300">NFC Memory biến công nghệ thành nơi lưu giữ cảm xúc — nhẹ nhàng, riêng tư và dễ dùng.</p>
+          </div>
+          <div className="hidden md:block">
+              <img src="/assets/about-hero.jpg" alt="About hero" className="w-full rounded-md object-cover h-64 md:h-[260px] lg:h-[320px] transform-gpu transition-transform transition-shadow duration-300 ease-out hover:scale-105 hover:shadow-xl" />
+          </div>
         </div>
 
-        <div className="space-y-4">
-          <h3 className="text-xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>2. Định hướng và giá trị</h3>
-          <p className="font-semibold">Sứ mệnh</p>
-          <p>Chúng tôi muốn biến công nghệ thành cầu nối giữa con người và ký ức. Để mỗi người có thể lưu giữ, chạm lại và sẻ chia những điều quý giá – không qua những phím bấm phức tạp, mà bằng một cú chạm giản đơn.</p>
-          <p className="font-semibold">Tầm nhìn</p>
-          <p>Trở thành nền tảng lưu trữ ký ức số nhân văn nơi công nghệ không làm phai mờ cảm xúc, mà giúp nó được lưu lại bền lâu.</p>
-          <p className="font-semibold">Giá trị cốt lõi</p>
-          <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-            <li>Cảm xúc: Mỗi chiếc thẻ là một câu chuyện.</li>
-            <li>Nhân văn: Mọi công nghệ đều nên bắt đầu từ trái tim.</li>
-            <li>Bảo mật: Ký ức của bạn – chỉ thuộc về bạn.</li>
-            <li>Tối giản: Một cú chạm – ngàn cảm xúc.</li>
-            <li>Chân thật: Chúng tôi không làm công nghệ để phô diễn, mà để sẻ chia.</li>
-          </ul>
-          <p className="font-semibold">Phương châm hoạt động</p>
-          <p>“Chúng tôi không bán thẻ NFC. Chúng tôi gửi đi những mảnh ký ức – để ai đó có thể tìm lại chính mình.”</p>
+        {/* Mission block: image left, text right */}
+        <div className="mt-12 grid gap-8 md:grid-cols-2 items-center">
+            <div className="order-2 md:order-1">
+        <img src="/assets/mission.jpg" alt="Mission" className="w-full rounded-lg shadow-md object-cover h-80 md:h-[480px] lg:h-[560px] transform-gpu transition-transform duration-300 ease-out hover:scale-105 hover:shadow-2xl" />
+          </div>
+          <div className="order-1 md:order-2">
+            <h3 className="text-2xl md:text-3xl font-semibold">Sứ mệnh</h3>
+            <p className="mt-3 text-gray-600 dark:text-gray-300">Biến công nghệ thành cầu nối cảm xúc. Mọi người có thể lưu và chia sẻ ký ức bằng một chạm.</p>
+            <ul className="mt-3 list-disc list-inside text-gray-700 dark:text-gray-300">
+              <li>Cảm xúc là trọng tâm</li>
+              <li>Bảo mật từ thiết kế</li>
+              <li>Tối giản và ấm áp</li>
+            </ul>
+          </div>
         </div>
-      </section>
 
-      {/* Team, contact, partners */}
-      <section className="section">
-        <div className="grid gap-10 md:grid-cols-3">
-          <div className="card">
-            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>3. Đội ngũ nhân sự</h3>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">NFC Memory được tạo nên bởi nhóm bạn trẻ đến từ Cần Thơ, những người tin rằng công nghệ có thể có trái tim. Chúng tôi là những kẻ mộng mơ giữa thế giới số - người kể chuyện, nhà thiết kế, lập trình viên - cùng chung một niềm tin rằng: Cảm xúc là ngôn ngữ phổ quát nhất mà công nghệ có thể nói được. Chúng tôi làm việc không chỉ để tạo ra sản phẩm, mà để mỗi thẻ NFC ra đời đều mang hơi ấm của con người - một chút hoài niệm, một chút dịu dàng, và rất nhiều yêu thương.</p>
+        {/* Story block: text left, image right */}
+        <div className="mt-12 grid gap-8 md:grid-cols-2 items-center">
+          <div>
+            <h3 className="text-2xl md:text-3xl font-semibold">Câu chuyện</h3>
+            <p className="mt-3 text-gray-600 dark:text-gray-300">Lấy cảm hứng từ khoảnh khắc một bức ảnh bị mất không thể khôi phục, chúng tôi tạo ra NFC Memory để ký ức có thể được lưu giữ an toàn và dễ chia sẻ.</p>
+            <details className="mt-3 text-sm text-gray-700 dark:text-gray-300">
+              <summary className="cursor-pointer font-medium">Đọc câu chuyện đầy đủ</summary>
+              <div className="mt-2">
+                <p>Sáng lập viên đã từng làm mất ví vào một ngày mưa — bên trong có một tấm ảnh quý giá. Khi nhận lại, bức ảnh đã bị hư hỏng; khoảnh khắc đó đã thôi thúc ý tưởng: tạo cho ký ức một "định danh" kỹ thuật số để nó không bị mất mát theo thời gian. Chúng tôi xây dựng NFC Memory để những ký ức ấy luôn có thể chạm tới — nhẹ nhàng, riêng tư và dễ dùng.</p>
+              </div>
+            </details>
           </div>
-          <div className="card">
-            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>4. Thông tin liên hệ</h3>
-            <ul className="mt-3 space-y-1 text-gray-700 dark:text-gray-300">
-              <li>📍 Trụ sở: Thành phố Cần Thơ, Việt Nam</li>
-              <li>💌 Email: contact@nfcmemory.vn</li>
-              <li>🌐 Website: www.nfcmemory.vn</li>
-              <li>📞 Hotline: 090x xxx xxx</li>
-            </ul>
-            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Mọi hành trình đều bắt đầu từ một ký ức nhỏ. Hãy kể cho chúng tôi nghe câu chuyện của bạn.</p>
-          </div>
-          <div className="card">
-            <h3 className="text-lg font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>5. Đối tác & đồng hành</h3>
-            <p className="mt-2 text-gray-600 dark:text-gray-300">Chúng tôi đồng hành cùng những người trẻ, những đơn vị sáng tạo và những thương hiệu tin vào cảm xúc.</p>
-            <ul className="mt-3 list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-              <li>Studio ảnh cưới & quà tặng cá nhân hóa – nơi ký ức được tái hiện qua từng tấm hình.</li>
-              <li>Nhà thiết kế trẻ & đơn vị in ấn – nơi những ý tưởng mỏng manh trở thành hiện thực.</li>
-              <li>Cộng đồng công nghệ NFC/AR/VR – cùng nhau làm nên trải nghiệm ký ức sống động.</li>
-            </ul>
+            <div>
+              <img src="/assets/story.jpg" alt="Story" className="w-full rounded-lg shadow-md object-cover h-80 md:h-[480px] lg:h-[560px] transform-gpu transition-transform duration-300 ease-out hover:scale-105 hover:shadow-2xl" />
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="panel">
-          <p className="text-center max-w-3xl mx-auto text-lg md:text-xl font-medium">
-            “Một ngày nào đó, khi bạn chạm vào chiếc thẻ nhỏ ấy, và thấy ký ức trở về - bạn sẽ hiểu vì sao chúng tôi tồn tại.”
-            <span className="block mt-2 text-sm text-gray-500">– NFC Memory</span>
-          </p>
+      {/* Team */}
+      <section className="section mt-8">
+        <div className="bg-white dark:bg-gray-900 rounded-lg shadow p-6">
+          <h3 className="text-lg font-semibold mb-2" style={{fontFamily:'var(--font-display, ui-serif)'}}>Đội ngũ</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Đội ngũ nhỏ từ Cần Thơ — nhà thiết kế, người kể chuyện và kỹ sư — cùng xây dựng công nghệ ấm áp để giữ gìn ký ức.</p>
+
+          <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            {TEAM.map(member => (
+              <div key={member.id} className="relative group">
+                <button
+                  type="button"
+                  onClick={() => setOpenBio(openBio === member.id ? null : member.id)}
+                  className="w-full text-left p-3 rounded-md hover:bg-amber-50 dark:hover:bg-gray-800 transition transform-gpu hover:scale-102 hover:shadow-md"
+                >
+                  <div className="flex flex-col items-center">
+                    <img src={member.img} alt={member.name} className="w-20 h-20 rounded-full object-cover shadow-md" />
+                    <div className="mt-3 font-medium">{member.name}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{member.role}</div>
+                  </div>
+                </button>
+
+                {/* Desktop tooltip */}
+                <div className="hidden md:block pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200 absolute left-1/2 transform -translate-x-1/2 -top-2 -translate-y-full w-56 p-3 rounded-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-lg text-left text-sm">
+                  <div className="font-medium">{member.name}</div>
+                  <div className="mt-1 text-gray-600 dark:text-gray-300">{member.bio}</div>
+                </div>
+
+                {/* Mobile expandable bio */}
+                {openBio === member.id && (
+                  <div className="md:hidden mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300">{member.bio}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      
+
+  </div>
+
+  <section className="section mt-8">
+        <div className="panel p-6 text-center">
+          <p className="text-lg md:text-xl font-medium">Sẵn sàng để ký ức tìm về tổ ấm?</p>
+          <div className="mt-4">
+            <a href="/create" className="inline-block bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-md">Tạo ký ức</a>
+          </div>
         </div>
       </section>
     </div>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../lib/api.js';
+import { toast } from '../lib/toast.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import EmptyState from '../components/EmptyState.jsx';
 
 export default function NfcCardsPage(){
   const [cards,setCards] = useState([]);
+  const [userProfile, setUserProfile] = useState(null);
   // Memory selection will be handled elsewhere per request
   const [error,setError] = useState('');
   const [creating,setCreating] = useState(false); // deprecated: auto-provisioned on paid
@@ -13,12 +15,55 @@ export default function NfcCardsPage(){
   const [loadingMem, setLoadingMem] = useState({}); // {cardId: boolean}
   const [uploadingAvatar, setUploadingAvatar] = useState({}); // {cardId: boolean}
   const [lastSaved, setLastSaved] = useState({}); // {cardId: timestamp}
+  const [highlightedCards, setHighlightedCards] = useState({});
+
+  function inputClass(cardId){
+    return highlightedCards[cardId] ? 'ring-2 ring-emerald-300 animate-pulse' : '';
+  }
 
   useEffect(()=>{
-    api.get('/nfc').then(async r=>{
-      const list = r.data||[]; setCards(list);
-      // We no longer prefetch memories for cards here
-    }).catch(()=>{});
+    let mounted = true;
+    async function load(){
+      try{
+        const r = await api.get('/nfc');
+        const list = r.data || [];
+        // Try to fetch the user's saved profile and use it to prefill card profiles
+        try{
+          const pr = await api.get('/auth/me/profile');
+          const user = pr.data || {};
+          const fetchedProfile = user.profile || {
+            avatar: '', cover: '', name: user.name || '', title: '', company: '', phone: '', email: user.email || '', website: '', address: '', socials: []
+          };
+          // store for later use by prefill button
+          setUserProfile(fetchedProfile);
+          const merged = list.map(card => {
+            const cp = card.profile || {};
+            return {
+              ...card,
+              profile: {
+                avatar: cp.avatar || fetchedProfile.avatar || '',
+                cover: cp.cover || fetchedProfile.cover || '',
+                name: cp.name || fetchedProfile.name || '',
+                title: cp.title || fetchedProfile.title || '',
+                company: cp.company || fetchedProfile.company || '',
+                phone: cp.phone || fetchedProfile.phone || '',
+                email: cp.email || fetchedProfile.email || '',
+                website: cp.website || fetchedProfile.website || '',
+                address: cp.address || fetchedProfile.address || '',
+                socials: (cp.socials && cp.socials.length) ? cp.socials : (fetchedProfile.socials || [])
+              }
+            };
+          });
+          if(mounted) setCards(merged);
+        }catch(e){
+          if(mounted) setCards(list);
+        }
+      }catch(e){
+        // ignore
+      }
+    }
+    load();
+    return ()=>{ mounted = false; };
   },[]);
 
   // Card creation is now automatic when order status becomes 'paid'
@@ -27,6 +72,58 @@ export default function NfcCardsPage(){
 
   function updateLocalCard(id, patch){
     setCards(cs=> cs.map(c=> (c._id===id ? { ...c, ...patch } : c)));
+  }
+  
+  async function prefillFromProfile(cardId){
+    try{
+      let profile = userProfile;
+      if(!profile){
+        const pr = await api.get('/auth/me/profile');
+        const user = pr.data || {};
+        profile = user.profile || { avatar:'', cover:'', name:user.name||'', title:'', company:'', phone:'', email:user.email||'', website:'', address:'', socials:[] };
+        setUserProfile(profile);
+      }
+
+      // build the updated card and update local state
+      let updatedCard = null;
+      setCards(cs => cs.map(c => {
+        if(c._id !== cardId) return c;
+        const cp = c.profile || {};
+        const merged = {
+          ...c,
+          profile: {
+            avatar: cp.avatar || profile.avatar || '',
+            cover: cp.cover || profile.cover || '',
+            name: cp.name || profile.name || '',
+            title: cp.title || profile.title || '',
+            company: cp.company || profile.company || '',
+            phone: cp.phone || profile.phone || '',
+            email: cp.email || profile.email || '',
+            website: cp.website || profile.website || '',
+            address: cp.address || profile.address || '',
+            socials: (cp.socials && cp.socials.length) ? cp.socials : (profile.socials || [])
+          }
+        };
+        updatedCard = merged;
+        return merged;
+      }));
+
+      // highlight updated card fields briefly
+      setHighlightedCards(h => ({ ...h, [cardId]: true }));
+      setTimeout(()=> setHighlightedCards(h => { const n = { ...(h||{}) }; delete n[cardId]; return n; }), 2200);
+
+      // Ask user for confirmation before auto-saving
+      const confirmSave = window.confirm('Áp thông tin từ hồ sơ vào biểu mẫu. Bạn có muốn lưu tự động các thay đổi lên server?');
+      if (confirmSave){
+        const ok = await saveProfile(updatedCard);
+        if (ok) toast.success('Đã áp hồ sơ và lưu vào thẻ');
+        else toast.error('Lưu tự động thất bại');
+      } else {
+        toast.success('Đã cập nhật từ hồ sơ thành công');
+      }
+    }catch(e){
+      toast.error('Không thể lấy hồ sơ người dùng');
+    }
   }
 
   function onProfileFieldChange(cardId, path, value){
@@ -110,7 +207,8 @@ export default function NfcCardsPage(){
       const r = await api.put(`/nfc/${card._id}`, payload);
       updateLocalCard(card._id, r.data);
       setLastSaved(s=> ({ ...s, [card._id]: Date.now() }));
-    }catch(e){ setError(e.response?.data?.message || 'Lưu profile thất bại'); }
+      return true;
+    }catch(e){ setError(e.response?.data?.message || 'Lưu profile thất bại'); return false; }
     finally{ setSavingProfileId(null); }
   }
 
@@ -154,6 +252,7 @@ export default function NfcCardsPage(){
               <div className="absolute bottom-2 right-2 flex gap-2">
                 {card.profile?.cover && <button type="button" onClick={()=> { onProfileFieldChange(card._id,'profile.cover',''); }} className="btn btn-outline btn-sm">Xoá</button>}
                 <button type="button" onClick={()=>uploadCover(card)} className="btn btn-outline btn-sm" disabled={!!uploadingAvatar['cover_'+card._id]}>{uploadingAvatar['cover_'+card._id]?'Đang tải...':'Tải cover'}</button>
+                {/* <button type="button" onClick={()=>prefillFromProfile(card._id)} className="btn btn-outline btn-sm">Lấy thông tin từ hồ sơ</button> */}
               </div>
             </div>
           </div>
@@ -161,38 +260,43 @@ export default function NfcCardsPage(){
             <div className="w-12 h-12 rounded-full overflow-hidden bg-muted border">
             {card.profile?.avatar ? <img loading="lazy" src={card.profile.avatar} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full grid place-items-center text-sm">🪪</div>}
             </div>
-            <button type="button" className="btn btn-outline btn-sm" onClick={()=>uploadAvatar(card)} disabled={!!uploadingAvatar[card._id]}>
-              {uploadingAvatar[card._id] ? 'Đang tải...' : 'Tải ảnh đại diện'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button type="button" className="btn btn-outline btn-sm" onClick={()=>prefillFromProfile(card._id)}>
+                Lấy thông tin từ hồ sơ
+              </button>
+              <button type="button" className="btn btn-outline btn-sm" onClick={()=>uploadAvatar(card)} disabled={!!uploadingAvatar[card._id]}>
+                {uploadingAvatar[card._id] ? 'Đang tải...' : 'Tải ảnh đại diện'}
+              </button>
+            </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1">
               <label className="label">Tên</label>
-              <input className="input" value={card.profile?.name||''} onChange={e=> onProfileFieldChange(card._id, 'profile.name', e.target.value)} placeholder="Nguyễn Văn A" />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.name||''} onChange={e=> onProfileFieldChange(card._id, 'profile.name', e.target.value)} placeholder="Nguyễn Văn A" />
             </div>
             <div className="space-y-1">
               <label className="label">Chức danh</label>
-              <input className="input" value={card.profile?.title||''} onChange={e=> onProfileFieldChange(card._id, 'profile.title', e.target.value)} placeholder="Software Engineer" />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.title||''} onChange={e=> onProfileFieldChange(card._id, 'profile.title', e.target.value)} placeholder="Software Engineer" />
             </div>
             <div className="space-y-1">
               <label className="label">Công ty</label>
-              <input className="input" value={card.profile?.company||''} onChange={e=> onProfileFieldChange(card._id, 'profile.company', e.target.value)} placeholder="TouchBack" />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.company||''} onChange={e=> onProfileFieldChange(card._id, 'profile.company', e.target.value)} placeholder="TouchBack" />
             </div>
             <div className="space-y-1">
               <label className="label">Số điện thoại</label>
-              <input className="input" value={card.profile?.phone||''} onChange={e=> onProfileFieldChange(card._id, 'profile.phone', e.target.value)} placeholder="0909..." />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.phone||''} onChange={e=> onProfileFieldChange(card._id, 'profile.phone', e.target.value)} placeholder="0909..." />
             </div>
             <div className="space-y-1">
               <label className="label">Email</label>
-              <input className="input" value={card.profile?.email||''} onChange={e=> onProfileFieldChange(card._id, 'profile.email', e.target.value)} placeholder="a@example.com" />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.email||''} onChange={e=> onProfileFieldChange(card._id, 'profile.email', e.target.value)} placeholder="a@example.com" />
             </div>
             <div className="space-y-1">
               <label className="label">Website</label>
-              <input className="input" value={card.profile?.website||''} onChange={e=> onProfileFieldChange(card._id, 'profile.website', e.target.value)} placeholder="https://..." />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.website||''} onChange={e=> onProfileFieldChange(card._id, 'profile.website', e.target.value)} placeholder="https://..." />
             </div>
             <div className="sm:col-span-2 space-y-1">
               <label className="label">Địa chỉ</label>
-              <input className="input" value={card.profile?.address||''} onChange={e=> onProfileFieldChange(card._id, 'profile.address', e.target.value)} placeholder="Địa chỉ" />
+              <input className={`input ${inputClass(card._id)}`} value={card.profile?.address||''} onChange={e=> onProfileFieldChange(card._id, 'profile.address', e.target.value)} placeholder="Địa chỉ" />
             </div>
             {/* URL inputs for avatar/cover removed; upload dùng nút ở trên */}
           </div>
@@ -204,14 +308,15 @@ export default function NfcCardsPage(){
             </div>
             {(card.profile?.socials||[]).map((s,idx)=> (
               <div key={idx} className="flex gap-2">
-                <input value={s.label||''} onChange={e=> updateSocial(card, idx, 'label', e.target.value)} className="input flex-[0.5]" placeholder="Facebook / LinkedIn / ..." />
-                <input value={s.url||''} onChange={e=> updateSocial(card, idx, 'url', e.target.value)} className="input flex-1" placeholder="https://..." />
+                <input value={s.label||''} onChange={e=> updateSocial(card, idx, 'label', e.target.value)} className={`input flex-[0.5] ${inputClass(card._id)}`} placeholder="Facebook / LinkedIn / ..." />
+                <input value={s.url||''} onChange={e=> updateSocial(card, idx, 'url', e.target.value)} className={`input flex-1 ${inputClass(card._id)}`} placeholder="https://..." />
                 <button type="button" onClick={()=>removeSocial(card, idx)} className="btn btn-outline">Xoá</button>
               </div>
             ))}
           </div>
 
           <div className="pt-1 flex flex-col md:flex-row items-center gap-4">
+            {/* <button type="button" onClick={()=>prefillFromProfile(card._id)} className="btn btn-outline md:min-w-[140px] w-full md:w-auto">Áp từ hồ sơ</button> */}
             <button onClick={()=>saveProfile(card)} disabled={savingProfileId===card._id} className="btn btn-primary md:min-w-[120px] w-full md:w-auto">{savingProfileId===card._id? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
             {lastSaved[card._id] && (
               <span className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 animate-fadeInUp">
