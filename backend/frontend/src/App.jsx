@@ -31,6 +31,7 @@ import AboutPage from './pages/AboutPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 import ComingSoon from './pages/ComingSoon.jsx';
+import UserGuide from './pages/UserGuide.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -82,6 +83,7 @@ export default function App(){
         <Route path="/products" element={<Layout><PageWrapper><ProductsPage /></PageWrapper></Layout>} />
         <Route path="/products/:id" element={<Layout><PageWrapper><ProductDetailPage /></PageWrapper></Layout>} />
   <Route path="/about" element={<Layout><PageWrapper><AboutPage /></PageWrapper></Layout>} />
+  <Route path="/huong-dan" element={<Layout><PageWrapper><UserGuide /></PageWrapper></Layout>} />
     {/* Coming soon sections */}
     <Route path="/ar" element={<Layout><PageWrapper><ComingSoon title="AR (Augmented Reality)" subtitle="Khám phá thế giới mở rộng với AR của TouchBack." /></PageWrapper></Layout>} />
     <Route path="/hologram" element={<Layout><PageWrapper><ComingSoon title="Hologram" subtitle="Hiển thị 3D sống động—tính năng đang được hoàn thiện." /></PageWrapper></Layout>} />

@@ -34,7 +34,7 @@ function Footer(){
         <div className="flex gap-6 text-xs text-gray-600 dark:text-gray-400">
           <a className="hover:text-gray-900 dark:hover:text-white transition" href="#">Privacy</a>
           <a className="hover:text-gray-900 dark:hover:text-white transition" href="#">Terms</a>
-          <a className="hover:text-gray-900 dark:hover:text-white transition" href="#">Support</a>
+          <a className="hover:text-gray-900 dark:hover:text-white transition" href="/huong-dan">Support</a>
         </div>
         <div className="text-xs text-gray-600 dark:text-gray-400">© {new Date().getFullYear()} TouchBack</div>
       </div>
