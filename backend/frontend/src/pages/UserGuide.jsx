@@ -12,9 +12,11 @@ function useSmoothScroll() {
       const target = document.querySelector(id);
       if (target) {
         e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Also update hash without jumping
-        history.replaceState(null, '', id);
+        const header = document.querySelector('header.sticky');
+        const offset = (header?.offsetHeight || 72) + 12; // add small gap
+        const y = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        history.replaceState(null, '', id); // update hash without jump
       }
     }
     document.addEventListener('click', onClick);
@@ -26,6 +28,8 @@ export default function UserGuide(){
   useSmoothScroll();
   const [openFaq, setOpenFaq] = React.useState(null);
   const tocRef = React.useRef(null);
+  const [activeId, setActiveId] = React.useState('quick-start');
+  const isProgramScroll = React.useRef(false);
 
   React.useEffect(() => {
     function onKey(e){
@@ -39,6 +43,27 @@ export default function UserGuide(){
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Highlight TOC item based on section in view
+  React.useEffect(() => {
+    const ids = ['quick-start','browse-buy','memories','cards','account-orders','troubleshooting','faq','contact'];
+    const nodes = ids.map(id => document.getElementById(id)).filter(Boolean);
+    if (nodes.length === 0) return;
+    const header = document.querySelector('header.sticky');
+    const headerHeight = (header?.offsetHeight || 72) + 12;
+    const observer = new IntersectionObserver((entries) => {
+      if (isProgramScroll.current) return; // avoid overriding manual selection during smooth scroll
+      // prioritize the entry nearest to top when multiple intersect
+      const visible = entries.filter(e => e.isIntersecting).sort((a,b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top));
+      if (visible[0]) { setActiveId(visible[0].target.id); return; }
+      // fallback when scrolling fast
+      const sorted = entries.sort((a,b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      const current = sorted.find(e => e.boundingClientRect.top >= 0) || sorted[sorted.length-1];
+      if (current?.target?.id) setActiveId(current.target.id);
+    }, { root: null, rootMargin: `-${headerHeight}px 0px -60% 0px`, threshold: [0, 0.1, 0.5, 1] });
+    nodes.forEach(n => observer.observe(n));
+    return () => observer.disconnect();
   }, []);
 
   const sections = [
@@ -57,7 +82,7 @@ export default function UserGuide(){
       <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 mt-2">
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5">
           {/* Sidebar */}
-          <aside className="lg:sticky lg:top-6 h-max rounded-2xl border border-black/10 dark:border-white/10 bg-[#fffdfa]/80 dark:bg-gray-900/70 backdrop-blur p-4" aria-label="Mục lục Hướng dẫn sử dụng">
+          <aside className="lg:sticky lg:top-6 h-max rounded-2xl border border-black/10 dark:border-white/10 bg-[#fffdfa]/80 dark:bg-gray-900/70 backdrop-blur p-4 print:hidden" aria-label="Mục lục Hướng dẫn sử dụng">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/5 flex items-center justify-center overflow-hidden">
                 <img src={TBLogo} alt="TouchBack" className="w-10 h-10 md:w-16 md:h-16 object-contain rounded pointer-events-none select-none" />
@@ -70,7 +95,27 @@ export default function UserGuide(){
 
             <nav aria-label="Mục lục" className="mt-3 space-y-1" ref={tocRef}>
               {sections.map((s) => (
-                <a key={s.id} href={`#${s.id}`} className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-sm">
+                <a
+                  key={s.id}
+                  href={`#${s.id}`}
+                  onClick={(e)=>{
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const target = document.getElementById(s.id);
+                    if(!target) return;
+                    const header = document.querySelector('header.sticky');
+                    const offset = (header?.offsetHeight || 72) + 12;
+                    const y = target.getBoundingClientRect().top + window.scrollY - offset;
+                    setActiveId(s.id);
+                    isProgramScroll.current = true;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+                    history.replaceState(null, '', `#${s.id}`);
+                    setTimeout(() => { isProgramScroll.current = false; }, 350);
+                  }}
+                  aria-current={activeId === s.id ? 'true' : undefined}
+                  className={(activeId === s.id
+                    ? 'bg-black/10 dark:bg-white/10 text-gray-900 dark:text-gray-100 shadow-sm '
+                    : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-700 dark:text-gray-300 ') + 'flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition'}>
                   <span className="truncate">{s.title}</span>
                   {s.badge && (
                     <span className="ml-auto text-[11px] px-2 py-0.5 rounded-full border border-black/10 dark:border-white/10 text-gray-500 dark:text-gray-400">{s.badge}</span>
@@ -89,23 +134,23 @@ export default function UserGuide(){
           </aside>
 
           {/* Main content */}
-          <main className="space-y-4">
+          <main className="space-y-4 print:text-black">
             {/* Hero */}
             <section className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 backdrop-blur p-5">
-              <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-                <div className="max-w-2xl">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="max-w-2xl text-center md:text-left">
                   <h2 className="text-xl font-semibold">Hướng dẫn nhanh sử dụng TouchBack</h2>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Làm quen trong 5 phút — xem sản phẩm, mua hàng, tạo/chia sẻ Memories và Danh thiếp NFC.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <a href="#quick-start" className="inline-flex items-center justify-center px-3 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm shadow">Bắt đầu</a>
-                  <a href="#contact" className="inline-flex items-center justify-center px-3 py-2 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-sm">Yêu cầu hỗ trợ</a>
+                <div className="flex items-center gap-2 justify-center md:justify-end">
+                  <a href="#quick-start" className="inline-flex items-center justify-center px-4 h-10 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium shadow whitespace-nowrap">Bắt đầu</a>
+                  <a href="#contact" className="inline-flex items-center justify-center px-4 h-10 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium whitespace-nowrap">Yêu cầu hỗ trợ</a>
                 </div>
               </div>
             </section>
 
             {/* Quick Start */}
-            <section id="quick-start" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="quick-start" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Bắt đầu nhanh</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Chỉ với 3 bước:</p>
               <ol className="mt-2 list-decimal list-inside space-y-1 text-sm">
@@ -126,7 +171,7 @@ export default function UserGuide(){
             </section>
 
             {/* Browse & Buy */}
-            <section id="browse-buy" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="browse-buy" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Xem & mua sản phẩm</h3>
               <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 <ol className="list-decimal list-inside space-y-1">
@@ -149,7 +194,7 @@ export default function UserGuide(){
             </section>
 
             {/* Memories */}
-            <section id="memories" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="memories" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Memories — tạo & chỉnh sửa</h3>
               <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                 <ol className="list-decimal list-inside space-y-1">
@@ -166,7 +211,7 @@ export default function UserGuide(){
             </section>
 
             {/* NFC Cards */}
-            <section id="cards" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="cards" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Danh thiếp NFC — tạo & chia sẻ</h3>
               <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
                 <ol className="list-decimal list-inside space-y-1">
@@ -183,7 +228,7 @@ export default function UserGuide(){
             </section>
 
             {/* Account & Orders */}
-            <section id="account-orders" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="account-orders" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Tài khoản & theo dõi đơn hàng</h3>
               <ul className="mt-2 list-disc list-inside space-y-1 text-sm text-gray-700 dark:text-gray-300">
                 <li><strong>Hồ sơ:</strong> xem/chỉnh sửa thông tin tại mục Hồ sơ.</li>
@@ -193,7 +238,7 @@ export default function UserGuide(){
             </section>
 
             {/* Troubleshooting */}
-            <section id="troubleshooting" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="troubleshooting" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Khắc phục sự cố</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
@@ -231,7 +276,7 @@ export default function UserGuide(){
             </section>
 
             {/* FAQ */}
-            <section id="faq" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="faq" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Câu hỏi thường gặp</h3>
               <div className="mt-2 space-y-2">
                 {[
@@ -259,22 +304,32 @@ export default function UserGuide(){
             </section>
 
             {/* Contact */}
-            <section id="contact" className="rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5">
+            <section id="contact" className="scroll-mt-28 md:scroll-mt-32 rounded-2xl border border-black/10 dark:border-white/10 bg-white/70 dark:bg-gray-900/50 p-5 print:bg-white print:border-0 print:shadow-none print:p-0">
               <h3 className="text-lg font-semibold">Liên hệ hỗ trợ</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">Nếu bạn không thể tự khắc phục, hãy liên hệ đội hỗ trợ TouchBack:</p>
               <div className="mt-2 text-sm">
-                <div><span className="font-medium">Email:</span> support@touchback.vn</div>
-                <div><span className="font-medium">Hotline:</span> +84 123 456 789</div>
+                <div><span className="font-medium">Email:</span> servicetb01@gmail.com</div>
+                <div><span className="font-medium">Hotline:</span> +84 368 822 490</div>
               </div>
             </section>
 
-            <footer className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+            <footer className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 print:hidden">
               <div>© {new Date().getFullYear()} TouchBack. All rights reserved.</div>
-              <div className="hidden sm:block">In trang này: Ctrl/Cmd + P</div>
+              {/* <div className="hidden sm:block">In trang này: Ctrl/Cmd + P</div> */}
             </footer>
           </main>
         </div>
       </div>
+      {/* Print-specific styles to produce a clean printout */}
+      <style>{`
+        @media print {
+          html, body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          header.sticky { display: none !important; }
+          .fixed { display: none !important; }
+          .backdrop-blur { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+          .grid { display: block !important; }
+        }
+      `}</style>
     </div>
   );
 }

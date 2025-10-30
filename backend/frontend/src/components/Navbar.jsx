@@ -60,6 +60,7 @@ export default function Navbar(){
   },[menuOpen]);
 
   return (
+  <>
   <header className="sticky top-0 z-[200] relative bg-[#f7f1e5]/90 dark:bg-gray-900/80 backdrop-blur border-b border-black/10 dark:border-white/10">
 
   <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between gap-6 text-gray-900 dark:text-white">
@@ -84,8 +85,8 @@ export default function Navbar(){
 
         {/* Right controls: cart + hamburger */}
         <div className="flex items-center gap-3">
-          {/* Cart icon on all sizes */}
-          <NavLink to="/cart" className={({isActive})=>`inline-flex items-center justify-center w-9 h-9 rounded-md ${isActive? 'bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'} transition`} aria-label="Giỏ hàng">
+          {/* Cart icon: desktop only (hidden on mobile) */}
+          <NavLink to="/cart" className={({isActive})=>`hidden md:inline-flex items-center justify-center w-9 h-9 rounded-md ${isActive? 'bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'} transition`} aria-label="Giỏ hàng">
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1.5"/><circle cx="17" cy="20" r="1.5"/></svg>
           </NavLink>
           {/* Desktop dropdown trigger */}
@@ -131,54 +132,63 @@ export default function Navbar(){
         </div>
       </div>
 
-      {/* Mobile slide-over panel (accessible) */}
-  <div aria-hidden={!open} className={`${open? 'fixed inset-0 z-[1000]':'hidden'}`}>
-        <div onClick={()=>setOpen(false)} className={`absolute inset-0 bg-black/20 dark:bg-black/60 transition-opacity ${open? 'opacity-100':'opacity-0 pointer-events-none'}`} />
-  <aside id="mobile-menu" ref={panelRef} role="dialog" aria-modal="true" className={`absolute right-0 top-0 h-full w-[82%] max-w-sm bg-[#f7f1e5] dark:bg-gray-900 shadow-holo transform transition-transform ${open? 'translate-x-0':'translate-x-full'} focus:outline-none rounded-l-2xl overflow-hidden`}>
-          <div className="px-4 pt-4 pb-6 space-y-3 h-full flex flex-col">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img loading="lazy" src={TBLogo} alt="TouchBack" className="w-9 h-9 object-contain rounded" />
-                <span className="font-semibold">TouchBack</span>
-              </div>
-              <button aria-label="Close menu" onClick={()=> setOpen(false)} className="p-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">✕</button>
+    </header>
+
+    {/* Mobile slide-over panel (accessible) - moved OUTSIDE header to avoid clipping */}
+    <div aria-hidden={!open} className={`${open? 'fixed inset-0 z-[1000]':'hidden'}`}>
+      <div onClick={()=>setOpen(false)} className={`absolute inset-0 bg-black/30 dark:bg-black/60 transition-opacity ${open? 'opacity-100':'opacity-0 pointer-events-none'}`} />
+      <aside
+        id="mobile-menu"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        className={`absolute right-0 top-0 h-full w-[85%] max-w-sm bg-[#f7f1e5] dark:bg-gray-900 shadow-holo transform transition-transform duration-300 ease-out ${open? 'translate-x-0':'translate-x-full'} focus:outline-none rounded-l-2xl overflow-hidden`}
+      >
+        <div className="px-4 pt-4 pb-6 space-y-3 h-full flex flex-col">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img loading="lazy" src={TBLogo} alt="TouchBack" className="w-9 h-9 object-contain rounded" />
+              <span className="font-semibold">TouchBack</span>
             </div>
+            <button aria-label="Close menu" onClick={()=> setOpen(false)} className="p-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">✕</button>
+          </div>
 
-            <nav className="flex flex-col gap-1 mt-3">
-              <button ref={firstFocusableRef} onClick={()=>{ setOpen(false); navigate('/products'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Sản phẩm</button>
-              {user && <button onClick={()=>{ setOpen(false); navigate('/memories'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Memories</button>}
-              {user && <button onClick={()=>{ setOpen(false); navigate('/nfc'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">NFC</button>}
-              <button onClick={()=>{ setOpen(false); navigate('/ar'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">AR</button>
-              <button onClick={()=>{ setOpen(false); navigate('/hologram'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hologram</button>
-              <button onClick={()=>{ setOpen(false); navigate('/education'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giáo dục</button>
-              <button onClick={()=>{ setOpen(false); navigate('/huong-dan'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hướng dẫn</button>
-              <button onClick={()=>{ setOpen(false); navigate('/about'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">About</button>
-              <button onClick={()=>{ setOpen(false); navigate('/cart'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giỏ hàng</button>
-            </nav>
+          <nav className="flex flex-col gap-1 mt-3">
+            <button ref={firstFocusableRef} onClick={()=>{ setOpen(false); navigate('/products'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Sản phẩm</button>
+            {user && <button onClick={()=>{ setOpen(false); navigate('/memories'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Lưu trữ ký ức</button>}
+            {user && <button onClick={()=>{ setOpen(false); navigate('/nfc'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Danh thiếp</button>}
+            <button onClick={()=>{ setOpen(false); navigate('/ar'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">AR</button>
+            <button onClick={()=>{ setOpen(false); navigate('/hologram'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hologram</button>
+            <button onClick={()=>{ setOpen(false); navigate('/education'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giáo dục</button>
+            <button onClick={()=>{ setOpen(false); navigate('/huong-dan'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hướng dẫn</button>
+            <button onClick={()=>{ setOpen(false); navigate('/about'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Về chúng tôi</button>
+            <button onClick={()=>{ setOpen(false); navigate('/cart'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giỏ hàng</button>
+          </nav>
 
-            <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-3 flex flex-col gap-2">
-              {!user ? (
-                <>
-                  <Link to="/login" onClick={()=>setOpen(false)} className="block w-full text-center px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Đăng nhập</Link>
-                  <Link to="/register" onClick={()=>setOpen(false)} className="block w-full text-center px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Đăng ký</Link>
-                </>
-              ) : (
-                <>
-                  <div className="px-3 text-sm truncate">{user.email || user.role}</div>
-                  <button onClick={()=>{ setOpen(false); navigate('/profile'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Hồ sơ</button>
-                  <button onClick={()=>{ setOpen(false); navigate('/change-password'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Đổi mật khẩu</button>
-                  <button onClick={()=>{ setOpen(false); navigate('/orders'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Đơn hàng</button>
-                  <button ref={lastFocusableRef} onClick={()=>{ setOpen(false); logout(); navigate('/') ;}} className="w-full text-left px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Thoát</button>
-                </>
-              )}
+          <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-3 flex flex-col gap-2">
+            {!user ? (
+              <>
+                <Link to="/login" onClick={()=>setOpen(false)} className="block w-full text-center px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Đăng nhập</Link>
+                <Link to="/register" onClick={()=>setOpen(false)} className="block w-full text-center px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Đăng ký</Link>
+              </>
+            ) : (
+              <>
+                <div className="px-3 text-sm truncate">{user.email || user.role}</div>
+                <button onClick={()=>{ setOpen(false); navigate('/profile'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Hồ sơ</button>
+                <button onClick={()=>{ setOpen(false); navigate('/change-password'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Đổi mật khẩu</button>
+                <button onClick={()=>{ setOpen(false); navigate('/orders'); }} className="w-full text-left px-3 py-2 rounded-md hover:bg-black/5 dark:hover:bg-white/5">Đơn hàng</button>
+                <button ref={lastFocusableRef} onClick={()=>{ setOpen(false); logout(); navigate('/') ;}} className="w-full text-left px-3 py-2 rounded-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5">Thoát</button>
+              </>
+            )}
 
-              <div className="pt-2">
-                <ThemeToggle />
-              </div>
+            <div className="pt-2">
+              <ThemeToggle />
             </div>
           </div>
-        </aside>
-      </div>
-    </header>
+        </div>
+      </aside>
+    </div>
+
+  </>
   );
 }
