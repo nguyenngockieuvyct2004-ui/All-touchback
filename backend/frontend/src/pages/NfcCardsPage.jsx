@@ -301,6 +301,18 @@ export default function NfcCardsPage(){
             {/* URL inputs for avatar/cover removed; upload dùng nút ở trên */}
           </div>
 
+          {/* Intro / About field */}
+          <div className="space-y-1">
+            <label className="label">Giới thiệu</label>
+            <textarea
+              className={`input min-h-[96px] ${inputClass(card._id)}`}
+              value={card.profile?.intro || ''}
+              onChange={e=> onProfileFieldChange(card._id, 'profile.intro', e.target.value)}
+              placeholder="Đoạn giới thiệu ngắn về bạn hoặc doanh nghiệp..."
+            />
+            <div className="text-[11px] text-muted-foreground">Hiển thị ở mục “Giới thiệu” trên trang danh thiếp công khai.</div>
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="label">Mạng xã hội / Liên kết</label>

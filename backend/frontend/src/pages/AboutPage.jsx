@@ -20,7 +20,7 @@ export default function AboutPage(){
             <div className="max-w-4xl mx-auto space-y-4 flex flex-col items-center text-center">
               <p className="uppercase tracking-wider text-xs text-gray-500 dark:text-gray-400">Giới thiệu · NFC Memory</p>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight inline-block max-w-3xl" style={{fontFamily:'var(--font-display, ui-serif)'}}>Một chạm — ký ức trở về</h1>
-                <p className="text-lg md:text-xl leading-relaxed max-w-prose text-gray-600 dark:text-gray-300">Lưu giữ khoảnh khắc quý giá. Gặp lại ký ức bằng một chạm — riêng tư, nhẹ nhàng và bền vững.</p>
+                <p className="text-lg md:text-xl leading-relaxed max-w-none text-gray-600 dark:text-gray-300">“Tôi mất một thứ, một ai đó, một ký ức... và từ đó, tôi quyết tâm tạo nên thứ giúp ký ức không bao giờ biến mất nữa”</p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <a href="/create" className="inline-block bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-md shadow">Tạo ký ức</a>
                 <a href="/contact" className="inline-block border border-amber-200 hover:bg-amber-50 text-amber-700 px-4 py-2 rounded-md">Liên hệ</a>
@@ -46,7 +46,7 @@ export default function AboutPage(){
         {/* Mission block: image left, text right */}
         <div className="mt-12 grid gap-8 md:grid-cols-2 items-center">
             <div className="order-2 md:order-1">
-        <img src="/assets/mission.jpg" alt="Mission" className="w-full rounded-lg shadow-md object-cover h-80 md:h-[480px] lg:h-[560px] transform-gpu transition-transform duration-300 ease-out hover:scale-105 hover:shadow-2xl" />
+        <img src="/assets/mission.jpg" alt="Mission" className="w-full rounded-md object-cover h-64 md:h-[260px] lg:h-[320px] transform-gpu transition-transform transition-shadow duration-300 ease-out hover:scale-105 hover:shadow-xl" />
           </div>
           <div className="order-1 md:order-2">
             <h3 className="text-2xl md:text-3xl font-semibold">Sứ mệnh</h3>
@@ -71,8 +71,8 @@ export default function AboutPage(){
               </div>
             </details>
           </div>
-            <div>
-              <img src="/assets/story.jpg" alt="Story" className="w-full rounded-lg shadow-md object-cover h-80 md:h-[480px] lg:h-[560px] transform-gpu transition-transform duration-300 ease-out hover:scale-105 hover:shadow-2xl" />
+            <div className="relative rounded-lg overflow-hidden shadow-md" style={{height: '20rem'}}>
+              <video src="/assets/7111471291219.mp4" className="absolute inset-0 w-full h-full object-cover transform-gpu transition-transform duration-300 ease-out hover:scale-115" autoPlay muted loop playsInline controls />
           </div>
         </div>
       </section>

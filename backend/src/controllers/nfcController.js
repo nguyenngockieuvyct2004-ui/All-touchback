@@ -45,6 +45,7 @@ const profileSchema = Joi.object({
   email: Joi.string().email({ tlds: false }).allow("", null),
   website: Joi.string().uri({ allowRelative: false }).allow("", null),
   address: Joi.string().allow("", null),
+  intro: Joi.string().allow("", null),
   avatar: Joi.string().uri().allow("", null),
   // allow relative or absolute path for cover (no uri constraint)
   cover: Joi.string().allow("", null),

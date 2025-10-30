@@ -51,7 +51,7 @@ const BrandFavicon = ({ url, label, size = 18 }) => {
         if (parent && !parent.dataset.fbFallback) {
           parent.dataset.fbFallback = '1';
           const span = document.createElement('span');
-          span.textContent = '�';
+          span.textContent = '🔗';
           span.style.fontSize = '14px';
           parent.appendChild(span);
         }
@@ -187,8 +187,10 @@ export default function PublicCardPage() {
                 {profile.phone && (
                   <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg ${iconPhoneBg} text-white grid place-items-center`}>
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12.84.36 1.66.72 2.42a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l1.66-1.66a2 2 0 0 1 2.11-.45c.76.36 1.58.6 2.42.72A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-emerald-600">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12.84.36 1.66.72 2.42a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l1.66-1.66a2 2 0 0 1 2.11-.45c.76.36 1.58.6 2.42.72A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
                       </div>
                       <div className="truncate font-medium">{profile.phone}</div>
                     </div>
@@ -202,8 +204,11 @@ export default function PublicCardPage() {
                 {profile.email && (
                   <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg ${iconMailBg} text-white grid place-items-center`}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8.5v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 8.5l8.5 5L20 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-indigo-600">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M3 8.5v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M3 8.5l8.5 5L20 8.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
                       </div>
                       <div className="truncate font-medium">{profile.email}</div>
                     </div>
@@ -232,8 +237,11 @@ export default function PublicCardPage() {
                 {profile.address && (
                   <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg ${iconAddrBg} text-white grid place-items-center`}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-rose-600">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path d="M12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
                       </div>
                       <div className="truncate font-medium">{profile.address}</div>
                     </div>
@@ -247,11 +255,11 @@ export default function PublicCardPage() {
             </section>
           )}
 
-          {/* Intro Section */}
-          {(memory?.description || memory?.content) && (
+          {/* Intro Section: prefer profile.intro; fallback to memory.description/content */}
+          {(profile.intro || memory?.description || memory?.content) && (
             <section className="mt-8 px-6 sm:px-8 space-y-4">
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className="inline-block w-1 h-5 rounded bg-slate-900 dark:bg-sky-500" />Giới thiệu</h2>
-              <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-slate-300">{memory.description ?? memory.content}</p>
+              <p className="text-sm leading-relaxed whitespace-pre-wrap text-slate-700 dark:text-slate-300">{profile.intro ?? memory.description ?? memory.content}</p>
             </section>
           )}
 
