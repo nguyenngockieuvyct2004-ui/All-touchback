@@ -87,6 +87,12 @@ export default function PublicCardPage() {
   const iconMailBg = theme === 'brand' ? 'bg-indigo-700' : 'bg-slate-900';
   const iconWebBg = theme === 'brand' ? 'bg-emerald-600' : 'bg-slate-900';
   const iconAddrBg = theme === 'brand' ? 'bg-indigo-600' : 'bg-slate-900';
+  // Soft row background per theme (avoid pure white)
+  const rowBgClass = theme === 'slate'
+    ? 'bg-slate-800/40'
+    : theme === 'brand'
+    ? 'bg-sky-50'
+    : 'bg-[#F5EFE6]'; // classic: warm ivory that fits the site
 
   const actions = useMemo(() => {
     const arr = [];
@@ -185,7 +191,7 @@ export default function PublicCardPage() {
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className={`inline-block w-1 h-5 rounded ${accentBg} dark:bg-sky-500`} />Thông tin liên hệ</h2>
               <div className="grid grid-cols-1 gap-3">
                 {profile.phone && (
-                  <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
+                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-emerald-600">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +208,7 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.email && (
-                  <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
+                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-indigo-600">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -220,7 +226,7 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.website && (
-                  <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
+                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white dark:bg-white border border-black/10 grid place-items-center overflow-hidden">
                         <BrandFavicon url={profile.website} label={getHost(profile.website)} size={20} />
@@ -235,7 +241,7 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.address && (
-                  <div className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white dark:bg-gray-800 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition">
+                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-rose-600">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
