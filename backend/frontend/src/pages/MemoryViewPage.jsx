@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import api from '../lib/api.js';
+import { toast } from '../lib/toast.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import { MemoryCardSkeleton } from '../components/Skeleton.jsx';
 
@@ -28,17 +29,22 @@ export default function MemoryViewPage(){
         <h1 className="text-3xl font-bold tracking-tight gradient-text">{memory.title}</h1>
         <div className="flex items-center gap-2">
           {memory.slug && (
-            <a href={`/pm/${memory.slug}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Xem public</a>
+            <a href={`/pm/${memory.slug}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Xem</a>
           )}
           <Link to={`/memories/${id}/edit`} className="btn btn-outline btn-sm">Sửa</Link>
           <button
             className="btn btn-outline btn-sm"
             onClick={async ()=>{
-              if(!confirm('Xoá kỷ niệm này?')) return;
-              try{ await api.delete(`/memories/${id}`); navigate('/memories'); }
-              catch(e){ alert(e.response?.data?.message || 'Xoá thất bại'); }
+              if(!confirm('Reset memory về mặc định? Nội dung, media sẽ bị xoá và tiêu đề đặt về "My Memory". Memory vẫn được giữ lại.')) return;
+              try{
+                const r = await api.post(`/memories/${id}/reset`);
+                setMemory(r.data);
+                toast.success('Reset thành công');
+              }catch(e){
+                toast.error(e.response?.data?.message || 'Reset thất bại');
+              }
             }}
-          >Xoá</button>
+          >Reset</button>
         </div>
       </div>
       <div className="prose prose-sm max-w-none dark:prose-invert leading-relaxed whitespace-pre-wrap">

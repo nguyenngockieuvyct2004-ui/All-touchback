@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 const TEAM = [
-  { id: 1, name: 'Nhật Quang', role: 'Giám đốc Marketing (CMO)', img: '/uploads/nhat-quang.jpg', bio: 'Chịu trách nhiệm chiến lược marketing và truyền thông, kết nối cộng đồng.' },
-  { id: 2, name: 'Hoàng Minh', role: 'Giám đốc Thiết kế (DD)', img: '/uploads/hoang-minh.jpg', bio: 'Lãnh đạo thiết kế, chịu trách nhiệm trải nghiệm người dùng và thẩm mỹ sản phẩm.' },
-  { id: 3, name: 'Minh Huy', role: 'Giám đốc Điều hành (CEO)', img: '/uploads/minh-huy.jpg', bio: 'Điều hành hoạt động hàng ngày và đảm bảo tầm nhìn sản phẩm được thực hiện.' },
-  { id: 4, name: 'Mỹ Hằng', role: 'Giám đốc Sản phẩm (CPO)', img: '/uploads/my-hang.jpg', bio: 'Quản lý lộ trình sản phẩm và ưu tiên tính năng theo nhu cầu người dùng.' },
-  { id: 5, name: 'Kiều Vy', role: 'Giám đốc Tài chính (CFO)', img: '/uploads/kieu-vy.jpg', bio: 'Quản lý tài chính, ngân sách và chiến lược phát triển bền vững.' }
+  { id: 1, name: 'Nhật Quang', role: 'Giám đốc Marketing', img: '/public/uploads/nhat-quang.jpg', bio: 'Chịu trách nhiệm chiến lược marketing và truyền thông, kết nối cộng đồng.' },
+  { id: 2, name: 'Hoàng Minh', role: 'Giám đốc Thiết kế', img: '/public/uploads/hoang-minh.jpg', bio: 'Lãnh đạo thiết kế, chịu trách nhiệm trải nghiệm người dùng và thẩm mỹ sản phẩm.' },
+  { id: 3, name: 'Minh Huy', role: 'Giám đốc Điều hành', img: '/public/uploads/minh-huy.jpg', bio: 'Điều hành hoạt động hàng ngày và đảm bảo tầm nhìn sản phẩm được thực hiện.' },
+  { id: 4, name: 'Mỹ Hằng', role: 'Giám đốc Sản phẩm', img: '/public/uploads/my-hang.jpg', bio: 'Quản lý lộ trình sản phẩm và ưu tiên tính năng theo nhu cầu người dùng.' },
+  { id: 5, name: 'Kiều Vy', role: 'Giám đốc Tài chính', img: '/public/uploads/kieu-vy.jpg', bio: 'Quản lý tài chính, ngân sách và chiến lược phát triển bền vững.' }
 ];
 
 export default function AboutPage(){
@@ -36,10 +36,13 @@ export default function AboutPage(){
         <div className="grid gap-8 md:grid-cols-2 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-semibold" style={{fontFamily:'var(--font-display, ui-serif)'}}>Về chúng tôi</h2>
-            <p className="mt-3 text-gray-600 dark:text-gray-300">NFC Memory biến công nghệ thành nơi lưu giữ cảm xúc — nhẹ nhàng, riêng tư và dễ dùng.</p>
+            <p className="mt-3 text-gray-600 dark:text-gray-300">Touch Back được tạo nên bởi nhóm bạn trẻ đến từ Cần Thơ, những người tin rằng công nghệ có thể có trái tim. Chúng tôi là những kẻ mộng mơ giữa thế giới số - người kể chuyện, nhà thiết kế, lập trình viên - cùng chung một niềm tin rằng:
+                                                                  Cảm xúc là ngôn ngữ phổ quát nhất mà công nghệ có thể nói được.
+                                                                  Chúng tôi làm việc không chỉ để tạo ra sản phẩm, mà để mỗi thẻ NFC ra đời đều mang hơi ấm của con người - một chút hoài niệm, một chút dịu dàng, và rất nhiều yêu thương.
+            </p>
           </div>
           <div className="hidden md:block">
-              <img src="/assets/about-hero.jpg" alt="About hero" className="w-full rounded-md object-cover h-64 md:h-[260px] lg:h-[320px] transform-gpu transition-transform transition-shadow duration-300 ease-out hover:scale-105 hover:shadow-xl" />
+              <img src="/assets/about-hero.png" alt="About hero" className="w-full rounded-md object-cover h-64 md:h-[260px] lg:h-[320px] transform-gpu transition-transform transition-shadow duration-300 ease-out hover:scale-105 hover:shadow-xl" />
           </div>
         </div>
 
@@ -122,7 +125,7 @@ export default function AboutPage(){
         <div className="panel p-6 text-center">
           <p className="text-lg md:text-xl font-medium">Sẵn sàng để ký ức tìm về tổ ấm?</p>
           <div className="mt-4">
-            <a href="/create" className="inline-block bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-md">Tạo ký ức</a>
+            <a href="/memories" className="inline-block bg-amber-600 hover:bg-amber-700 text-white px-5 py-2 rounded-md">Tạo ký ức</a>
           </div>
         </div>
       </section>

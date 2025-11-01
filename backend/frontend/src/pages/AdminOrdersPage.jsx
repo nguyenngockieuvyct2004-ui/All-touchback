@@ -30,7 +30,7 @@ export default function AdminOrdersPage(){
           <div key={o._id} className="rounded-xl border border-white/10 p-4 bg-gray-900/40">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-400">#{o._id.slice(-6)} • {new Date(o.createdAt).toLocaleString()}</div>
-              <select value={o.status} onChange={e=>changeStatus(o, e.target.value)} className="input w-40">
+              <select value={o.status} onChange={e=>changeStatus(o, e.target.value)} className="input w-40 bg-white/10 border-white/20 text-white dark:text-white">
                 {STATUS.map(s=> <option key={s} value={s}>{s}</option>)}
               </select>
             </div>

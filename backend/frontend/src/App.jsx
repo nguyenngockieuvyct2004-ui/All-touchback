@@ -19,6 +19,7 @@ import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
 import AdminUsersPage from './pages/AdminUsersPage.jsx';
 import AdminOrdersPage from './pages/AdminOrdersPage.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
+import AdminContactsPage from './pages/AdminContactsPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import ChatPage from './pages/ChatPage.jsx';
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx';
@@ -32,6 +33,7 @@ import ProfilePage from './pages/ProfilePage.jsx';
 import ChangePasswordPage from './pages/ChangePasswordPage.jsx';
 import ComingSoon from './pages/ComingSoon.jsx';
 import UserGuide from './pages/UserGuide.jsx';
+import ContactPage from './pages/ContactPage.jsx';
 
 function PageWrapper({ children }){
   return (
@@ -72,6 +74,7 @@ export default function App(){
           <Route path="products" element={<PageWrapper><AdminProductsPage /></PageWrapper>} />
           <Route path="users" element={<ProtectedRoute roles={["admin"]}><PageWrapper><AdminUsersPage /></PageWrapper></ProtectedRoute>} />
           <Route path="orders" element={<PageWrapper><AdminOrdersPage /></PageWrapper>} />
+          <Route path="contacts" element={<PageWrapper><AdminContactsPage /></PageWrapper>} />
         </Route>
 
         {/* Public site wrapped per-route with Layout */}
@@ -82,6 +85,7 @@ export default function App(){
         } />
         <Route path="/products" element={<Layout><PageWrapper><ProductsPage /></PageWrapper></Layout>} />
         <Route path="/products/:id" element={<Layout><PageWrapper><ProductDetailPage /></PageWrapper></Layout>} />
+  <Route path="/contact" element={<Layout><PageWrapper><ContactPage /></PageWrapper></Layout>} />
   <Route path="/about" element={<Layout><PageWrapper><AboutPage /></PageWrapper></Layout>} />
   <Route path="/huong-dan" element={<Layout><PageWrapper><UserGuide /></PageWrapper></Layout>} />
     {/* Coming soon sections */}

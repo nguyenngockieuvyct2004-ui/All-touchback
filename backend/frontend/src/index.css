@@ -54,6 +54,10 @@ p { @apply leading-relaxed; }
 
 /* Inputs */
 .input { @apply w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/60 focus:border-brand-500 transition shadow-sm; }
+/* Force readable text inside <select> and <option> across themes */
+select.input, select { color: inherit; }
+select option { color: #111827; }
+.dark select option { color: #e5e7eb; background-color: #0b1220; }
 .input-error { @apply border-red-500 focus:ring-red-500/50; }
 textarea.input { @apply resize-y; }
 
@@ -172,6 +176,41 @@ textarea.input { @apply resize-y; }
     0 0 0 1px rgba(255,255,255,0.06);
 }
 
+/* ---------------- Toast animations & surface ---------------- */
+@keyframes toastInRight { from { transform: translateX(16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastInLeft  { from { transform: translateX(-16px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastInTop   { from { transform: translateY(-12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes toastInBottom{ from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.toast-enter-right { animation: toastInRight .28s cubic-bezier(.2,.8,.2,1) both; }
+.toast-enter-left  { animation: toastInLeft  .28s cubic-bezier(.2,.8,.2,1) both; }
+.toast-enter-top   { animation: toastInTop   .28s cubic-bezier(.2,.8,.2,1) both; }
+.toast-enter-bottom{ animation: toastInBottom.28s cubic-bezier(.2,.8,.2,1) both; }
+
+.toast-card {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.10);
+  background: linear-gradient(135deg, rgba(255,253,250,0.98), rgba(255,253,250,0.95));
+  box-shadow: 0 10px 24px -10px rgba(2,6,23,0.18), 0 0 0 1px rgba(2,6,23,0.06);
+}
+.dark .toast-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(135deg, rgba(17,24,39,0.96), rgba(17,24,39,0.90));
+  box-shadow: 0 24px 40px -18px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.toast-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--toast-accent, #60a5fa);
+  border-top-left-radius: inherit; border-bottom-left-radius: inherit;
+}
+.toast-success { --toast-accent: #16a34a; }
+.toast-error   { --toast-accent: #dc2626; }
+.toast-warn    { --toast-accent: #d97706; }
+.toast-info    { --toast-accent: #2563eb; }
+
 /* --------- Global dark-mode contrast safety for common text utilities --------- */
 /* Many components used hard-coded text-gray-9xx in light mode; ensure readable fallbacks in dark */
 .dark .text-gray-900, .dark .text-black { color: rgb(243 244 246) !important; }
@@ -246,6 +285,48 @@ textarea.input { @apply resize-y; }
 .btn-gradient:after { content:""; position:absolute; inset:2px; background:linear-gradient(135deg,#4338ca 0%,#1e3a8a 55%,#312e81 100%); border-radius:inherit; }
 .light .btn-gradient:after { background:linear-gradient(135deg,#6366f1 0%,#3b82f6 50%,#0ea5e9 100%); }
 .btn-gradient > span { position:relative; z:10; }
+
+/* ---------------- Mobile-only button hardening (prevent wrap/misalignment) ---------------- */
+@media (max-width: 420px) {
+  /* unify target size and no-wrap on small screens */
+  .btn,
+  .btn-outline,
+  .btn-ghost,
+  .btn-share,
+  .btn-gradient,
+  .btn-sm {
+    @apply whitespace-nowrap leading-none min-w-0; /* avoid text wrap */
+    min-height: 42px; /* comfortable tap target */
+  }
+  /* truncate long labels inside common button patterns */
+  .btn > span,
+  .btn-gradient > span,
+  .btn-share > span,
+  .btn-ghost > span { @apply truncate; }
+
+  /* generic safeguard for pill-style inline-flex buttons used without btn classes */
+  a.inline-flex.rounded-full.h-11,
+  button.inline-flex.rounded-full.h-11 {
+    @apply whitespace-nowrap leading-none min-w-0;
+    min-height: 42px;
+    font-size: 13px; /* slightly smaller label to prevent wrap */
+    line-height: 1;  /* align vertically */
+  }
+  a.inline-flex.rounded-full.h-11 > span,
+  button.inline-flex.rounded-full.h-11 > span {
+    @apply truncate;
+  }
+
+  /* icons inside buttons scale down slightly on tiny screens */
+  .btn svg, .btn-gradient svg, .btn-share svg, .btn-ghost svg,
+  a.inline-flex.rounded-full.h-11 svg, button.inline-flex.rounded-full.h-11 svg {
+    width: 16px; height: 16px;
+  }
+}
+
+/* Safe-area padding utility for iOS home indicator overlap */
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom, 0px), 0px); }
+
 
 /* Input with icon wrapper */
 .field { @apply relative; }

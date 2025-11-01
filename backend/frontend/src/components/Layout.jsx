@@ -1,7 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar.jsx';
 import ChatWidget from './ChatWidget.jsx';
-import { subscribe } from '../lib/toast.js';
+import { subscribe, getToastConfig, subscribeConfig } from '../lib/toast.js';
 
 export default function Layout({ children }){
   React.useEffect(()=>{
@@ -44,21 +44,45 @@ function Footer(){
 
 function ToastContainer(){
   const [items, setItems] = React.useState([]);
+  const [pos, setPos] = React.useState(getToastConfig().position);
   React.useEffect(()=>{
-    return subscribe((evt)=>{
+    const unsub1 = subscribe((evt)=>{
       if (evt.action === 'add') setItems((arr)=>[...arr, evt.item]);
       if (evt.action === 'remove') setItems((arr)=>arr.filter(x=>x.id!==evt.id));
     });
+    const unsub2 = subscribeConfig((cfg)=> setPos(cfg.position));
+    return ()=> { unsub1(); unsub2(); };
   },[]);
+  const base = 'fixed z-[9999] space-y-2 pointer-events-none';
+  const map = {
+    'top-right': 'top-4 right-4 items-end',
+    'top-left': 'top-4 left-4 items-start',
+    'top-center': 'top-4 left-1/2 -translate-x-1/2 items-center',
+    'bottom-right': 'bottom-4 right-4 items-end',
+    'bottom-left': 'bottom-4 left-4 items-start',
+    'bottom-center': 'bottom-4 left-1/2 -translate-x-1/2 items-center',
+  };
+  const animMap = {
+    'top-right': 'toast-enter-right',
+    'bottom-right': 'toast-enter-right',
+    'top-left': 'toast-enter-left',
+    'bottom-left': 'toast-enter-left',
+    'top-center': 'toast-enter-top',
+    'bottom-center': 'toast-enter-bottom',
+  };
+  const typeClass = (type)=> type==='success' ? 'toast-success' : type==='error' ? 'toast-error' : type==='warn' ? 'toast-warn' : 'toast-info';
+  const typeIcon = (type)=> type==='success' ? '✓' : type==='error' ? '✖' : type==='warn' ? '⚠' : 'ℹ';
   return (
-    <div className="fixed bottom-4 right-4 z-[9999] space-y-2">
+    <div className={`${base} flex flex-col ${map[pos] || map['top-right']}`}>
       {items.map((t)=> (
-        <div key={t.id} className="px-4 py-3 rounded-lg shadow border border-black/10 dark:border-white/10 bg-[#fffdfa]/95 dark:bg-gray-900/95 text-gray-900 dark:text-gray-100 min-w-[240px]">
-          <div className="flex items-start gap-3">
-            <span className={`mt-0.5 h-2.5 w-2.5 rounded-full ${t.type==='success'?'bg-green-600':t.type==='error'?'bg-red-600':t.type==='warn'?'bg-amber-500':'bg-gray-500'}`}></span>
-            <div>
-              <div className="text-sm font-medium text-gray-900">{t.title}</div>
-              {t.message && <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{t.message}</div>}
+        <div key={t.id} className={`pointer-events-auto min-w-[240px] toast-card ${typeClass(t.type)} ${animMap[pos] || animMap['top-right']}`}>
+          <div className="px-4 py-3">
+            <div className="flex items-start gap-3">
+              <span className="text-lg mt-0.5" style={{ color: 'var(--toast-accent)' }}>{typeIcon(t.type)}</span>
+              <div>
+                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{t.title}</div>
+                {t.message && <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{t.message}</div>}
+              </div>
             </div>
           </div>
         </div>

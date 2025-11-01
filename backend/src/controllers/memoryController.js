@@ -95,10 +95,40 @@ export async function updateMemory(req, res, next) {
 }
 
 export async function deleteMemory(req, res) {
-  const deleted = await Memory.findOneAndDelete({
-    _id: req.params.id,
-    userId: req.user.id,
-  });
-  if (!deleted) return res.status(404).json({ message: "Not found" });
-  res.json({ success: true });
+  // Deletion of memories is disabled by product policy; use resetMemory instead
+  return res
+    .status(405)
+    .json({
+      message:
+        "Xoá memories đã bị vô hiệu hoá. Vui lòng dùng 'Reset as default'.",
+    });
+}
+
+export async function resetMemory(req, res, next) {
+  try {
+    // Reset selected fields back to default/empty while keeping id and slug
+    const update = {
+      $set: {
+        title: "My Memory",
+        description: "",
+        media: [],
+        galleryStyle: "grid",
+        tags: [],
+        isPublic: true,
+      },
+      $unset: {
+        coverImageUrl: "",
+        bgAudioUrl: "",
+      },
+    };
+    const updated = await Memory.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.id },
+      update,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ message: "Not found" });
+    res.json(updated);
+  } catch (e) {
+    next(e);
+  }
 }

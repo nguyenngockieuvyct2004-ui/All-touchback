@@ -1,6 +1,18 @@
 let listeners = [];
 let idCounter = 1;
 
+// Configurable position for toast container
+const POSITIONS = new Set([
+  'top-right', 'top-left', 'top-center',
+  'bottom-right', 'bottom-left', 'bottom-center'
+]);
+let config = { position: 'top-right' };
+try{
+  const saved = localStorage.getItem('tb-toast-pos');
+  if (saved && POSITIONS.has(saved)) config.position = saved;
+}catch{}
+let cfgListeners = [];
+
 export function showToast({
   type = "info",
   title,
@@ -29,6 +41,22 @@ export function subscribe(fn) {
   };
 }
 
+export function getToastConfig(){
+  return { ...config };
+}
+
+export function subscribeConfig(fn){
+  cfgListeners.push(fn);
+  return () => { cfgListeners = cfgListeners.filter(x=> x!==fn); };
+}
+
+export function setToastPosition(pos){
+  if(!POSITIONS.has(pos)) return;
+  config = { ...config, position: pos };
+  try{ localStorage.setItem('tb-toast-pos', pos); }catch{}
+  cfgListeners.forEach(fn=> fn({ ...config }));
+}
+
 export const toast = {
   info: (msg, title = "Thông báo") =>
     showToast({ type: "info", title, message: msg }),
@@ -38,4 +66,5 @@ export const toast = {
     showToast({ type: "warn", title, message: msg }),
   error: (msg, title = "Lỗi") =>
     showToast({ type: "error", title, message: msg, duration: 4000 }),
+  setPosition: (pos) => setToastPosition(pos),
 };

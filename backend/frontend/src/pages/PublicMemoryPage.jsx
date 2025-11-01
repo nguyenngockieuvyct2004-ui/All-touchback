@@ -292,12 +292,12 @@ export default function PublicMemoryPage({ standalone = false }){
                   <div className="max-w-xl mx-auto text-center text-[13px] md:text-sm text-gray-700 dark:text-gray-300">
                     Tạo ký ức lưu trữ của riêng bạn tại đây
                   </div>
-                  <div className="mt-3 flex justify-center gap-3">
-                    <a href="/" className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-medium shadow-lg hover:brightness-110 transition">
+                  <div className="mt-3 flex items-stretch justify-center gap-3 whitespace-nowrap">
+                    <a href="/" className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-gradient-to-r from-indigo-500 to-fuchsia-500 text-white font-medium shadow-lg hover:brightness-110 transition min-w-0">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12l2-2 7-7 7 7 2 2"/><path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"/></svg>
-                      <span>Về trang chủ TouchBack</span>
+                      <span className="truncate">Về trang chủ TouchBack</span>
                     </a>
-                    <button onClick={()=> setShowQR(true)} className="btn-share">
+                    <button onClick={()=> setShowQR(true)} className="btn-share shrink-0">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h3v3h-3v-3zm5 0h3v3h-3v-3zm-5 5h3v3h-3v-3zm5 0h3v3h-3v-3z" fill="currentColor"/></svg>
                       Chia sẻ
                     </button>

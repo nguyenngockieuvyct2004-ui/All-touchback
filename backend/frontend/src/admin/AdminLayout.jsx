@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import ThemeToggle from '../components/ThemeToggle.jsx';
+import api from '../lib/api.js';
+import { Routes, Route } from 'react-router-dom';
 
 function SideLink({ to, children }){
   return (
@@ -17,6 +19,22 @@ function SideLink({ to, children }){
 export default function AdminLayout(){
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [newContacts, setNewContacts] = useState(0);
+
+  useEffect(()=>{
+    let mounted = true;
+    const load = async ()=>{
+      try{
+        const r = await api.get('/contact', { params: { status: 'new', limit: 1 } });
+        if(mounted) setNewContacts(Number(r.data?.total||0));
+      }catch{ /* silent */ }
+    };
+    load();
+    const onSignal = ()=> load();
+    window.addEventListener('tb-contacts-updated', onSignal);
+    const iv = setInterval(load, 60000);
+    return ()=>{ mounted=false; window.removeEventListener('tb-contacts-updated', onSignal); clearInterval(iv); };
+  },[]);
   return (
     <div className="min-h-screen bg-[#070b14] text-white">
       {/* Sidebar */}
@@ -39,6 +57,14 @@ export default function AdminLayout(){
           <SideLink to="/admin/orders">Orders</SideLink>
           <SideLink to="/admin/products">Products</SideLink>
           <SideLink to="/admin/users">Users</SideLink>
+          <SideLink to="/admin/contacts">
+            <span className="flex-1">Contacts</span>
+            {newContacts>0 && (
+              <span className="ml-auto inline-flex min-w-[1.25rem] h-5 px-1.5 items-center justify-center rounded-full text-[11px] bg-rose-500 text-white">
+                {newContacts>99?'99+':newContacts}
+              </span>
+            )}
+          </SideLink>
         </nav>
 
         {/* Bottom controls */}

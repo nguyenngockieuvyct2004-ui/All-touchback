@@ -79,7 +79,7 @@ export default function AdminDashboardPage(){
           <p className="text-sm text-white/60">Tổng quan cửa hàng</p>
         </div>
         <div>
-          <select value={range} onChange={e=>setRange(e.target.value)} className="input bg-white/10 border-white/10">
+          <select value={range} onChange={e=>setRange(e.target.value)} className="input bg-white/10 border-white/20 text-white dark:text-white">
             <option value="3m">3 tháng</option>
             <option value="6m">6 tháng</option>
             <option value="12m">12 tháng</option>

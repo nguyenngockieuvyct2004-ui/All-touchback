@@ -79,6 +79,7 @@ export default function Navbar(){
             <NavLink to="/education" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Giáo dục</NavLink>
             <NavLink to="/huong-dan" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Hướng dẫn</NavLink>
             <NavLink to="/about" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Về chúng tôi</NavLink>
+            <NavLink to="/contact" className={({isActive})=>`relative px-3 py-2 rounded-md text-sm font-medium transition ${isActive? 'bg-black/10 text-gray-900 dark:bg-white/10 dark:text-white' : 'hover:bg-black/5 dark:hover:bg-white/5 text-gray-900 dark:text-gray-100'}`}>Liên Hệ</NavLink>
           </nav>
         </div>
         
@@ -162,7 +163,9 @@ export default function Navbar(){
             <button onClick={()=>{ setOpen(false); navigate('/education'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giáo dục</button>
             <button onClick={()=>{ setOpen(false); navigate('/huong-dan'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Hướng dẫn</button>
             <button onClick={()=>{ setOpen(false); navigate('/about'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Về chúng tôi</button>
+            <button onClick={()=>{ setOpen(false); navigate('/contact'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Liên Hệ</button>
             <button onClick={()=>{ setOpen(false); navigate('/cart'); }} className="text-left px-3 py-2 rounded-md text-sm w-full hover:bg-black/5 dark:hover:bg-white/5">Giỏ hàng</button>
+            
           </nav>
 
           <div className="mt-auto border-t border-black/10 dark:border-white/10 pt-3 flex flex-col gap-2">

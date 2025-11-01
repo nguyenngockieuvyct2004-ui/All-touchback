@@ -133,7 +133,8 @@ export default function PublicCardPage() {
         <>
           {/* Hero / centered paper card */}
           <div className="relative">
-            <div className="aspect-[16/6] sm:aspect-[18/6] w-full rounded-2xl overflow-hidden shadow-sm">
+            {/* Taller cover on mobile to avoid being fully hidden by the overlay card */}
+            <div className="aspect-[16/9] sm:aspect-[18/6] w-full rounded-2xl overflow-hidden shadow-sm">
               {profile.cover ? (
                 <img loading="lazy" src={profile.cover} alt="cover" className="w-full h-full object-cover" />
               ) : (
@@ -141,8 +142,9 @@ export default function PublicCardPage() {
               )}
             </div>
 
-            <div className="-mt-24 relative z-20">
-              <div className="max-w-3xl mx-auto glass-card p-6 sm:p-8 animate-fadeInUp" style={{marginTop:'-2.6rem'}}>
+            {/* Slightly less overlap on mobile; keep previous overlap for >= sm */}
+            <div className="-mt-16 sm:-mt-24 relative z-20">
+              <div className="max-w-3xl mx-auto glass-card p-6 sm:p-8 animate-fadeInUp sm:-mt-[2.6rem]">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
                   <div className="flex items-center justify-center sm:justify-start">
                     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden shadow-2xl ring-4 ring-white dark:ring-gray-900 bg-gray-100 transition-transform">
@@ -191,8 +193,8 @@ export default function PublicCardPage() {
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className={`inline-block w-1 h-5 rounded ${accentBg} dark:bg-sky-500`} />Thông tin liên hệ</h2>
               <div className="grid grid-cols-1 gap-3">
                 {profile.phone && (
-                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
-                    <div className="flex items-center gap-3">
+                  <div className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-emerald-600">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 4.18 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.72c.12.84.36 1.66.72 2.42a2 2 0 0 1-.45 2.11L9.91 9.91a16 16 0 0 0 6 6l1.66-1.66a2 2 0 0 1 2.11-.45c.76.36 1.58.6 2.42.72A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -200,7 +202,7 @@ export default function PublicCardPage() {
                       </div>
                       <div className="truncate font-medium">{profile.phone}</div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-2 sm:mt-0 flex items-center gap-2">
                       <a href={`tel:${profile.phone}`} className="btn-sm btn-ghost">Gọi</a>
                       <button onClick={()=>copyToClipboard(profile.phone,'Số điện thoại')} className="btn-sm btn-ghost">Sao chép</button>
                     </div>
@@ -208,8 +210,8 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.email && (
-                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
-                    <div className="flex items-center gap-3">
+                  <div className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-indigo-600">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M3 8.5v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -218,7 +220,7 @@ export default function PublicCardPage() {
                       </div>
                       <div className="truncate font-medium">{profile.email}</div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-2 sm:mt-0 flex items-center gap-2">
                       <a href={`mailto:${profile.email}`} className="btn-sm btn-ghost">Gửi</a>
                       <button onClick={()=>copyToClipboard(profile.email,'Email')} className="btn-sm btn-ghost">Sao chép</button>
                     </div>
@@ -226,14 +228,14 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.website && (
-                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
-                    <div className="flex items-center gap-3">
+                  <div className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 rounded-lg bg-white dark:bg-white border border-black/10 grid place-items-center overflow-hidden">
                         <BrandFavicon url={profile.website} label={getHost(profile.website)} size={20} />
                       </div>
                       <div className="truncate font-medium">{profile.website.replace(/^https?:\/\//,'').replace(/\/$/,'')}</div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-2 sm:mt-0 flex items-center gap-2">
                       <a href={normalizeUrl(profile.website)} target="_blank" rel="noreferrer" className="btn-sm btn-ghost">Mở</a>
                       <button onClick={()=>copyToClipboard(profile.website,'Website')} className="btn-sm btn-ghost">Sao chép</button>
                     </div>
@@ -241,8 +243,8 @@ export default function PublicCardPage() {
                 )}
 
                 {profile.address && (
-                  <div className={`flex items-center justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
-                    <div className="flex items-center gap-3">
+                  <div className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="w-10 h-10 rounded-lg bg-white border border-black/10 grid place-items-center text-rose-600">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -251,7 +253,7 @@ export default function PublicCardPage() {
                       </div>
                       <div className="truncate font-medium">{profile.address}</div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="mt-2 sm:mt-0 flex items-center gap-2">
                       <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`} target="_blank" rel="noreferrer" className="btn-sm btn-ghost">Bản đồ</a>
                       <button onClick={()=>copyToClipboard(profile.address,'Địa chỉ')} className="btn-sm btn-ghost">Sao chép</button>
                     </div>

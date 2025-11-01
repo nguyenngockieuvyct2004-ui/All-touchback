@@ -37,10 +37,9 @@ export default function MemoriesPage(){
     return arr;
   },[q, sort, memories]);
 
+  // Delete disabled by policy; no-op retained for compatibility
   async function onDelete(id){
-    if(!confirm('Xoá kỷ niệm này?')) return;
-    try{ await api.delete(`/memories/${id}`); setMemories(prev => prev.filter(m=> (m._id||m.id)!==id)); }
-    catch{ alert('Xoá thất bại'); }
+    alert('Xoá memories đã bị vô hiệu hoá. Vui lòng dùng Reset trong chi tiết memory.');
   }
 
   return <div className="space-y-6">
@@ -52,7 +51,6 @@ export default function MemoriesPage(){
           <option value="newest">Mới nhất</option>
           <option value="oldest">Cũ nhất</option>
         </select>
-        {/* Theo yêu cầu: bỏ nút tạo memories thủ công; memories sẽ được tạo tự động khi đơn hàng 'paid' với lựa chọn A */}
       </div>
     </div>
     <ErrorMessage error={error} />
@@ -61,7 +59,6 @@ export default function MemoriesPage(){
       {filtered.map(m=> (
         <div key={m._id||m.id} className="relative group">
           <MemoryCard memory={m} />
-          {/* Theo yêu cầu: bỏ nút Xoá ở danh sách */}
         </div>
       ))}
     </div>}

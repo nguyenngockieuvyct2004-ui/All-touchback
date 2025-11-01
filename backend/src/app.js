@@ -19,6 +19,7 @@ import publicRoutes from "./routes/publicRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import adminUserRoutes from "./routes/adminUserRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
@@ -72,6 +73,7 @@ app.use("/upload", uploadRoutes);
 app.use("/public", publicRoutes);
 app.use("/admin/users", adminUserRoutes);
 app.use("/stats", statsRoutes);
+app.use("/contact", contactRoutes);
 
 app.use(errorHandler);
 
