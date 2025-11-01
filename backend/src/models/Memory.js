@@ -29,6 +29,18 @@ const memorySchema = new Schema(
     galleryStyle: { type: String, enum: ["grid", "carousel"], default: "grid" },
     tags: [String],
     isPublic: { type: Boolean, default: true },
+    // Trạng thái thất lạc (Lost mode) cho memory
+    lost: {
+      isLost: { type: Boolean, default: false }, // Bật/tắt chế độ Lost
+      title: { type: String, default: "" }, // Tiêu đề hiển thị khi Lost
+      message: { type: String, default: "" }, // Nội dung hiển thị khi Lost
+      contact: {
+        name: { type: String, default: "" }, // Tên liên hệ
+        phone: { type: String, default: "" }, // Số điện thoại
+        email: { type: String, default: "" }, // Email
+      },
+      updatedAt: { type: Date }, // Thời điểm cấu hình gần nhất
+    },
   },
   { timestamps: true }
 );

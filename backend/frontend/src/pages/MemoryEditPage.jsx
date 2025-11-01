@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../lib/api.js';
+import { toast } from '../lib/toast.js';
+import LostModeSwitch from '../components/LostModeSwitch.jsx';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 
 export default function MemoryEditPage(){
@@ -17,6 +19,14 @@ export default function MemoryEditPage(){
   const [galleryStyle, setGalleryStyle] = useState('grid');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [isCoverDragOver, setIsCoverDragOver] = useState(false);
+  // Lost mode form state
+  const [lostEnabled, setLostEnabled] = useState(false);
+  const [lostTitle, setLostTitle] = useState('');
+  const [lostMessage, setLostMessage] = useState('');
+  const [lostName, setLostName] = useState('');
+  const [lostPhone, setLostPhone] = useState('');
+  const [lostEmail, setLostEmail] = useState('');
+  const [savingLost, setSavingLost] = useState(false);
 
   // Form chỉnh sửa: theo yêu cầu bỏ phần nhập URL ảnh khi tạo
   const [mType, setMType] = useState('image');
@@ -34,6 +44,13 @@ export default function MemoryEditPage(){
           setBgAudioUrl(r.data.bgAudioUrl || '');
           setGalleryStyle(r.data.galleryStyle || 'grid');
           setCoverImageUrl(r.data.coverImageUrl || '');
+          const lost = r.data.lost || { isLost:false, title:'', message:'', contact:{ name:'', phone:'', email:'' } };
+          setLostEnabled(!!lost.isLost);
+          setLostTitle(lost.title||'');
+          setLostMessage(lost.message||'');
+          setLostName(lost.contact?.name||'');
+          setLostPhone(lost.contact?.phone||'');
+          setLostEmail(lost.contact?.email||'');
         })
         .catch(()=> setError('Không tải được dữ liệu'));
     } else {
@@ -310,6 +327,60 @@ export default function MemoryEditPage(){
   <button disabled={saving || !title.trim()} className="btn btn-primary w-full sm:w-auto md:min-w-[120px]">{saving?'Đang lưu...':'Lưu'}</button>
         {!title.trim() && <span className="text-xs text-amber-600 dark:text-amber-400">Cần tiêu đề.</span>}
       </div>
+
+      {/* Lost mode editor */}
+      {!isNew && (
+        <div className="pt-4 border-t border-border space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-semibold">Trường hợp bị mất</h3>
+            <LostModeSwitch isLost={!!lostEnabled} onToggle={(v)=> setLostEnabled(!!v)} />
+          </div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div className="space-y-1 sm:col-span-2">
+              <label className="label">Tiêu đề Lost</label>
+              <input className="input" value={lostTitle} onChange={e=>setLostTitle(e.target.value)} placeholder="Tôi bị mất đồ..." />
+            </div>
+            <div className="space-y-1 sm:col-span-2">
+              <label className="label">Lời nhắn</label>
+              <textarea className="input min-h-[100px]" value={lostMessage} onChange={e=>setLostMessage(e.target.value)} placeholder="Nếu bạn nhặt được, xin liên hệ..." />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Tên liên hệ</label>
+              <input className="input" value={lostName} onChange={e=>setLostName(e.target.value)} placeholder="Người liên hệ" />
+            </div>
+            <div className="space-y-1">
+              <label className="label">Số điện thoại</label>
+              <input className="input" value={lostPhone} onChange={e=>setLostPhone(e.target.value)} placeholder="090..." />
+            </div>
+            <div className="space-y-1 sm:col-span-2">
+              <label className="label">Email</label>
+              <input className="input" value={lostEmail} onChange={e=>setLostEmail(e.target.value)} placeholder="you@example.com" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button type="button" className="btn btn-outline" disabled={savingLost} onClick={async ()=>{
+              try{
+                setSavingLost(true);
+                const payload = { isLost: !!lostEnabled, title: lostTitle, message: lostMessage, contact: { name: lostName, phone: lostPhone, email: lostEmail } };
+                await api.patch(`/memories/${id}/lost`, payload);
+                toast.success('Đã lưu Lost mode');
+                // show subtle 'Đã lưu' pill similar to your mock
+                const badge = document.createElement('span');
+                badge.textContent = 'Đã lưu';
+                badge.className = 'text-[11px] px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20';
+                const container = document.getElementById('lost-save-badge');
+                if(container){
+                  container.innerHTML = '';
+                  container.appendChild(badge);
+                  setTimeout(()=>{ if(container) container.innerHTML=''; }, 1800);
+                }
+              }catch(e){ toast.error(e.response?.data?.message||'Lưu thất bại'); }
+              finally{ setSavingLost(false); }
+            }}>Lưu Lost mode</button>
+            <span id="lost-save-badge" />
+          </div>
+        </div>
+      )}
     </form>
   </div>;
 }

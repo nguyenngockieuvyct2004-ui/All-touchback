@@ -48,9 +48,13 @@ export async function getPublicCard(req, res) {
       }
     : null;
 
-  // Return minimal public info
+  // Trả về thông tin công khai tối thiểu, kèm trạng thái lost của danh thiếp
   res.json({
-    card: { slug: card.slug, title: card.title || card.profile?.name || null },
+    card: {
+      slug: card.slug,
+      title: card.title || card.profile?.name || null,
+      lost: card.lost || { isLost: false },
+    },
     profile,
     memory,
   });
@@ -112,5 +116,7 @@ export async function getPublicMemory(req, res) {
     galleryStyle: m.galleryStyle || "grid",
     createdAt: m.createdAt,
     updatedAt: m.updatedAt,
+    // Đưa trạng thái lost để FE quyết định hiển thị Lost Panel
+    lost: m.lost || { isLost: false },
   });
 }

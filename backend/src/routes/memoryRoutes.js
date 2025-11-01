@@ -6,6 +6,7 @@ import {
   updateMemory,
   deleteMemory,
   resetMemory,
+  updateLostMemory,
 } from "../controllers/memoryController.js";
 import { authRequired } from "../middleware/auth.js";
 
@@ -17,5 +18,6 @@ router.get("/:id", authRequired, getMemory);
 router.put("/:id", authRequired, updateMemory);
 router.delete("/:id", authRequired, deleteMemory);
 router.post("/:id/reset", authRequired, resetMemory);
+router.patch("/:id/lost", authRequired, updateLostMemory);
 
 export default router;

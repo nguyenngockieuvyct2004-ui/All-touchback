@@ -3,6 +3,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import api from '../lib/api.js';
 import { toast } from '../lib/toast.js';
 import { motion } from 'framer-motion';
+import LostPanel from '../components/LostPanel.jsx';
 
 // Helpers to show brand-specific icons (Facebook, TikTok, etc.) via site favicon
 const normalizeUrl = (u='') => {
@@ -131,8 +132,15 @@ export default function PublicCardPage() {
 
       {!loading && !error && (
         <>
-          {/* Hero / centered paper card */}
-          <div className="relative">
+          {/* Khi danh thiếp ở chế độ Lost: ẩn toàn bộ thông tin, hiển thị LostPanel */}
+          {data?.card?.lost?.isLost ? (
+            <div className="mt-10">
+              <LostPanel lost={data.card.lost} imageSrc="/assets/hinhanhtimdothatlac.png" fullImage={true} />
+            </div>
+          ) : (
+            <>
+            {/* Hero / centered paper card */}
+            <div className="relative">
             {/* Taller cover on mobile to avoid being fully hidden by the overlay card */}
             <div className="aspect-[16/9] sm:aspect-[18/6] w-full rounded-2xl overflow-hidden shadow-sm">
               {profile.cover ? (
@@ -339,25 +347,19 @@ export default function PublicCardPage() {
             </section>
           )}
 
-          {/* Map placeholder if address */}
-          {/* {profile.address && (
+          {/* Map placeholder if address (disabled for now) */}
+          {/*
+          {profile.address && (
             <section className="mt-8 px-6 space-y-4">
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className="inline-block w-1 h-5 rounded bg-[#031a2c] dark:bg-sky-500" />Bản đồ</h2>
-              <div className="w-full aspect-[5/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 relative"> */}
-                {/* Hide iframe on small screens to save resources; provide link instead */}
-                {/* <div className="hidden sm:block absolute inset-0">
-                  <iframe
-                    title="map"
-                    className="absolute inset-0 w-full h-full"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyD-PLACEHOLDER&q=${encodeURIComponent(profile.address)}`}
-                  />
-                </div>
-                <a className="block sm:hidden w-full h-full flex items-center justify-center text-sm text-blue-600 dark:text-blue-400" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`} target="_blank" rel="noreferrer">Mở bản đồ trên Google Maps</a>
+              <div className="w-full aspect-[5/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-800 relative">
+                <a className="block w-full h-full flex items-center justify-center text-sm text-blue-600 dark:text-blue-400" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(profile.address)}`} target="_blank" rel="noreferrer">Mở bản đồ trên Google Maps</a>
               </div>
             </section>
-          )} */}
+          )}
+          */}
+            </>
+          )}
 
           <footer className="mt-12 px-6 text-center pb-12 text-[12px] text-gray-500 dark:text-gray-500">© 2025 TouchBack</footer>
         </>

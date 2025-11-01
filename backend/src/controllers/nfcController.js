@@ -98,6 +98,46 @@ export async function updateCard(req, res, next) {
   }
 }
 
+// ---------------- Lost mode (Active/Lost) cho danh thiếp ----------------
+const lostCardSchema = Joi.object({
+  isLost: Joi.boolean().required(),
+  title: Joi.string().allow("", null).default(""),
+  message: Joi.string().allow("", null).default(""),
+  contact: Joi.object({
+    name: Joi.string().allow("", null).default(""),
+    phone: Joi.string().allow("", null).default(""),
+    email: Joi.string().email({ tlds: false }).allow("", null).default(""),
+  }).default({}),
+}).unknown(false);
+
+export async function updateLostCard(req, res, next) {
+  try {
+    const data = await lostCardSchema.validateAsync(req.body || {}, {
+      stripUnknown: true,
+    });
+    const card = await NfcCard.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+    if (!card) return res.status(404).json({ message: "Not found" });
+    card.lost = {
+      isLost: !!data.isLost,
+      title: data.title || "",
+      message: data.message || "",
+      contact: {
+        name: data.contact?.name || "",
+        phone: data.contact?.phone || "",
+        email: data.contact?.email || "",
+      },
+      updatedAt: new Date(),
+    };
+    await card.save();
+    res.json(card);
+  } catch (e) {
+    next(e);
+  }
+}
+
 export async function listCardMemories(req, res, next) {
   try {
     const card = await NfcCard.findOne({
@@ -134,7 +174,14 @@ export async function resolveSlug(req, res) {
     _id: { $in: card.linkedMemoryIds },
     isPublic: true,
   }).sort({ createdAt: -1 });
-  res.json({ card: { slug: card.slug, title: card.title }, memories });
+  res.json({
+    card: {
+      slug: card.slug,
+      title: card.title,
+      lost: card.lost || { isLost: false },
+    },
+    memories,
+  });
 }
 
 export async function activateCard(req, res) {

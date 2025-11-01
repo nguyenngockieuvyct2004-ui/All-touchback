@@ -130,3 +130,45 @@ export async function resetMemory(req, res, next) {
     next(e);
   }
 }
+
+// ---------------- Lost mode (Active/Lost) ----------------
+// Schema validate payload cho chế độ Lost
+const lostSchema = Joi.object({
+  isLost: Joi.boolean().required(),
+  title: Joi.string().allow("", null).default(""),
+  message: Joi.string().allow("", null).default(""),
+  contact: Joi.object({
+    name: Joi.string().allow("", null).default(""),
+    phone: Joi.string().allow("", null).default(""),
+    email: Joi.string().email({ tlds: false }).allow("", null).default(""),
+  }).default({}),
+}).unknown(false);
+
+// API: PATCH /memories/:id/lost - Bật/tắt và cấu hình nội dung Lost cho Memory
+export async function updateLostMemory(req, res, next) {
+  try {
+    const data = await lostSchema.validateAsync(req.body || {}, {
+      stripUnknown: true,
+    });
+    const mem = await Memory.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+    if (!mem) return res.status(404).json({ message: "Not found" });
+    mem.lost = {
+      isLost: !!data.isLost,
+      title: data.title || "",
+      message: data.message || "",
+      contact: {
+        name: data.contact?.name || "",
+        phone: data.contact?.phone || "",
+        email: data.contact?.email || "",
+      },
+      updatedAt: new Date(),
+    };
+    await mem.save();
+    res.json(mem);
+  } catch (e) {
+    next(e);
+  }
+}

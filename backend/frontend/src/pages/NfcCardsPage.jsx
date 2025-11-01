@@ -3,6 +3,7 @@ import api from '../lib/api.js';
 import { toast } from '../lib/toast.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import EmptyState from '../components/EmptyState.jsx';
+import LostModeSwitch from '../components/LostModeSwitch.jsx';
 
 export default function NfcCardsPage(){
   const [cards,setCards] = useState([]);
@@ -16,6 +17,7 @@ export default function NfcCardsPage(){
   const [uploadingAvatar, setUploadingAvatar] = useState({}); // {cardId: boolean}
   const [lastSaved, setLastSaved] = useState({}); // {cardId: timestamp}
   const [highlightedCards, setHighlightedCards] = useState({});
+  const [savingLost, setSavingLost] = useState({}); // {cardId:boolean}
 
   function inputClass(cardId){
     return highlightedCards[cardId] ? 'ring-2 ring-emerald-300 animate-pulse' : '';
@@ -238,9 +240,8 @@ export default function NfcCardsPage(){
             )}
           </div>
         </div>
-  {/* Theo yêu cầu: bỏ chức năng liên kết memory từ trang NFC */}
 
-  {/* Bỏ selector chọn primary memory */}
+        {/* (Chế độ sẽ hiển thị trong header của phần Lost editor bên dưới) */}
 
         {/* Profile form */}
         <div className="pt-2 border-t border-border space-y-3">
@@ -335,6 +336,59 @@ export default function NfcCardsPage(){
                 <span>Đã lưu</span>
               </span>
             )}
+          </div>
+
+          {/* Lost mode editor */}
+          <div className="pt-4 border-t border-border space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium">Trường hợp bị mất</h4>
+              <LostModeSwitch isLost={!!card.lost?.isLost} disabled={!!savingLost[card._id]} onToggle={async (next)=>{
+                try{ setSavingLost(s=>({...s,[card._id]:true})); const r = await api.patch(`/nfc/${card._id}/lost`, { isLost: !!next }); updateLocalCard(card._id, { lost: r.data.lost }); toast.success(next?'Đã bật Lost mode':'Đã chuyển Active'); }
+                catch(e){ toast.error(e.response?.data?.message||'Lỗi cập nhật'); }
+                finally{ setSavingLost(s=>({...s,[card._id]:false})); }
+              }} />
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="space-y-1 sm:col-span-2">
+                <label className="label">Tiêu đề</label>
+                <input className="input" value={card.lost?.title||''} onChange={e=> updateLocalCard(card._id, { lost: { ...(card.lost||{}), title: e.target.value } })} placeholder="Tôi bị mất thẻ..." />
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <label className="label">Lời nhắn</label>
+                <textarea className="input min-h-[100px]" value={card.lost?.message||''} onChange={e=> updateLocalCard(card._id, { lost: { ...(card.lost||{}), message: e.target.value } })} placeholder="Nếu bạn nhặt được, xin liên hệ..." />
+              </div>
+              <div className="space-y-1">
+                <label className="label">Tên liên hệ</label>
+                <input className="input" value={card.lost?.contact?.name||''} onChange={e=> updateLocalCard(card._id, { lost: { ...(card.lost||{}), contact: { ...(card.lost?.contact||{}), name: e.target.value } } })} />
+              </div>
+              <div className="space-y-1">
+                <label className="label">Số điện thoại</label>
+                <input className="input" value={card.lost?.contact?.phone||''} onChange={e=> updateLocalCard(card._id, { lost: { ...(card.lost||{}), contact: { ...(card.lost?.contact||{}), phone: e.target.value } } })} />
+              </div>
+              <div className="space-y-1 sm:col-span-2">
+                <label className="label">Email</label>
+                <input className="input" value={card.lost?.contact?.email||''} onChange={e=> updateLocalCard(card._id, { lost: { ...(card.lost||{}), contact: { ...(card.lost?.contact||{}), email: e.target.value } } })} />
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <button type="button" className="btn btn-outline" disabled={savingProfileId===card._id} onClick={async ()=>{
+                try{
+                  setSavingProfileId(card._id);
+                  const payload = { isLost: !!(card.lost?.isLost), title: card.lost?.title||'', message: card.lost?.message||'', contact: { name: card.lost?.contact?.name||'', phone: card.lost?.contact?.phone||'', email: card.lost?.contact?.email||'' } };
+                  const r = await api.patch(`/nfc/${card._id}/lost`, payload);
+                  updateLocalCard(card._id, { lost: r.data.lost });
+                  toast.success('Đã lưu Lost mode');
+                  const el = document.querySelector(`[data-saved-badge="${card._id}"]`);
+                  if(el){
+                    el.textContent = 'Đã lưu';
+                    el.style.opacity = '1';
+                    setTimeout(()=>{ if(el){ el.style.opacity = '0'; el.textContent=''; } }, 1800);
+                  }
+                }catch(e){ toast.error(e.response?.data?.message||'Lưu thất bại'); }
+                finally{ setSavingProfileId(null); }
+              }}>Lưu Lost mode</button>
+              <span className="text-[11px] px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 opacity-0 transition" data-saved-badge={card._id}></span>
+            </div>
           </div>
         </div>
       </div>})}

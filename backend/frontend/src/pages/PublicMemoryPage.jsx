@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../lib/api.js';
+import LostPanel from '../components/LostPanel.jsx';
 
 export default function PublicMemoryPage({ standalone = false }){
   const { slug } = useParams();
@@ -118,6 +119,13 @@ export default function PublicMemoryPage({ standalone = false }){
 
         {!loading && !error && data && (
           <div className={`${standalone ? 'pt-8 sm:pt-12' : 'mt-6'}`}>
+            {/* Nếu memory đang ở trạng thái Lost: ẩn nội dung thật, hiển thị Lost Panel */}
+            {data?.lost?.isLost ? (
+              <div className="max-w-3xl mx-auto">
+                <LostPanel lost={data.lost} imageSrc="/assets/hinhanhtimdothatlac.png" fullImage={true} />
+              </div>
+            ) : (
+            <>
             {/* Khung trình bày kiểu cửa sổ ứng dụng + nền pastel giống mockup */}
             <div className="rounded-2xl overflow-hidden shadow-xl border border-black/5 bg-gradient-to-br from-pink-100 via-indigo-100 to-teal-100 dark:from-[#241a35] dark:via-[#1a243a] dark:to-[#0e1c1c]">
               {/* Thanh tiêu đề giả lập cửa sổ */}
@@ -305,6 +313,8 @@ export default function PublicMemoryPage({ standalone = false }){
                 </div>
               </div>
             </div>
+            </>
+            )}
 
             {/* Standalone: không có footer chung; có thể giữ bản quyền rất nhỏ nếu muốn */}
             {standalone ? null : <div className="text-center text-[11px] mt-6 text-gray-500">© 2025 TouchBack</div>}

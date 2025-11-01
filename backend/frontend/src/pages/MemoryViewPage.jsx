@@ -4,6 +4,7 @@ import api from '../lib/api.js';
 import { toast } from '../lib/toast.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import { MemoryCardSkeleton } from '../components/Skeleton.jsx';
+import LostModeSwitch from '../components/LostModeSwitch.jsx';
 
 export default function MemoryViewPage(){
   const { id } = useParams();
@@ -12,6 +13,7 @@ export default function MemoryViewPage(){
   const [loading,setLoading] = useState(true);
   const [error,setError] = useState('');
   const [lightbox, setLightbox] = useState(null); // {type,url,caption}
+  const [savingLost, setSavingLost] = useState(false);
 
   useEffect(()=>{
     api.get(`/memories/${id}`)
@@ -28,6 +30,21 @@ export default function MemoryViewPage(){
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-3xl font-bold tracking-tight gradient-text">{memory.title}</h1>
         <div className="flex items-center gap-2">
+          {/* Active/Lost switch
+          <LostModeSwitch
+            className="hidden sm:block mr-2"
+            disabled={savingLost}
+            isLost={!!memory?.lost?.isLost}
+            onToggle={async (next)=>{
+              try{
+                setSavingLost(true);
+                const r = await api.patch(`/memories/${id}/lost`, { isLost: !!next });
+                setMemory(m=> ({ ...(m||{}), lost: r.data.lost || { isLost: !!next } }));
+                toast.success(next? 'Đã bật Lost mode' : 'Chuyển về Active');
+              }catch(e){ toast.error(e.response?.data?.message||'Lỗi cập nhật'); }
+              finally{ setSavingLost(false); }
+            }}
+          /> */}
           {memory.slug && (
             <a href={`/pm/${memory.slug}`} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">Xem</a>
           )}
