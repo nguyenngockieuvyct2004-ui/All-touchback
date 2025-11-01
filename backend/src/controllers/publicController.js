@@ -1,5 +1,6 @@
 import NfcCard from "../models/NfcCard.js";
 import Memory from "../models/Memory.js";
+import { mapMediaToRelative, toUploadRelative } from "../utils/urls.js";
 
 export async function getPublicCard(req, res) {
   const slug = req.params.slug;
@@ -29,11 +30,29 @@ export async function getPublicCard(req, res) {
     primary = memories[0] || null;
   }
 
+  // Normalize profile and memory URLs to relative paths so they work behind proxies/Ngrok
+  const profile = card.profile
+    ? {
+        ...card.profile,
+        avatar: toUploadRelative(card.profile.avatar),
+        cover: toUploadRelative(card.profile.cover),
+      }
+    : null;
+
+  const memory = primary
+    ? {
+        ...primary,
+        media: mapMediaToRelative(primary.media),
+        coverImageUrl: toUploadRelative(primary.coverImageUrl),
+        bgAudioUrl: toUploadRelative(primary.bgAudioUrl),
+      }
+    : null;
+
   // Return minimal public info
   res.json({
     card: { slug: card.slug, title: card.title || card.profile?.name || null },
-    profile: card.profile || null,
-    memory: primary,
+    profile,
+    memory,
   });
 }
 
@@ -87,9 +106,9 @@ export async function getPublicMemory(req, res) {
   res.json({
     title: m.title,
     description: m.description ?? m.content ?? "",
-    media: m.media || [],
-    coverImageUrl: m.coverImageUrl || null,
-    bgAudioUrl: m.bgAudioUrl || null,
+    media: mapMediaToRelative(m.media || []),
+    coverImageUrl: toUploadRelative(m.coverImageUrl || null),
+    bgAudioUrl: toUploadRelative(m.bgAudioUrl || null),
     galleryStyle: m.galleryStyle || "grid",
     createdAt: m.createdAt,
     updatedAt: m.updatedAt,

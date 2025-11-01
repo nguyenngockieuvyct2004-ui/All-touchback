@@ -18,6 +18,9 @@ export default function PublicMemoryPage({ standalone = false }){
   const visCanvasRef = useRef(null);
   const tiltRef = useRef(null);
   const [showQR, setShowQR] = useState(false);
+  const videoRef = useRef(null);
+  const [vidPlaying, setVidPlaying] = useState(true);
+  const [vidMuted, setVidMuted] = useState(true); // start muted for autoplay; unmute on user action
 
   useEffect(()=>{
     setLoading(true);
@@ -91,6 +94,7 @@ export default function PublicMemoryPage({ standalone = false }){
     return ()=>{ clearTimeout(t); audioEl.removeEventListener('play', onPlay); if(rafId) cancelAnimationFrame(rafId); try{ source&&source.disconnect(); analyser&&analyser.disconnect(); audioCtx&&audioCtx.close(); }catch{} };
   },[data?.bgAudioUrl]);
 
+  const firstVideo = useMemo(()=> data?.media?.find(m=> m.type==='video') || null, [data]);
   const firstImage = useMemo(()=> data?.coverImageUrl || data?.media?.find(m=> m.type==='image')?.url || null, [data]);
   const images = useMemo(()=> {
     const all = (data?.media||[]).filter(m=> m.type==='image');
@@ -126,7 +130,7 @@ export default function PublicMemoryPage({ standalone = false }){
 
               {/* Nội dung */}
               <div className="p-6 md:p-10">
-                {/* Ảnh preview lớn nếu có */}
+                {/* Preview lớn: ưu tiên video nếu có, nếu không thì ảnh bìa/ảnh đầu tiên */}
                 <div ref={tiltRef} className="max-w-3xl mx-auto rounded-2xl overflow-hidden border border-black/10 bg-white/70 dark:bg-white/5 tb-tilt"
                      onMouseMove={(e)=>{
                        const el = tiltRef.current; if(!el) return; const r = el.getBoundingClientRect();
@@ -134,9 +138,41 @@ export default function PublicMemoryPage({ standalone = false }){
                        const rx = (0.5 - y) * 6; const ry = (x - 0.5) * 8; el.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg)`;
                      }}
                      onMouseLeave={()=>{ const el = tiltRef.current; if(el) el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)'; }}>
-                  <div className="aspect-video grid place-items-center tb-kenburns">
-                    {firstImage ? (
-                      <img loading="lazy" src={firstImage} alt={data.title} className="w-full h-full object-cover" />
+                  <div className="aspect-video relative grid place-items-center bg-black">
+                    {firstVideo ? (
+                      <>
+                        <video
+                          ref={videoRef}
+                          src={firstVideo.url}
+                          poster={firstImage || undefined}
+                          className="w-full h-full object-contain object-center"
+                          playsInline
+                          muted={vidMuted}
+                          controls
+                          autoPlay
+                          loop
+                          onPlay={()=> setVidPlaying(true)}
+                          onPause={()=> setVidPlaying(false)}
+                        />
+                        {/* Overlay controls (play/pause + mute) */}
+                        <div className="absolute bottom-3 right-3 flex gap-2">
+                          {/* <button
+                            aria-label={vidPlaying? 'Tạm dừng video':'Phát video'}
+                            onClick={()=>{
+                              const v = videoRef.current; if(!v) return;
+                              if(v.paused){ v.play(); } else { v.pause(); }
+                            }}
+                            className="px-3 h-9 rounded-full bg-white/90 dark:bg-white/20 backdrop-blur border border-black/10 text-sm shadow"
+                          >{vidPlaying? 'Pause':'Play'}</button> */}
+                          {/* <button
+                            aria-label={vidMuted? 'Bật tiếng':'Tắt tiếng'}
+                            onClick={()=>{ const v = videoRef.current; if(!v) return; const next = !vidMuted; setVidMuted(next); v.muted = next; if(!next){ try{ v.volume = Math.max(0.6, v.volume||0.6); }catch{} } }}
+                            className="px-3 h-9 rounded-full bg-white/90 dark:bg-white/20 backdrop-blur border border-black/10 text-sm shadow"
+                          >{vidMuted? 'Unmute':'Mute'}</button> */}
+                        </div>
+                      </>
+                    ) : firstImage ? (
+                      <img loading="lazy" src={firstImage} alt={data.title} className="w-full h-full object-contain object-center" />
                     ) : (
                       <div className="text-5xl">🖼️</div>
                     )}
@@ -202,7 +238,7 @@ export default function PublicMemoryPage({ standalone = false }){
                               <div key={i} className="shrink-0 w-full">
                                 <div className="p-3">
                                   <div className="rounded-xl overflow-hidden aspect-video bg-black/10">
-                                    <img loading="lazy" src={m.url} alt={m.caption||''} className="w-full h-full object-cover" />
+                                    <img loading="lazy" src={m.url} alt={m.caption||''} className="w-full h-full object-contain object-center bg-black" />
                                   </div>
                                 </div>
                               </div>
@@ -243,8 +279,8 @@ export default function PublicMemoryPage({ standalone = false }){
                   ) : (
                     <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                       {images.map((m,i)=> (
-                        <div key={i} className="rounded-xl overflow-hidden border border-black/10 bg-white/60 dark:bg-white/5">
-                          <img loading="lazy" src={m.url} alt={m.caption||''} className="w-full h-full object-cover" />
+                        <div key={i} className="rounded-xl overflow-hidden border border-black/10 bg-black">
+                          <img loading="lazy" src={m.url} alt={m.caption||''} className="w-full h-full object-contain object-center" />
                         </div>
                       ))}
                     </div>

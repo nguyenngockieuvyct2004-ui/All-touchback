@@ -3,6 +3,7 @@ import Memory from "../models/Memory.js";
 import { generateSlug } from "../utils/generateSlug.js";
 import Joi from "joi";
 import { activateCardByCodeOrTag } from "../services/provisioningService.js";
+import { toUploadRelative } from "../utils/urls.js";
 
 const linkSchema = Joi.object({
   memoryIds: Joi.array().items(Joi.string()).default([]),
@@ -46,7 +47,8 @@ const profileSchema = Joi.object({
   website: Joi.string().uri({ allowRelative: false }).allow("", null),
   address: Joi.string().allow("", null),
   intro: Joi.string().allow("", null),
-  avatar: Joi.string().uri().allow("", null),
+  // Cho phép avatar là URL tuyệt đối hoặc đường dẫn tương đối
+  avatar: Joi.string().allow("", null),
   // allow relative or absolute path for cover (no uri constraint)
   cover: Joi.string().allow("", null),
   socials: Joi.array()
@@ -75,6 +77,13 @@ export async function updateCard(req, res, next) {
     // Support explicit remove cover if client sends profile.cover === "__REMOVE__"
     if (data.profile && data.profile.cover === "__REMOVE__") {
       data.profile.cover = "";
+    }
+    // Normalize upload-like fields to relative paths
+    if (data.profile) {
+      if (data.profile.avatar)
+        data.profile.avatar = toUploadRelative(data.profile.avatar);
+      if (data.profile.cover)
+        data.profile.cover = toUploadRelative(data.profile.cover);
     }
     if (data.primaryMemoryId === "") data.primaryMemoryId = null;
     const updated = await NfcCard.findOneAndUpdate(

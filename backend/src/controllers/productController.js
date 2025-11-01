@@ -1,5 +1,6 @@
 import Product from "../models/Product.js";
 import Joi from "joi";
+import { toUploadRelative } from "../utils/urls.js";
 
 const productSchema = Joi.object({
   name: Joi.string().min(1).required(),
@@ -8,7 +9,8 @@ const productSchema = Joi.object({
   variant: Joi.string().allow("", null),
   description: Joi.string().allow("", null),
   price: Joi.number().positive().required(),
-  images: Joi.array().items(Joi.string().uri()).default([]),
+  // Hỗ trợ cả URL tuyệt đối lẫn đường dẫn tương đối
+  images: Joi.array().items(Joi.string().min(1)).default([]),
   isFeatured: Joi.boolean().default(false),
 });
 
@@ -26,6 +28,9 @@ export async function getProduct(req, res) {
 export async function createProduct(req, res, next) {
   try {
     const data = await productSchema.validateAsync(req.body);
+    if (Array.isArray(data.images)) {
+      data.images = data.images.map((u) => toUploadRelative(u));
+    }
     const exists = await Product.findOne({ code: data.code });
     if (exists)
       return res.status(400).json({ message: "Mã sản phẩm đã tồn tại" });
@@ -42,6 +47,9 @@ export async function updateProduct(req, res, next) {
     const data = await productSchema
       .fork(["code", "category", "name", "price"], (s) => s.optional())
       .validateAsync(req.body);
+    if (Array.isArray(data.images)) {
+      data.images = data.images.map((u) => toUploadRelative(u));
+    }
     const p = await Product.findByIdAndUpdate(req.params.id, data, {
       new: true,
       runValidators: true,

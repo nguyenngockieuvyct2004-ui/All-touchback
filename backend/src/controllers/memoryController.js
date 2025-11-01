@@ -1,11 +1,13 @@
 import Memory from "../models/Memory.js";
 import Joi from "joi";
 import { generateSlug } from "../utils/generateSlug.js";
+import { mapMediaToRelative, toRelativeIfUpload } from "../utils/urls.js";
 
 const mediaItem = Joi.object({
   // Thêm 'audio' để làm nhạc nền trong public page
   type: Joi.string().valid("image", "video", "audio").required(),
-  url: Joi.string().uri().required(),
+  // Chấp nhận cả URL tuyệt đối lẫn đường dẫn tương đối
+  url: Joi.string().min(1).required(),
   caption: Joi.string().allow("", null),
 });
 
@@ -13,8 +15,9 @@ const createSchema = Joi.object({
   title: Joi.string().min(1).required(),
   description: Joi.string().allow("", null),
   media: Joi.array().items(mediaItem).max(20).default([]),
-  coverImageUrl: Joi.string().uri().allow("", null),
-  bgAudioUrl: Joi.string().uri().allow("", null),
+  // Cho phép đường dẫn tương đối để hoạt động tốt với proxy/ngrok
+  coverImageUrl: Joi.string().allow("", null),
+  bgAudioUrl: Joi.string().allow("", null),
   galleryStyle: Joi.string().valid("grid", "carousel").default("grid"),
   tags: Joi.array().items(Joi.string().min(1)).max(15).default([]),
   isPublic: Joi.boolean().default(true),
@@ -37,6 +40,11 @@ export async function createMemory(req, res, next) {
     const data = await createSchema.validateAsync(req.body, {
       stripUnknown: true,
     });
+    // Normalize any upload URLs to relative paths
+    data.media = mapMediaToRelative(data.media);
+    if (data.coverImageUrl)
+      data.coverImageUrl = toRelativeIfUpload(data.coverImageUrl);
+    if (data.bgAudioUrl) data.bgAudioUrl = toRelativeIfUpload(data.bgAudioUrl);
     if (!data.slug) data.slug = generateSlug();
     const memory = await Memory.create({ ...data, userId: req.user.id });
     res.status(201).json(memory);
@@ -60,6 +68,11 @@ export async function updateMemory(req, res, next) {
     const data = await partialSchema.validateAsync(req.body, {
       stripUnknown: true,
     });
+    // Normalize relative paths on update as well
+    if (data.media) data.media = mapMediaToRelative(data.media);
+    if (data.coverImageUrl)
+      data.coverImageUrl = toRelativeIfUpload(data.coverImageUrl);
+    if (data.bgAudioUrl) data.bgAudioUrl = toRelativeIfUpload(data.bgAudioUrl);
     // Nếu memory chưa có slug (cũ), tự gán slug mới để chia sẻ công khai
     const prev = await Memory.findOne({
       _id: req.params.id,

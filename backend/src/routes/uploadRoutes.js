@@ -56,9 +56,9 @@ const upload = multer({
 // POST /upload
 // Form-data: files[] (multiple)
 router.post("/", authRequired, upload.array("files"), (req, res) => {
-  const baseUrl = `${req.protocol}://${req.get("host")}`;
+  // Always return relative paths so clients can use current origin (works with proxies/Ngrok)
   const files = (req.files || []).map((f) => ({
-    url: `${baseUrl}/uploads/${f.filename}`,
+    url: `/uploads/${f.filename}`,
     type: f.mimetype.startsWith("image/")
       ? "image"
       : f.mimetype.startsWith("video/")
