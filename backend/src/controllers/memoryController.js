@@ -96,12 +96,10 @@ export async function updateMemory(req, res, next) {
 
 export async function deleteMemory(req, res) {
   // Deletion of memories is disabled by product policy; use resetMemory instead
-  return res
-    .status(405)
-    .json({
-      message:
-        "Xoá memories đã bị vô hiệu hoá. Vui lòng dùng 'Reset as default'.",
-    });
+  return res.status(405).json({
+    message:
+      "Xoá memories đã bị vô hiệu hoá. Vui lòng dùng 'Reset as default'.",
+  });
 }
 
 export async function resetMemory(req, res, next) {

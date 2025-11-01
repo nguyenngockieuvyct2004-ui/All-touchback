@@ -3,14 +3,18 @@ let idCounter = 1;
 
 // Configurable position for toast container
 const POSITIONS = new Set([
-  'top-right', 'top-left', 'top-center',
-  'bottom-right', 'bottom-left', 'bottom-center'
+  "top-right",
+  "top-left",
+  "top-center",
+  "bottom-right",
+  "bottom-left",
+  "bottom-center",
 ]);
-let config = { position: 'top-right' };
-try{
-  const saved = localStorage.getItem('tb-toast-pos');
+let config = { position: "top-right" };
+try {
+  const saved = localStorage.getItem("tb-toast-pos");
   if (saved && POSITIONS.has(saved)) config.position = saved;
-}catch{}
+} catch {}
 let cfgListeners = [];
 
 export function showToast({
@@ -41,20 +45,24 @@ export function subscribe(fn) {
   };
 }
 
-export function getToastConfig(){
+export function getToastConfig() {
   return { ...config };
 }
 
-export function subscribeConfig(fn){
+export function subscribeConfig(fn) {
   cfgListeners.push(fn);
-  return () => { cfgListeners = cfgListeners.filter(x=> x!==fn); };
+  return () => {
+    cfgListeners = cfgListeners.filter((x) => x !== fn);
+  };
 }
 
-export function setToastPosition(pos){
-  if(!POSITIONS.has(pos)) return;
+export function setToastPosition(pos) {
+  if (!POSITIONS.has(pos)) return;
   config = { ...config, position: pos };
-  try{ localStorage.setItem('tb-toast-pos', pos); }catch{}
-  cfgListeners.forEach(fn=> fn({ ...config }));
+  try {
+    localStorage.setItem("tb-toast-pos", pos);
+  } catch {}
+  cfgListeners.forEach((fn) => fn({ ...config }));
 }
 
 export const toast = {
