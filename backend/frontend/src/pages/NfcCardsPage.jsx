@@ -140,13 +140,13 @@ export default function NfcCardsPage(){
   }
 
   function addSocial(card){
-    const socials = [...(card.profile?.socials||[]), { label: '', url: '' }];
+    const socials = [...(card.profile?.socials||[]), { url: '' }];
     updateLocalCard(card._id, { profile: { ...(card.profile||{}), socials } });
   }
 
-  function updateSocial(card, idx, field, value){
+  function updateSocial(card, idx, value){
     const socials = [...(card.profile?.socials||[])];
-    socials[idx] = { ...(socials[idx]||{}), [field]: value };
+    socials[idx] = { url: value };
     updateLocalCard(card._id, { profile: { ...(card.profile||{}), socials } });
   }
 
@@ -321,8 +321,7 @@ export default function NfcCardsPage(){
             </div>
             {(card.profile?.socials||[]).map((s,idx)=> (
               <div key={idx} className="flex gap-2">
-                <input value={s.label||''} onChange={e=> updateSocial(card, idx, 'label', e.target.value)} className={`input flex-[0.5] ${inputClass(card._id)}`} placeholder="Facebook / LinkedIn / ..." />
-                <input value={s.url||''} onChange={e=> updateSocial(card, idx, 'url', e.target.value)} className={`input flex-1 ${inputClass(card._id)}`} placeholder="https://..." />
+                <input value={s.url||''} onChange={e=> updateSocial(card, idx, e.target.value)} className={`input flex-1 ${inputClass(card._id)}`} placeholder="https://www.facebook.com/yourname" />
                 <button type="button" onClick={()=>removeSocial(card, idx)} className="btn btn-outline">Xoá</button>
               </div>
             ))}

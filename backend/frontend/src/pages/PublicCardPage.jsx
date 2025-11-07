@@ -195,8 +195,8 @@ export default function PublicCardPage() {
             </div>
           </div>
 
-          {/* Contact section: single place for contact details */}
-          {(profile.phone || profile.email || profile.website || profile.address) && (
+          {/* Contact section: single place for contact details (now also shows Social links as rows) */}
+          {(profile.phone || profile.email || profile.website || profile.address || (profile.socials&&profile.socials.length)) && (
             <section className="mt-8 px-6 sm:px-8 space-y-4">
               <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className={`inline-block w-1 h-5 rounded ${accentBg} dark:bg-sky-500`} />Thông tin liên hệ</h2>
               <div className="grid grid-cols-1 gap-3">
@@ -267,6 +267,36 @@ export default function PublicCardPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Social links removed from contact block - rendered in a separate section below */}
+              </div>
+            </section>
+          )}
+
+          {/* Social links - separate dedicated section */}
+          {(profile.socials && profile.socials.length) && (
+            <section className="mt-6 px-6 sm:px-8 space-y-4">
+              <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className={`inline-block w-1 h-5 rounded ${accentBg} dark:bg-sky-500`} />Mạng xã hội</h2>
+              <div className="grid grid-cols-1 gap-3">
+                {profile.socials.map((s,i)=>{
+                  if(!s?.url) return null;
+                  const host = getHost(s.url);
+                  const display = (s.label || s.url || '').replace(/^https?:\/\//,'').replace(/\/$/,'');
+                  return (
+                    <div key={`social-${i}`} className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-lg bg-white dark:bg-white border border-black/10 grid place-items-center overflow-hidden">
+                          <BrandFavicon url={s.url} label={host} size={20} />
+                        </div>
+                        <div className="truncate font-medium">{display}</div>
+                      </div>
+                      <div className="mt-2 sm:mt-0 flex items-center gap-2">
+                        <a href={normalizeUrl(s.url)} target="_blank" rel="noreferrer" className="btn-sm btn-ghost">Mở</a>
+                        <button onClick={()=>copyToClipboard(normalizeUrl(s.url),'Liên kết')} className="btn-sm btn-ghost">Sao chép</button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </section>
           )}
@@ -296,32 +326,7 @@ export default function PublicCardPage() {
             </div>
           )}
 
-          {/* Social list row version with domain-based icons */}
-          {!!profile.socials?.length && (
-            <section className="mt-8 px-6 sm:px-8 space-y-4">
-              <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className="inline-block w-1 h-5 rounded bg-slate-900 dark:bg-sky-500" />Mạng xã hội</h2>
-              <div className="flex flex-wrap gap-3">
-                {profile.socials.map((s, i) => {
-                  const host = getHost(s.url);
-                  const display = s.label || host || 'Link';
-                  return (
-                    <a
-                      key={i}
-                      href={normalizeUrl(s.url)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="h-10 pl-2 pr-4 rounded-full bg-white dark:bg-gray-800 hover:shadow-lg text-sm inline-flex items-center gap-2 font-medium transition border border-black/5 dark:border-white/5"
-                    >
-                      <span className="w-8 h-8 rounded-md bg-white border border-black/10 grid place-items-center overflow-hidden">
-                        <BrandFavicon url={s.url} label={s.label} size={18} />
-                      </span>
-                      <span className="truncate max-w-[12rem]">{display}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            </section>
-          )}
+          {/* Social section removed: socials are shown in Contact list above */}
 
           {/* Contact Section (removed; consolidated above) */}
 
