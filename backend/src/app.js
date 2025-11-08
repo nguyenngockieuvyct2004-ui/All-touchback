@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { setupPassport } from "./config/passport.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import categoryRoutes from "./routes/categoryRoutes.js";
 import cartRoutes from "./routes/cartRoutes.js";
 import memoryRoutes from "./routes/memoryRoutes.js";
 import nfcRoutes from "./routes/nfcRoutes.js";
@@ -63,6 +64,7 @@ app.get("/health", (_req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
+app.use("/categories", categoryRoutes);
 app.use("/cart", cartRoutes);
 app.use("/orders", orderRoutes);
 app.use("/memories", memoryRoutes);

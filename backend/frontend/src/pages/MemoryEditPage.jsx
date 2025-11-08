@@ -333,7 +333,25 @@ export default function MemoryEditPage(){
         <div className="pt-4 border-t border-border space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold">Trường hợp bị mất</h3>
-            <LostModeSwitch isLost={!!lostEnabled} onToggle={(v)=> setLostEnabled(!!v)} />
+            <LostModeSwitch isLost={!!lostEnabled} disabled={savingLost} onToggle={async (next)=>{
+              // auto-save when user toggles Lost/Active
+              try{
+                setSavingLost(true);
+                const r = await api.patch(`/memories/${id}/lost`, { isLost: !!next });
+                // server should return updated lost object
+                const lostResp = r.data?.lost;
+                setLostEnabled(!!(lostResp?.isLost ?? next));
+                toast.success(next ? 'Đã bật Lost mode' : 'Đã chuyển Active');
+                // show small saved badge similar to the manual save button
+                const badge = document.createElement('span');
+                badge.textContent = 'Đã lưu';
+                badge.className = 'text-[11px] px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20';
+                const container = document.getElementById('lost-save-badge');
+                if(container){ container.innerHTML = ''; container.appendChild(badge); setTimeout(()=>{ if(container) container.innerHTML=''; }, 1800); }
+              }catch(e){
+                toast.error(e.response?.data?.message || 'Lỗi cập nhật Lost mode');
+              }finally{ setSavingLost(false); }
+            }} />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div className="space-y-1 sm:col-span-2">

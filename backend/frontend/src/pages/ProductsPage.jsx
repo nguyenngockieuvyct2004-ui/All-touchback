@@ -12,6 +12,9 @@ export default function ProductsPage(){
   // Tìm kiếm & lọc theo category
   const [q,setQ] = useState('');
   const [cat,setCat] = useState('all');
+  const [categories,setCategories] = useState([{ slug: 'all', name: 'Tất cả' }]);
+  const [catsLoading,setCatsLoading] = useState(true);
+  const [catsError,setCatsError] = useState('');
 
   useEffect(()=>{
     let active = true;
@@ -22,10 +25,19 @@ export default function ProductsPage(){
     return ()=>{ active=false; };
   },[]);
 
-  const categories = ['all','basic','plus','premium'];
+  useEffect(()=>{
+    let active = true;
+    setCatsLoading(true);
+    api.get('/categories')
+      .then(r=>{ if(!active) return; const list = r.data || []; setCategories([{ slug: 'all', name: 'Tất cả' }, ...list.map(c=>({ slug: c.slug || c._id, name: c.name }))]); })
+      .catch(e=> { if(!active) return; setCatsError(e.response?.data?.message || 'Không thể tải categories') })
+      .finally(()=> { if(active) setCatsLoading(false); });
+    return ()=>{ active=false; };
+  },[]);
 
   const filtered = items.filter(p=>{
-    const okCat = cat==='all' || p.category===cat;
+    // product.category stores a slug (or free-form string). Match against selected category slug.
+    const okCat = cat==='all' || (p.category === cat) || (p.category?.slug === cat);
     const kw = q.trim().toLowerCase();
     const okQ = !kw || p.name?.toLowerCase().includes(kw) || p.description?.toLowerCase().includes(kw) || p.code?.toLowerCase().includes(kw);
     return okCat && okQ;
@@ -37,7 +49,7 @@ export default function ProductsPage(){
       <div className="flex items-center gap-2">
         <input value={q} onChange={e=>setQ(e.target.value)} className="input h-10 w-64" placeholder="Tìm kiếm sản phẩm..." />
         <select value={cat} onChange={e=>setCat(e.target.value)} className="input h-10 w-40">
-          {categories.map(c=> <option key={c} value={c}>{c==='all'?'Tất cả':c.toUpperCase()}</option>)}
+          {categories.map(c=> <option key={c.slug} value={c.slug}>{c.name}</option>)}
         </select>
       </div>
     </div>

@@ -268,22 +268,13 @@ export default function PublicCardPage() {
                   </div>
                 )}
 
-                {/* Social links removed from contact block - rendered in a separate section below */}
-              </div>
-            </section>
-          )}
-
-          {/* Social links - separate dedicated section */}
-          {(profile.socials && profile.socials.length) && (
-            <section className="mt-6 px-6 sm:px-8 space-y-4">
-              <h2 className="font-semibold text-[15px] flex items-center gap-2"><span className={`inline-block w-1 h-5 rounded ${accentBg} dark:bg-sky-500`} />Mạng xã hội</h2>
-              <div className="grid grid-cols-1 gap-3">
-                {profile.socials.map((s,i)=>{
+                {/* Social links as contact-style rows */}
+                {(profile.socials||[]).map((s, i) => {
                   if(!s?.url) return null;
                   const host = getHost(s.url);
                   const display = (s.label || s.url || '').replace(/^https?:\/\//,'').replace(/\/$/,'');
                   return (
-                    <div key={`social-${i}`} className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
+                    <div key={`soc-${i}`} className={`sm:flex sm:items-center sm:justify-between gap-3 p-3 rounded-lg ${rowBgClass} dark:bg-gray-800/60 border border-black/5 dark:border-white/5 hover:shadow-md hover:-translate-y-0.5 transition`}>
                       <div className="flex items-center gap-3 min-w-0">
                         <div className="w-10 h-10 rounded-lg bg-white dark:bg-white border border-black/10 grid place-items-center overflow-hidden">
                           <BrandFavicon url={s.url} label={host} size={20} />

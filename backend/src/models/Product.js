@@ -4,11 +4,7 @@ const productSchema = new Schema(
   {
     name: { type: String, required: true },
     code: { type: String, unique: true, required: true },
-    category: {
-      type: String,
-      enum: ["basic", "plus", "premium"],
-      required: true,
-    },
+    category: { type: String, required: true },
     variant: String,
     description: String,
     price: { type: Number, required: true },

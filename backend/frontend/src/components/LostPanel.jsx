@@ -5,12 +5,17 @@ export default function LostPanel({ lost, imageSrc, fullImage = false }){
   const title = lost?.title?.trim() || 'Thẻ của tôi đã bị đánh rơi';
   const message = lost?.message || '';
   const contact = lost?.contact || {};
-  return (
+  return (  
+    
     <div className="rounded-2xl overflow-hidden border border-black/5 bg-white shadow-xl grid grid-cols-1 md:grid-cols-2">
       {/* Bên trái: ảnh minh họa thất lạc */}
-      <div className="p-6 sm:p-8 bg-gradient-to-b from-[#8056D3] via-[#AE84E6] to-[#D691E1] text-white flex items-center justify-center">
+      
+      <div className={`${fullImage ? 'p-0' : 'p-6 sm:p-8'} bg-gradient-to-b from-[#8056D3] via-[#AE84E6] to-[#D691E1] text-white flex items-center justify-center`}>
         {fullImage ? (
-          <img src={imageSrc} alt="lost" className="max-h-72 w-auto object-contain drop-shadow-md" />
+          // full-bleed image filling the left column
+          <div className="w-full h-full">
+            <img src={imageSrc} alt="lost" className="w-full h-full object-cover drop-shadow-md" />
+          </div>
         ) : (
           <div className="w-[260px] max-w-[90%] aspect-square rounded-xl bg-white shadow-md grid place-items-center overflow-hidden">
             <img src={imageSrc} alt="lost" className="max-h-[85%] w-auto object-contain" />
