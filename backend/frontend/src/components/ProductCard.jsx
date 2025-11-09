@@ -1,22 +1,21 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { previewUrl, makeSrcSet, defaultSizes } from '../lib/images.js';
+import ResponsiveImage from './ResponsiveImage.jsx';
 
 export default function ProductCard({ product }){
   return (
   <Link to={`/products/${product._id}`} className="group card card-hover overflow-hidden bg-[#fffdfa] dark:bg-gray-900 border-black/10 dark:border-gray-800 text-gray-900 dark:text-gray-100">
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition bg-black/5 pointer-events-none" />
       <div className="flex flex-col h-full">
-        {/* Image */}
-        <div className="aspect-video w-full mb-3 overflow-hidden rounded-md bg-muted">
-          {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-          <img
-            src={previewUrl(product.images?.[0] || 'https://via.placeholder.com/800x450?text=TouchBack')}
-            srcSet={product.images?.[0] ? makeSrcSet(product.images[0]) : undefined}
-            sizes={defaultSizes('90vw')}
+        {/* Image (handles portrait/landscape nicely) */}
+        <div className="mb-3">
+          <ResponsiveImage
+            src={product.images?.[0] || 'https://via.placeholder.com/800x450?text=TouchBack'}
             alt={`Ảnh sản phẩm ${product.name}`}
-            className="w-full h-full object-cover"
-            loading="lazy"
+            ratio="aspect-video"
+            autoRatio
+            framed
+            hoverZoom
           />
         </div>
         {/* Content */}

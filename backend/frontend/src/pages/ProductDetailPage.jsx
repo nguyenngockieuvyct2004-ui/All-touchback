@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import api from '../lib/api.js';
 import ErrorMessage from '../components/ErrorMessage.jsx';
 import { ProductCardSkeleton } from '../components/Skeleton.jsx';
-import { previewUrl, fullUrl, thumbUrl, makeSrcSet } from '../lib/images.js';
+import { fullUrl, thumbUrl } from '../lib/images.js';
+import ResponsiveImage from '../components/ResponsiveImage.jsx';
 
 export default function ProductDetailPage(){
   const { id } = useParams();
@@ -49,17 +50,16 @@ export default function ProductDetailPage(){
       {/* Carousel with thumbnail selector */}
       {!!product.images?.length && (
         <div className="space-y-3">
-          {/* Main image */}
-          <div className="aspect-video rounded-lg overflow-hidden bg-muted">
-            {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-            <img
-              src={previewUrl(product.images[activeIdx])}
-              srcSet={makeSrcSet(product.images[activeIdx])}
-              sizes="(min-width: 1024px) 800px, 100vw"
-              alt={`Ảnh sản phẩm ${activeIdx + 1}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {/* Main image (auto handles portrait/landscape) */}
+          <ResponsiveImage
+            src={product.images[activeIdx]}
+            alt={`Ảnh sản phẩm ${activeIdx + 1}`}
+            ratio="aspect-video"
+            sizes="(min-width: 1024px) 800px, 100vw"
+            autoRatio
+            framed
+            hoverZoom={false}
+          />
           {/* Thumbnails */}
           <div className="flex items-center gap-2 overflow-x-auto pb-1">
             {product.images.map((src, idx) => (
