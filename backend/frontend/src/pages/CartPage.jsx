@@ -131,6 +131,7 @@ export default function CartPage(){
             try {
               const r = await api.post('/orders/checkout', { shippingAddress: `${prov}|${dst}|${ward}|${detail}`, phone, note, paymentMethod: pm });
               setPlaced(r.data); setCart({ items: [] });
+              try { window.dispatchEvent(new Event('tb-orders-updated')); } catch {}
             } catch(e){ alert(e.response?.data?.message || 'Đặt hàng thất bại'); }
             finally { setPlacing(false); }
           }} className="btn w-full disabled:opacity-100">{placing? 'Đang đặt...':'Đặt hàng'}</button>

@@ -126,8 +126,8 @@ function Hero(){
         <div className="mx-auto max-w-3xl space-y-8">
           <div className="space-y-4">
             <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/5 text-gray-800 dark:text-brand-300 text-xs font-medium">Phiên bản demo</p>
-            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">Lưu kỷ niệm — chia sẻ tức thì bằng NFC</h1>
-            <p className="text-base md:text-lg text-gray-700 dark:text-gray-400 leading-relaxed">Gắn kỷ niệm vào thẻ NFC, tạo liên kết rút gọn và chia sẻ gọn — mọi thứ được bảo mật và dễ tìm.</p>
+            <h1 className="text-3xl md:text-5xl font-semibold tracking-tight">Một chạm chia sẻ tức thì bằng NFC</h1>
+            <p className="text-base md:text-lg text-gray-700 dark:text-gray-400 leading-relaxed">Gắn kỷ niệm vào thẻ NFC, tạo liên kết rút gọn và chia sẻ gọn, mọi thứ được bảo mật và dễ tìm.</p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">

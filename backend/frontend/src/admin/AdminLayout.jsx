@@ -20,6 +20,7 @@ export default function AdminLayout(){
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [newContacts, setNewContacts] = useState(0);
+  const [newOrders, setNewOrders] = useState(0);
 
   useEffect(()=>{
     let mounted = true;
@@ -34,6 +35,25 @@ export default function AdminLayout(){
     window.addEventListener('tb-contacts-updated', onSignal);
     const iv = setInterval(load, 60000);
     return ()=>{ mounted=false; window.removeEventListener('tb-contacts-updated', onSignal); clearInterval(iv); };
+  },[]);
+
+  // Poll orders to show new orders badge (e.g. pending orders)
+  useEffect(()=>{
+    let mounted = true;
+    const loadOrders = async ()=>{
+      try{
+        const r = await api.get('/orders');
+        if(!mounted) return;
+        const list = Array.isArray(r.data) ? r.data : [];
+        const pending = list.filter(o=> o.status === 'pending').length;
+        setNewOrders(pending);
+      }catch{}
+    };
+    loadOrders();
+    const onSignal = ()=> loadOrders();
+    window.addEventListener('tb-orders-updated', onSignal);
+    const iv = setInterval(loadOrders, 60000);
+    return ()=>{ mounted=false; window.removeEventListener('tb-orders-updated', onSignal); clearInterval(iv); };
   },[]);
   return (
     <div className="min-h-screen bg-[#070b14] text-white">
@@ -54,7 +74,14 @@ export default function AdminLayout(){
         {/* Nav */}
         <nav className="mt-4 flex-1 space-y-1 overflow-auto">
           <SideLink to="/admin">Dashboard</SideLink>
-          <SideLink to="/admin/orders">Orders</SideLink>
+          <SideLink to="/admin/orders">
+            <span className="flex-1">Orders</span>
+            {newOrders>0 && (
+              <span className="ml-auto inline-flex min-w-[1.25rem] h-5 px-1.5 items-center justify-center rounded-full text-[11px] bg-rose-500 text-white">
+                {newOrders>99?'99+':newOrders}
+              </span>
+            )}
+          </SideLink>
           <SideLink to="/admin/products">Products</SideLink>
           <SideLink to="/admin/users">Users</SideLink>
           <SideLink to="/admin/contacts">

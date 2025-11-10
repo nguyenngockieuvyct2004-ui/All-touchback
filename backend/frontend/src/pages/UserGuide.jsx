@@ -144,7 +144,7 @@ export default function UserGuide(){
                 </div>
                 <div className="flex items-center gap-2 justify-center md:justify-end">
                   <a href="#quick-start" className="inline-flex items-center justify-center px-4 h-10 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium shadow whitespace-nowrap">Bắt đầu</a>
-                  <a href="#contact" className="inline-flex items-center justify-center px-4 h-10 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium whitespace-nowrap">Yêu cầu hỗ trợ</a>
+                  <a href="/contact" className="inline-flex items-center justify-center px-4 h-10 rounded-lg border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/5 text-sm font-medium whitespace-nowrap">Yêu cầu hỗ trợ</a>
                 </div>
               </div>
             </section>

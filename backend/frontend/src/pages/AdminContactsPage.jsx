@@ -36,6 +36,7 @@ export default function AdminContactsPage(){
   };
 
   const totalPages = Math.max(1, Math.ceil(total/limit));
+  const [selected, setSelected] = useState(null);
 
   return (
     <div>
@@ -80,15 +81,24 @@ export default function AdminContactsPage(){
                   <td className="px-4 py-3">{m.email}</td>
                   <td className="px-4 py-3">{m.phone ? (<a className="text-blue-300 hover:underline" href={`tel:${String(m.phone).replace(/\s+/g,'')}`}>{m.phone}</a>) : '-'}</td>
                   <td className="px-4 py-3">{m.subject || '-'}</td>
-                  <td className="px-4 py-3 max-w-[380px]"><div className="line-clamp-2 text-white/90">{m.message}</div></td>
+                  <td className="px-4 py-3 max-w-[380px]">
+                    <div className="line-clamp-2 text-white/90">{m.message}</div>
+                    <div className="mt-2">
+                      <button onClick={()=> setSelected(m)} className="inline-flex items-center px-2 py-1 text-xs rounded bg-white/5 border border-white/10 text-white/90 hover:bg-white/10 transition">Xem</button>
+                    </div>
+                  </td>
                   <td className="px-4 py-3">{new Date(m.createdAt).toLocaleString()}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-1 rounded text-xs ${m.status==='new'?'bg-blue-500/20 text-blue-300': m.status==='read'?'bg-yellow-500/20 text-yellow-300':'bg-green-500/20 text-green-300'}`}>{m.status}</span>
                   </td>
                   <td className="px-4 py-3 text-right">
-                    <div className="flex items-center gap-2 justify-end">
-                      {m.status!=='read' && <button className="px-3 h-8 rounded bg-white/10 hover:bg-white/20" onClick={()=> updateMsgStatus(m._id,'read')}>Đã đọc</button>}
-                      {m.status!=='closed' && <button className="px-3 h-8 rounded bg-white/10 hover:bg-white/20" onClick={()=> updateMsgStatus(m._id,'closed')}>Đóng</button>}
+                    <div className="flex items-center gap-2 justify-end whitespace-nowrap">
+                      {m.status!=='read' && (
+                        <button className="inline-flex items-center px-3 h-8 rounded-md bg-blue-600/10 text-blue-300 border border-blue-700/10 hover:bg-blue-600/20 transition min-w-[64px]" onClick={()=> updateMsgStatus(m._id,'read')}>Đã đọc</button>
+                      )}
+                      {m.status!=='closed' && (
+                        <button className="inline-flex items-center px-3 h-8 rounded-md bg-rose-600/10 text-rose-300 border border-rose-700/10 hover:bg-rose-600/20 transition min-w-[52px]" onClick={()=> updateMsgStatus(m._id,'closed')}>Đóng</button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -111,6 +121,32 @@ export default function AdminContactsPage(){
           <button disabled={page>=totalPages} onClick={()=> setPage(p=> Math.min(totalPages,p+1))} className="px-3 h-9 rounded bg-white/10 disabled:opacity-40">Sau</button>
         </div>
       </div>
+      {/* Modal for viewing full message */}
+      {selected && (
+        <div className="tb-modal-backdrop" onClick={()=> setSelected(null)}>
+          <div className="tb-modal-card max-w-2xl" onClick={e=> e.stopPropagation()}>
+            <h3 className="text-lg font-semibold mb-2">Chi tiết liên hệ</h3>
+            <div className="text-sm text-white/60 mb-3">{selected.name} • {selected.email} • {selected.phone || '-'}</div>
+            <div className="mb-3">
+              <div className="text-xs text-white/60">Chủ đề</div>
+              <div className="text-sm text-white/90">{selected.subject || '-'}</div>
+            </div>
+            <div className="mb-4">
+              <div className="text-xs text-white/60">Nội dung</div>
+              <div className="whitespace-pre-wrap text-sm text-white/90">{selected.message}</div>
+            </div>
+            <div className="flex items-center gap-2 justify-end">
+              {selected.status !== 'read' && (
+                <button onClick={()=>{ updateMsgStatus(selected._id,'read'); setSelected(null); }} className="px-3 h-9 rounded bg-blue-600/20 text-blue-300 hover:bg-blue-600/30">Đánh dấu đã đọc</button>
+              )}
+              {selected.status !== 'closed' && (
+                <button onClick={()=>{ updateMsgStatus(selected._id,'closed'); setSelected(null); }} className="px-3 h-9 rounded bg-rose-600/20 text-rose-300 hover:bg-rose-600/30">Đóng</button>
+              )}
+              <button onClick={()=> setSelected(null)} className="px-3 h-9 rounded bg-white/5 border border-white/10">Đóng cửa sổ</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
