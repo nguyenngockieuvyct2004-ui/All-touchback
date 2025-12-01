@@ -8,7 +8,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "../controllers/authController.js";
-import { authRequired } from "../middleware/auth.js";
+import { authRequired, requireRole } from "../middleware/auth.js";
 import {
   getMyProfile,
   updateMyProfile,
