@@ -88,7 +88,7 @@ export default function Payment() {
   // -----------------------------------------------
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-4">Thanh toán bằng SmartKey NFC</h1>
+      <h1 className="text-3xl font-bold mb-4">Thanh toán bằng  NFC</h1>
 
       {/* NFC CARD */}
       <div className="bg-white shadow-lg rounded-xl p-6 border">
